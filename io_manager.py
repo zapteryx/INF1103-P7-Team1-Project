@@ -20,7 +20,18 @@ def load_shelters_from_csv (filepath: str = filename) -> list:
 
             available = capacity - occupants 
             if available < 0:
-                available = 0   # So that i won t have negative numbers 
+                available = 0   # So that i won t have negative numbers
 
-            
+            accomodations = {
+                "name": row.get ("Shelter Name", "N/A"), #Looks up the "Shelter Name" column in the CSV. If found, it stores the name string else default as N/A
+                "category": row.get("Category", "N/A"),
+                "capacity": capacity, 
+                "occupants": occupants,
+                "available": available,
+                "Requirement": row.get("Requirements", "N/A"),
+                "contact": row.get("Contact", "N/A"),
+                "location": row.get("Location", "N/A")
+            }
+            shelters.append(accomodations)
+    return accomodations       
 
