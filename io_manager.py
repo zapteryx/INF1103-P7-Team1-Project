@@ -3,6 +3,7 @@ import os
 
 filename = "singapore_shelters_directory.csv"
 
+#CSV Reading
 def load_shelters_from_csv (filepath: str = filename) -> list:
     #Reads shelter data directly from CSV into a list of dictionaries.
     if not os.path.exists(filepath):
@@ -23,15 +24,25 @@ def load_shelters_from_csv (filepath: str = filename) -> list:
                 available = 0   # So that i won t have negative numbers
 
             accomodations = {
-                "name": row.get ("Shelter Name", "N/A"), #Looks up the "Shelter Name" column in the CSV. If found, it stores the name string else default as N/A
+                "name": row.get("Shelter Name", "N/A"), #Looks up the "Shelter Name" column in the CSV. If found, it stores the name string else default as N/A
                 "category": row.get("Category", "N/A"),
                 "capacity": capacity, 
                 "occupants": occupants,
                 "available": available,
-                "Requirement": row.get("Requirements", "N/A"),
+                "requirement": row.get("Requirements", "N/A"),
                 "contact": row.get("Contact", "N/A"),
                 "location": row.get("Location", "N/A")
             }
             shelters.append(accomodations)
-    return accomodations       
+    return accomodations  
 
+# Display & User Input
+def format_shelter (shelter: dict)  -> str:
+    info = ""
+    info += "Name:   " + shelter["name"] + "\n"
+    info += "Category:   " + shelter["category"] + "\n"
+    info += "Target:   " + shelter["target"] + "\n"
+    info += "Available:   " + str(shelter["available"]) + "bed left (" + str(shelter["occupants"]) + "/" + str(shelter["capacity"]) + " occupied)\n"
+    info += "Contact:     " + shelter["contact"] + "\n"
+    info += "------------------------------------------------------"
+    return info
