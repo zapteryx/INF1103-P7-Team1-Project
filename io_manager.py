@@ -121,3 +121,6 @@ def collect_intake_input() -> dict:
         "special_needs": special_needs,
         "intake_notes": intakes_notes
         }
+
+def print_message(text: str) -> None:
+    print(text) #Helper function to print generic messages to the terminal
