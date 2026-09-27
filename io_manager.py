@@ -71,8 +71,15 @@ def display_menu() -> str: #Is a hint stating that the function returns a string
 def collect_intake_input() -> dict:
     print("\n--- NEW CLIENT INTAKE---")
 
-    #Client ID Validation
+    # Client ID Validation
     client_id = input("Enter Client ID: ").strip()
     while not client_id:
         print("Client ID cannot be empty")
         client_id = input("Enter Client ID: ").strip()
+
+    #Age Validation
+    age_input = input("Enter Client Age: "). strip()
+    while not age_input.isdigit():
+        print("Please enter a valid number for age")
+        age_input = input("Enter Client Age: ").strip()
+    age = int(age_input)
