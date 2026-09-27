@@ -83,7 +83,7 @@ def display_menu() -> int: #Is a hint stating that the function returns an integ
     print("2. View All Shelters")
     print("3. Exit")
     print("====================================")
-    choice_input = int(input("Select option (1-3): ").strip()) #.strip removes leading and trailing whitespace eg; space, tabs or newline characters
+    choice_input = input("Select option (1-3): ").strip() #.strip removes leading and trailing whitespace eg; space, tabs or newline characters
 
     #Validate Input Menu Options
     while not choice_input.isdigit() or int(choice_input) not in [1, 2, 3]:
