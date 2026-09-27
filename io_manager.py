@@ -137,15 +137,11 @@ def collect_intake_input() -> dict:
     #Intake Description / Notes
     intakes_notes = input("Enter intake description: ").strip()
 
-    return{
+    return {
         "client_id": client_id,
         "age": age,
         "dependents": dependents,
-        "care_type": special_needs,
+        "care_type": care_input,
         "special_needs": special_needs,
         "intake_notes": intakes_notes
-        }
-
-def print_message(text: str) -> None:
-    print(text) #Helper function to print generic messages to the terminal
-
+    }
