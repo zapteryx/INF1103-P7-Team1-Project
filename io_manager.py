@@ -107,3 +107,8 @@ def collect_intake_input() -> dict:
     while needs_input not in ["yes", "no", "y", "n"]:
         print("Invalid input. Please enter 'Yes' or 'No'.")
         needs_input = input("Special Needs (Yes / No): ").strip().lower()
+
+    special_needs = "Yes" if needs_input in ["yes", "y"] else "No"  #Standardize special needs output text
+
+    #Intake Description / Notes
+    intakes_notes = input("Enter intake description: ").strip()
