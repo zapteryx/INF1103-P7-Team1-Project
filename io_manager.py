@@ -37,7 +37,7 @@ def load_shelters_from_csv(filepath: str = filename) -> list:
     return accomodations 
 
 # Display & User Input
-def format_shelter(shelter: dict) -> str:  #Is a hint staing that this input must be a dictionary and this functions returns a string
+def format_shelter(shelter: dict) -> str:  #Is a hint stating that this input must be a dictionary and this functions returns a string
     info = ""
     info += "Name:   " + shelter["name"] + "\n"
     info += "Category:   " + shelter["category"] + "\n"
@@ -47,11 +47,23 @@ def format_shelter(shelter: dict) -> str:  #Is a hint staing that this input mus
     info += "------------------------------------------------------"
     return info
 
-def print_shelter_list(shelters: list) -> None:
-    if not shelters:
+def print_shelter_list(shelters: list) -> None: # :list is a type hint stating this parameter expects a Python list
+    if not shelters:                            #  None -> returns nothing
         print("\n No shelters available to display.")
         return
     
     print("\n===== AVAILABLE SHELTERS =====\n")
     for shelter in shelters:
         print(format_shelter(shelter))
+
+def display_menu() -> str: #Is a hint stating that the function returns a string
+    print("\n==================================")
+    print("         Social Service AI          ")
+    print("====================================")
+    print("1. New Client Intake")
+    print("2. View All Shelters")
+    print("3. Exit")
+    print("====================================")
+    choice = input("Select option (1-3): ")
+    return choice.strip()   #.strip removes leading and trailing whitespace eg; space, tabs or newline characters
+
