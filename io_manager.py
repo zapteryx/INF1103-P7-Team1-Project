@@ -11,8 +11,8 @@ def load_shelters_from_csv(filepath: str = filename) -> list:
         return []
 
     shelters = []
-
-    with open(filepath, mode="r", encodings="utf-8-sig") as file: # Translate raw binary binary bytes into readable text characters . utf-8 : is the standard character encoding for web and modern text files, sig stands for signature 
+# Translate raw binary binary bytes into readable text characters . utf-8 : is the standard character encoding for web and modern text files, sig stands for signature
+    with open(filepath, mode="r", encoding="utf-8-sig") as file:  
         reader = csv.DictReader(file)   #Creates a special object that reads a CSV file line by line and automatically converts each row into a Python dictionary
  
         for row in reader:
@@ -34,14 +34,15 @@ def load_shelters_from_csv(filepath: str = filename) -> list:
                 "location": row.get("Location", "N/A")
             }
             shelters.append(accomodations)
-    return accomodations 
+    return shelters 
 
 # Terminal Display & Formatting
 def format_shelter(shelter: dict) -> str:  #Is a hint stating that this input must be a dictionary and this functions returns a string
+    print(shelter)
     info = ""
     info += "Name:   " + shelter["name"] + "\n"
     info += "Category:   " + shelter["category"] + "\n"
-    info += "Target:   " + shelter["target"] + "\n"
+    info += "Requirements:   " + shelter["requirements"] + "\n"
     info += "Available:   " + str(shelter["available"]) + "bed left (" + str(shelter["occupants"]) + "/" + str(shelter["capacity"]) + " occupied)\n"
     info += "Contact:     " + shelter["contact"] + "\n"
     info += "------------------------------------------------------"
@@ -124,3 +125,4 @@ def collect_intake_input() -> dict:
 
 def print_message(text: str) -> None:
     print(text) #Helper function to print generic messages to the terminal
+
