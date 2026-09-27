@@ -56,7 +56,6 @@ def load_shelters_from_csv(filepath: str) -> list:
 
 # Terminal Display & Formatting
 def format_shelter(shelter: dict) -> str:  #Is a hint stating that this input must be a dictionary and this functions returns a string
-    print(shelter)
     info = ""
     info += "Name:   " + shelter["name"] + "\n"
     info += "Category:   " + shelter["category"] + "\n"
