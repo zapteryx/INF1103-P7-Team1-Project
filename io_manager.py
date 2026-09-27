@@ -57,16 +57,21 @@ def print_shelter_list(shelters: list) -> None: # :list is a type hint stating t
     for shelter in shelters:
         print(format_shelter(shelter))
 
-def display_menu() -> str: #Is a hint stating that the function returns a string
-    print("\n==================================")
+def display_menu() -> int: #Is a hint stating that the function returns an integer
+    print("====================================")
     print("         Social Service AI          ")
     print("====================================")
     print("1. New Client Intake")
     print("2. View All Shelters")
     print("3. Exit")
     print("====================================")
-    choice = input("Select option (1-3): ")
-    return choice.strip()   #.strip removes leading and trailing whitespace eg; space, tabs or newline characters
+    choice_input = int(input("Select option (1-3): ")).strip() #.strip removes leading and trailing whitespace eg; space, tabs or newline characters
+
+    #Validate Input Menu Options
+    while not choice_input.isdigit() or int(choice_input) not in [1, 2, 3]:
+        print("Invalid option. Please enter a number between 1 and 3.")
+        choice_input = int(input("Select option (1-3): ")).strip()
+    return int(choice_input)
 
 # User input collection & Validation
 def collect_intake_input() -> dict:
