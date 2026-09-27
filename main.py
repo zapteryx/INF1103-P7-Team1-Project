@@ -10,6 +10,7 @@ def main() -> None:
             client = collect_intake_input()
             if file_path == "":
                 file_path = get_shelter_filename()
+            # TODO: pass client data to AI manager
         # view all shelters
         elif choice == 2:
             if file_path == "":
