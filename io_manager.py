@@ -78,7 +78,7 @@ def collect_intake_input() -> dict:
         client_id = input("Enter Client ID: ").strip()
 
     #Age Validation
-    age_input = input("Enter Client Age: "). strip()
+    age_input = input("Enter Client Age: ").strip()
     while not age_input.isdigit():
         print("Please enter a valid number for age.")
         age_input = input("Enter Client Age: ").strip()
@@ -91,4 +91,8 @@ def collect_intake_input() -> dict:
         dep_input = input("Enter Number of Dependents: ").strip()
     dependents = int(dep_input)
 
-    
+    #Type of Care Validation (Short Term / Long Term)
+    care_input = input("Type of care required (Short Term / Long Term): ").strip().lower() #.lower() help to convert any uppercase to lowercase
+    while care_input not in ["short term", "long term", "short", "long"]:
+        print("Invalid input. Please enter Short Term or Long Term.")
+        care_input = input("Type of care required (Short Term / Long Term): ").strip().lower()
