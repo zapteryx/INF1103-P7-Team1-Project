@@ -74,12 +74,21 @@ def collect_intake_input() -> dict:
     # Client ID Validation
     client_id = input("Enter Client ID: ").strip()
     while not client_id:
-        print("Client ID cannot be empty")
+        print("Client ID cannot be empty.")
         client_id = input("Enter Client ID: ").strip()
 
     #Age Validation
     age_input = input("Enter Client Age: "). strip()
     while not age_input.isdigit():
-        print("Please enter a valid number for age")
+        print("Please enter a valid number for age.")
         age_input = input("Enter Client Age: ").strip()
     age = int(age_input)
+
+    # Dependents Validation
+    dep_input = input("Enter Number of Dependents: ").strip()
+    while not dep_input.isdigit():
+        print("Please enter a valid number for dependents.")
+        dep_input = input("Enter Number of Dependents: ").strip()
+    dependents = int(dep_input)
+
+    
