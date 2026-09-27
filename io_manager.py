@@ -141,7 +141,7 @@ def collect_intake_input() -> dict:
         "client_id": client_id,
         "age": age,
         "dependents": dependents,
-        "care_type": care_input,
+        "care_type": care_type,
         "special_needs": special_needs,
         "intake_notes": intakes_notes
     }
