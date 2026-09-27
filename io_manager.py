@@ -96,3 +96,14 @@ def collect_intake_input() -> dict:
     while care_input not in ["short term", "long term", "short", "long"]:
         print("Invalid input. Please enter Short Term or Long Term.")
         care_input = input("Type of care required (Short Term / Long Term): ").strip().lower()
+
+    if "short" in care_input:  #Standardize care output text
+        care_type = "Short Term"
+    else:
+        care_type = "Long Term"
+
+    #Special Needs Validation (Yes / No)
+    needs_input = input("Special Needs (Yes / No): ").strip().lower()
+    while needs_input not in ["yes", "no", "y", "n"]:
+        print("Invalid input. Please enter 'Yes' or 'No'.")
+        needs_input = input("Special Needs (Yes / No): ").strip().lower()
