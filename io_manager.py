@@ -4,7 +4,7 @@ import os
 filename = "singapore_shelters_directory.csv"
 
 #CSV Reading
-def load_shelters_from_csv (filepath: str = filename) -> list:
+def load_shelters_from_csv(filepath: str = filename) -> list:
     #Reads shelter data directly from CSV into a list of dictionaries.
     if not os.path.exists(filepath):
         print("\nFile not found:", filepath) # the built-in os module that checks the path stored in filepath
@@ -29,15 +29,15 @@ def load_shelters_from_csv (filepath: str = filename) -> list:
                 "capacity": capacity, 
                 "occupants": occupants,
                 "available": available,
-                "requirement": row.get("Requirements", "N/A"),
+                "requirements": row.get("Requirements", "N/A"),
                 "contact": row.get("Contact", "N/A"),
                 "location": row.get("Location", "N/A")
             }
             shelters.append(accomodations)
-    return accomodations  
+    return accomodations 
 
 # Display & User Input
-def format_shelter (shelter: dict)  -> str:
+def format_shelter(shelter: dict) -> str:  #Is a hint staing that this input must be a dictionary and this functions returns a string
     info = ""
     info += "Name:   " + shelter["name"] + "\n"
     info += "Category:   " + shelter["category"] + "\n"
@@ -46,3 +46,12 @@ def format_shelter (shelter: dict)  -> str:
     info += "Contact:     " + shelter["contact"] + "\n"
     info += "------------------------------------------------------"
     return info
+
+def print_shelter_list(shelters: list) -> None:
+    if not shelters:
+        print("\n No shelters available to display.")
+        return
+    
+    print("\n===== AVAILABLE SHELTERS =====\n")
+    for shelter in shelters:
+        print(format_shelter(shelter))
