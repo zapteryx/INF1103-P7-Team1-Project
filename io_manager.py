@@ -4,12 +4,30 @@ import os
 filename = "singapore_shelters_directory.csv"
 
 #CSV Reading
-def load_shelters_from_csv(filepath: str = filename) -> list:
-    #Reads shelter data directly from CSV into a list of dictionaries.
-    if not os.path.exists(filepath):
-        print("\nFile not found:", filepath) # the built-in os module that checks the path stored in filepath
-        return []
 
+
+def get_shelter_filename(default_filename: str = filename) -> str:
+    
+    #Prompts the user to enter the shelter dataset filename.
+    #Allows pressing Enter to use the default filename and validates file existence.
+
+    print(f"\nDefault dataset: '{default_filename}'")
+    filename = input("Enter shelter CSV filename (or press Enter for default): ").strip()
+
+    # Use default if user presses Enter without typing anything
+    if not filename:
+        filename = default_filename
+
+    # Validation loop: Check if the file actually exists on disk
+    while not os.path.exists(filename):
+        print(f"[!] File '{filename}' not found. Please make sure the path and filename are correct.")
+        filename = input("Enter shelter CSV filename (or press Enter for default): ").strip()
+        if not filename:
+            filename = default_filename
+
+    return filename
+
+def load_shelters_from_csv(filepath: str) -> list:
     shelters = []
 # Translate raw binary binary bytes into readable text characters . utf-8 : is the standard character encoding for web and modern text files, sig stands for signature
     with open(filepath, mode="r", encoding="utf-8-sig") as file:  
