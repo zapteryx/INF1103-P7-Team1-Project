@@ -60,7 +60,7 @@ def format_shelter(shelter: dict) -> str:  #Is a hint stating that this input mu
     info += "Name:   " + shelter["name"] + "\n"
     info += "Category:   " + shelter["category"] + "\n"
     info += "Requirements:   " + shelter["requirements"] + "\n"
-    info += "Available:   " + str(shelter["available"]) + "bed left (" + str(shelter["occupants"]) + "/" + str(shelter["capacity"]) + " occupied)\n"
+    info += "Available:   " + str(shelter["available"]) + " bed left (" + str(shelter["occupants"]) + "/" + str(shelter["capacity"]) + " occupied)\n"
     info += "Contact:     " + shelter["contact"] + "\n"
     info += "------------------------------------------------------"
     return info
@@ -80,14 +80,15 @@ def display_menu() -> int: #Is a hint stating that the function returns an integ
     print("====================================")
     print("1. New Client Intake")
     print("2. View All Shelters")
-    print("3. Exit")
+    print("3. Update CSV File Used")
+    print("4. Exit")
     print("====================================")
-    choice_input = input("Select option (1-3): ").strip() #.strip removes leading and trailing whitespace eg; space, tabs or newline characters
+    choice_input = input("Select option (1-4): ").strip() #.strip removes leading and trailing whitespace eg; space, tabs or newline characters
 
     #Validate Input Menu Options
-    while not choice_input.isdigit() or int(choice_input) not in [1, 2, 3]:
-        print("Invalid option. Please enter a number between 1 and 3.")
-        choice_input = int(input("Select option (1-3): ").strip())
+    while not choice_input.isdigit() or int(choice_input) not in [1, 2, 3, 4]:
+        print("Invalid option. Please enter a number between 1 and 4.")
+        choice_input = input("Select option (1-4): ").strip()
     return int(choice_input)
 
 # User input collection & Validation
@@ -95,10 +96,10 @@ def collect_intake_input() -> dict:
     print("\n--- NEW CLIENT INTAKE---")
 
     # Client ID Validation
-    client_id = input("Enter Client ID: ").strip()
+    client_id = input("Enter NRIC: ").strip()
     while not client_id:
         print("Client ID cannot be empty.")
-        client_id = input("Enter Client ID: ").strip()
+        client_id = input("Enter NRIC: ").strip()
 
     #Age Validation
     age_input = input("Enter Client Age: ").strip()
