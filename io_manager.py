@@ -112,3 +112,12 @@ def collect_intake_input() -> dict:
 
     #Intake Description / Notes
     intakes_notes = input("Enter intake description: ").strip()
+
+    return{
+        "client_id": client_id,
+        "age": age,
+        "dependents": dependents,
+        "care_type": special_needs,
+        "special_needs": special_needs,
+        "intake_notes": intakes_notes
+        }
