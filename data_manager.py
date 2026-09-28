@@ -24,9 +24,9 @@ def load_records():
     except FileNotFoundError:
         # On the first run, there is no file.
         return [], None
-
+    
     except (json.JSONDecodeError, UnicodeDecodeError):
         return [], "The saved file is damaged or contains invalid JSON."
-
+   
     except OSError:
         return [], "Unable to open the saved file."
