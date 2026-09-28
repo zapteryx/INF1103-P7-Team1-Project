@@ -3,13 +3,10 @@ import os
 
 filename = "singapore_shelters_directory.csv"
 
-#CSV Reading
-
-
+# Maintained by Shi Ting (2600663)
 def get_shelter_filename(default_filename: str = filename) -> str:
-    
-    #Prompts the user to enter the shelter dataset filename.
-    #Allows pressing Enter to use the default filename and validates file existence.
+    # Prompts the user to enter the shelter dataset filename.
+    # Allows pressing Enter to use the default filename and validates file existence.
 
     print(f"\nDefault dataset: '{default_filename}'")
     filename = input("Enter shelter CSV filename (or press Enter for default): ").strip()
@@ -27,24 +24,26 @@ def get_shelter_filename(default_filename: str = filename) -> str:
 
     return filename
 
+# Maintained by Shi Ting (2600663)
+# CSV Reading
 def load_shelters_from_csv(filepath: str) -> list:
     shelters = []
 # Translate raw binary binary bytes into readable text characters . utf-8 : is the standard character encoding for web and modern text files, sig stands for signature
-    with open(filepath, mode="r", encoding="utf-8-sig") as file:  
+    with open(filepath, mode="r", encoding="utf-8-sig") as file:
         reader = csv.DictReader(file)   #Creates a special object that reads a CSV file line by line and automatically converts each row into a Python dictionary
- 
+
         for row in reader:
             capacity = int(row.get ("Maximum Capacity", 0))   # It will replace the value if it can find else it will be 0 instead of crashing the entire application
             occupants = int(row.get("Current occupants", 0))
 
-            available = capacity - occupants 
+            available = capacity - occupants
             if available < 0:
                 available = 0   # So that i won t have negative numbers
 
             accomodations = {
                 "name": row.get("Shelter Name", "N/A"), #Looks up the "Shelter Name" column in the CSV. If found, it stores the name string else default as N/A
                 "category": row.get("Category", "N/A"),
-                "capacity": capacity, 
+                "capacity": capacity,
                 "occupants": occupants,
                 "available": available,
                 "requirements": row.get("Requirements", "N/A"),
@@ -52,8 +51,9 @@ def load_shelters_from_csv(filepath: str) -> list:
                 "location": row.get("Location", "N/A")
             }
             shelters.append(accomodations)
-    return shelters 
+    return shelters
 
+# Maintained by Shi Ting (2600663)
 # Terminal Display & Formatting
 def format_shelter(shelter: dict) -> str:  #Is a hint stating that this input must be a dictionary and this functions returns a string
     info = ""
@@ -65,15 +65,17 @@ def format_shelter(shelter: dict) -> str:  #Is a hint stating that this input mu
     info += "------------------------------------------------------"
     return info
 
+# Maintained by Shi Ting (2600663)
 def print_shelter_list(shelters: list) -> None: # :list is a type hint stating this parameter expects a Python list
     if not shelters:                            #  None -> returns nothing
         print("\nNo shelters available to display.")
         return
-    
+
     print("\n===== AVAILABLE SHELTERS =====\n")
     for shelter in shelters:
         print(format_shelter(shelter))
 
+# Maintained by Shi Ting (2600663)
 def display_menu() -> int: #Is a hint stating that the function returns an integer
     print("====================================")
     print("         Social Service AI          ")
@@ -91,6 +93,7 @@ def display_menu() -> int: #Is a hint stating that the function returns an integ
         choice_input = input("Select option (1-4): ").strip()
     return int(choice_input)
 
+# Maintained by Shi Ting (2600663)
 # User input collection & Validation
 def collect_intake_input() -> dict:
     print("\n--- NEW CLIENT INTAKE---")
