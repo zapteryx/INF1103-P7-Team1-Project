@@ -1,10 +1,10 @@
 import csv
 import os
 
-filename = "singapore_shelters_directory.csv"
+FILENAME = "singapore_shelters_directory.csv"
 
 # Maintained by Shi Ting (2600663)
-def get_shelter_filename(default_filename: str = filename) -> str:
+def get_shelter_filename(default_filename: str = FILENAME) -> str:
     # Prompts the user to enter the shelter dataset filename.
     # Allows pressing Enter to use the default filename and validates file existence.
 
