@@ -1,5 +1,6 @@
 import io_manager
 
+# Maintained by Ming Xuan (2604426)
 def main() -> None:
     file_path = ""
     while True:
