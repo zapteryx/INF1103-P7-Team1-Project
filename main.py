@@ -3,7 +3,6 @@ import io_manager
 def main() -> None:
     file_path = ""
     while True:
-        # TODO: move IO logic to io_manager.py
         choice = io_manager.display_menu()
         # new client intake
         if choice == 1:
