@@ -1,6 +1,7 @@
 import io_manager
 import json
 import jsonschema
+import logging
 from jsonschema import validate
 from dotenv import load_dotenv
 from google import genai
@@ -18,6 +19,17 @@ shelter_info = "\n".join(io_manager.format_shelter(s) for s in shelters)
 
 # Retrieve the client info using functions from io_manager
 client_info = io_manager.collect_intake_input()
+
+# Errors are written to a file, so that the messages doesn't clutter the terminal
+# Create and set log configurations based on file parameters, level of log messages, format of messages, style of format
+logging.basicConfig(
+    filename="ai_manager.log", 
+    encoding="utf-8", 
+    filemode="a", 
+    level=logging.INFO, 
+    format="{asctime} {levelname} {message}", 
+    style="{"
+)
 
 # Maintained by Mei Qi (2605039)
 def get_shelter_recomendation(client_info: str, shelter_info: str) -> dict | None:
@@ -69,16 +81,15 @@ def get_shelter_recomendation(client_info: str, shelter_info: str) -> dict | Non
 
         # Validates the api output based on response schema
         validate(instance=output, schema=response_schema)
-        print("Api call was successful and output is valid.")
+        logging.info("Api call was successful and output is valid.")
 
-    except jsonschema.exceptions.ValidationError as e:
-        print(f"Api call is invalid: {e.message}")
-
-    # If the api works successfully, print out the output, else use sample api response instead
-    if output:
         # Converts from Python dictionary to JSON text
         print(json.dumps(output, indent=2))
-    else:
+
+    # Logs all api failures and invalid api output into a file, and uses the sample api response instead of calling api again
+    except jsonschema.exceptions.ValidationError as e:
+        logging.error("Api call is invalid: {e.message}")
+
         # Opens the sample api response file and loops through the list called steps to retrieve the output text
         with open("sample_api_response.json", encoding="utf-8") as file:
             data = json.load(file)
