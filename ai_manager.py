@@ -88,9 +88,13 @@ def get_shelter_recomendation(client_info: str, shelter_info: str) -> dict | Non
             logging.info("Api call was successful and output is valid.")
             return output
 
-        # Logs all api failures and invalid api output into a file
+        # Log all the api failures (rate limits, timeout...) and invalid api outputs (invalid schema and json) into a file, and retry
         except jsonschema.exceptions.ValidationError as e:
-            logging.error(f"Api call is invalid: {e.message}")
+            logging.error(f"Attempt {attempt}: api output is invalid: {e.message}")
+        except json.JSONDecodeError as e:
+            logging.error(f"Attempt {attempt}: api output is not valid JSON: {e}")
+        except Exception as e:
+            logging.error(f"Attempt {attempt}: api call failed: {e}")
 
     # All api call attempts failed, so use the sample api response instead
     logging.warning(f"All {max_attempts} api attempts failed. Using sample api response instead.")
