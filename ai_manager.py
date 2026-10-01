@@ -1,5 +1,7 @@
 import io_manager
 import json
+import jsonschema
+from jsonschema import validate
 from dotenv import load_dotenv
 from google import genai
 
@@ -49,28 +51,36 @@ def get_shelter_recomendation(client_info: str, shelter_info: str) -> dict | Non
     that the shelter meets for the case, and provide a recommended shelter for the client.\n 
     Client info:\n {client_info} \nShelter info:\n {shelter_info}"""
 
-    client = genai.Client()
+    try:
+        client = genai.Client()
 
-    # Call the api to give a prompt based on the parameters shown below
-    interaction = client.interactions.create(
-        model="gemini-3.1-flash-lite",
-        input=prompt,
-        response_format={
-            "type": "text",
-            "mime_type": "application/json",
-            "schema": response_schema
-        },
-    )
+        # Call the api to give a prompt based on the parameters shown below
+        interaction = client.interactions.create(
+            model="gemini-3.1-flash-lite",
+            input=prompt,
+            response_format={
+                "type": "text",
+                "mime_type": "application/json",
+                "schema": response_schema
+            },
+        )
 
-    output = json.loads(interaction.output_text)
+        output = json.loads(interaction.output_text)
 
-    # If the api works successfully print out the output, else use sample ai response instead
+        # Validates the api output based on response schema
+        validate(instance=output, schema=response_schema)
+        print("Api call was successful and output is valid.")
+
+    except jsonschema.exceptions.ValidationError as e:
+        print(f"Api call is invalid: {e.message}")
+
+    # If the api works successfully, print out the output, else use sample api response instead
     if output:
         # Converts from Python dictionary to JSON text
         print(json.dumps(output, indent=2))
     else:
-        # Opens the sample ai response file and loops through the list called steps to retrieve the output text
-        with open("sample_response.json", encoding="utf-8") as file:
+        # Opens the sample api response file and loops through the list called steps to retrieve the output text
+        with open("sample_api_response.json", encoding="utf-8") as file:
             data = json.load(file)
         for step in data["steps"]:
             if step["type"] == "model_output":
