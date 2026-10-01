@@ -17,12 +17,6 @@ shelter_info = "\n".join(io_manager.format_shelter(s) for s in shelters)
 # Retrieve the client info using functions from io_manager
 client_info = io_manager.collect_intake_input()
 
-# Create a prompt using the shelter and client info
-prompt = f"""Based on the client and shelter information shown, determine the urgency level of the case 
-    (from 1-5, where 5 is the most urgent and 1 is the least urgent), give a structured JSON dictionary of criterias 
-    that the shelter meets for the case, and provide a recommended shelter for the client.\n 
-    Client info:\n {client_info} \nShelter info:\n {shelter_info}"""
-
 # Create a schema for the output after calling the api
 response_schema = {
     "type": "object",
@@ -38,7 +32,6 @@ response_schema = {
                 "properties": {
                     "shelter_name": {"type": "string"},
                     "criteria": {"type": "string"},
-                    "availability": {"type": "string"}, 
                     "met": {"type": "boolean"}
                 }
             },
@@ -48,19 +41,36 @@ response_schema = {
     "required": ["urgency_level", "criterias_met"]
 }
 
-client = genai.Client()
+def get_shelter_reccomendation(client_info: str, shelter_info: str) -> dict | None:
+    # Create a prompt using the shelter and client info
+    prompt = f"""Based on the client and shelter information shown, determine the urgency level of the case 
+    (from 1-5, where 5 is the most urgent and 1 is the least urgent), give a structured JSON dictionary of criterias 
+    that the shelter meets for the case, and provide a recommended shelter for the client.\n 
+    Client info:\n {client_info} \nShelter info:\n {shelter_info}"""
 
-# Call the api to give a prompt based on the parameters shown below
-interaction = client.interactions.create(
-    model="gemini-3.8-flash",
-    input=prompt,
-    response_format={
-        "type": "text",
-        "mime_type": "application/json",
-        "schema": response_schema
-    },
-    stream=True
-)
+    client = genai.Client()
 
-output = json.loads(interaction.output_text)
-print(interaction.output_text)
+    # Call the api to give a prompt based on the parameters shown below
+    interaction = client.interactions.create(
+        model="gemini-3.1-flash-lite",
+        input=prompt,
+        response_format={
+            "type": "text",
+            "mime_type": "application/json",
+            "schema": response_schema
+        },
+    )
+
+    output = json.loads(interaction.output_text)
+
+    # If the api works successfully print out the output, else use sample ai response instead
+    if output:
+        # Converts from Python dictionary to JSON text
+        print(json.dumps(output, indent=2))
+    else:
+        # Opens the sample ai response file and loops through the list called steps to retrieve the output text
+        with open("sample_response.json", encoding="utf-8") as file:
+            data = json.load(file)
+        for step in data["steps"]:
+            if step["type"] == "model_output":
+                return json.loads(step["content"][0]["text"])
