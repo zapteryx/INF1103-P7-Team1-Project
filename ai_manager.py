@@ -31,6 +31,9 @@ logging.basicConfig(
     style="{"
 )
 
+# No. of attempts to call api before using the sample api response
+max_attempts = 2
+
 # Maintained by Mei Qi (2605039)
 def get_shelter_recomendation(client_info: str, shelter_info: str) -> dict | None:
     # Create a schema for the output after calling the api
@@ -63,36 +66,37 @@ def get_shelter_recomendation(client_info: str, shelter_info: str) -> dict | Non
     that the shelter meets for the case, and provide a recommended shelter for the client.\n 
     Client info:\n {client_info} \nShelter info:\n {shelter_info}"""
 
-    try:
-        client = genai.Client()
+    for attempt in range(1, max_attempts + 1):
+        try:
+            client = genai.Client()
 
-        # Call the api to give a prompt based on the parameters shown below
-        interaction = client.interactions.create(
-            model="gemini-3.1-flash-lite",
-            input=prompt,
-            response_format={
-                "type": "text",
-                "mime_type": "application/json",
-                "schema": response_schema
-            },
-        )
+            # Call the api to give a prompt based on the parameters shown below
+            interaction = client.interactions.create(
+                model="gemini-3.1-flash-lite",
+                input=prompt,
+                response_format={
+                    "type": "text",
+                    "mime_type": "application/json",
+                    "schema": response_schema
+                },
+            )
 
-        output = json.loads(interaction.output_text)
+            output = json.loads(interaction.output_text)
 
-        # Validates the api output based on response schema
-        validate(instance=output, schema=response_schema)
-        logging.info("Api call was successful and output is valid.")
+            # Validates the api output based on response schema
+            validate(instance=output, schema=response_schema)
+            logging.info("Api call was successful and output is valid.")
+            return output
 
-        # Converts from Python dictionary to JSON text
-        print(json.dumps(output, indent=2))
+        # Logs all api failures and invalid api output into a file
+        except jsonschema.exceptions.ValidationError as e:
+            logging.error(f"Api call is invalid: {e.message}")
 
-    # Logs all api failures and invalid api output into a file, and uses the sample api response instead of calling api again
-    except jsonschema.exceptions.ValidationError as e:
-        logging.error("Api call is invalid: {e.message}")
-
-        # Opens the sample api response file and loops through the list called steps to retrieve the output text
-        with open("sample_api_response.json", encoding="utf-8") as file:
-            data = json.load(file)
-        for step in data["steps"]:
-            if step["type"] == "model_output":
-                return json.loads(step["content"][0]["text"])
+    # All api call attempts failed, so use the sample api response instead
+    logging.warning(f"All {max_attempts} api attempts failed. Using sample api response instead.")
+    # Opens the sample api response file and loops through the list called steps to retrieve the output text
+    with open("sample_api_response.json", encoding="utf-8") as file:
+        data = json.load(file)
+    for step in data["steps"]:
+        if step["type"] == "model_output":
+            return json.loads(step["content"][0]["text"])
