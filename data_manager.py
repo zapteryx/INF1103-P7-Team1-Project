@@ -1,4 +1,5 @@
 import json
+import csv
 
 FILENAME = "case_records.json"
 
@@ -30,3 +31,8 @@ def load_records():
    
     except OSError:
         return [], "Unable to open the saved file."
+
+    def validate_csv_filename(filename):
+        if not filename.lower().endswith(".csv"):
+            return False, "Invalid file format. Please select a CSV file."
+        
