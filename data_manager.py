@@ -3,6 +3,7 @@ import json
 import csv
 
 # Maintained by Htet Shine Aung (2604711)
+# Load case record from JSON or CSV file
 def load_records(filename):
     cases = []
 
@@ -65,6 +66,7 @@ def save_records(filename, records):
         return False, "Unable to save records."
    
 # Maintained by Htet Shine Aung (2604711)
+# if the selected file is a valid CSV file
 def validate_csv_filename(filename):
     if not filename.lower().endswith(".csv"):
         return False, "Invalid file format. Please select a CSV file."
@@ -88,8 +90,43 @@ def validate_csv_filename(filename):
         return False,
 
 # Maintained by Htet Shine Aung (2604711)
-def load_shelters_from_csv(filename):
-    """Load shelters from a CSV file."""
-
+# Load shelters from CSV file
+def load_shelters(filename):
     shelters = []
+
+    # Check the file first 
+    if not validate_csv_filename(filename):
+        return shelters, "Invalid CSV file. Please select a valid CSV file."
+
+    try:
+        with open(filename, "r", encoding="utf-8-sig") as file:
+            reader = csv.DictReader(file)
+
+            for row in reader:
+                capacity = int(row.get("Maximum Capacity", 0))
+                occupants = int(row.get("Current Occupants", 0))
+
+                available = capacity - occupants
+
+                if available < 0:
+                    available = 0
+
+                shelter = {
+                    "name": row.get("Shelter Name", "N/A"),
+                    "category": row.get("Category", "N/A"),
+                    "capacity": capacity,
+                    "occupants": occupants,
+                    "available": available,
+                    "requirements": row.get("Requirements", "N/A"),
+                    "contact": row.get("Contact", "N/A"),
+                    "location": row.get("Address", "N/A")
+                }
+
+                shelters.append(shelter)
+
+        return shelters
+
+    except (OSError, ValueError, csv.Error):
+        return []
+
 
