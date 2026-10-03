@@ -84,4 +84,14 @@ def load_shelters_from_csv(filename):
 
     shelters = []
 
+# Maintained by Htet Shine Aung (2604711)
+def save_records(filename, records):
+    try:
+        with open(filename, "w", encoding="utf-8") as file:
+            json.dump(records, file, indent=4)
+
+        return True, None
+
+    except OSError:
+        return False, "Unable to save records."
    
