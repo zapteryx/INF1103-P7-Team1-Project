@@ -131,3 +131,14 @@ def load_shelters(filename):
 
     except (OSError, ValueError, csv.Error):
         return [], "Unable to load shelter data."
+
+# Maintained by Htet Shine Aung (2604711)
+# Filter processed records by the outcome
+def filter_records_by_outcome(records, outcome):
+    filtered_records = []
+
+    for record in records:
+        if record.get("outcome", "").lower() == outcome.lower():
+            filtered_records.append(record)
+
+    return filtered_records
