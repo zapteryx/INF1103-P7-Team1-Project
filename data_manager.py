@@ -39,14 +39,11 @@ def load_records(filename):
 
                     cases.append(case)
 
-
         # Not JSON or CSV
         else:
             return [], "File must be a JSON or CSV file."
 
-
         return cases, None
-
 
     except FileNotFoundError:
         return [], "File not found."
