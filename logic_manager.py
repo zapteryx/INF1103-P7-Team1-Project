@@ -24,29 +24,48 @@ def validate_ai_recommendation(json_string):
             flag = "REJECT"
 
         # validate shelter names against CSV file
-        shelter_quantity = 0
-        target_quantity = len(json_string.get("criterias_met", []))
+        criterias_met = json_string.get("criterias_met", [])
+        ai_shelter_names = {item["shelter_name"] for item in criterias_met}
+        shelter_count = 0
+        target_count = len(criterias_met)
         accepted_shelter_names = []
         with open(CSV_FILENAME, mode="r", encoding="utf-8") as file:
             reader = csv.DictReader(file)
             for row in reader:
-                for i in json_string.get("criterias_met", []):
-                    if row["Shelter Name"] == i["shelter_name"]:
-                        print("Shelter name is valid.")
-                        shelter_quantity += 1
-                        accepted_shelter_names.append(i["shelter_name"])
-                        break
+                if row["Shelter Name"] in ai_shelter_names:
+                    print("Shelter name is valid.")
+                    shelter_count += 1
+                    accepted_shelter_names.append(row["Shelter Name"])
         # if there is an incorrect shelter name, the name will be added to flag_reasons
-        if shelter_quantity < target_quantity:
+        if shelter_count < target_count:
             print("Shelter name is invalid.")
-            for i in json_string.get("criterias_met", []):
+            for i in criterias_met:
                 if i["shelter_name"] not in accepted_shelter_names:
-                    flag_reason = f"FLAG: '{i['shelter_name']}' does not exist."
+                    flag_reason = f"FLAG: {i['shelter_name']} does not exist."
                     flag_reasons.append(flag_reason)
             flag = "REJECT"
 
+        # validate ai_confidence_score and suitability_score within range
+        for i in criterias_met:
+            if not 0 <= i.get("ai_confidence_score", 0) <= 1:
+                print("AI confidence score is invalid.")
+                flag_reasons.append(
+                    f"FLAG: AI confidence score for {i['shelter_name']} is out of range (0-1)."
+                )
+                flag = "REJECT"
+            if not 0 <= i.get("suitability_score", 0) <= 100:
+                print("Suitability score is invalid.")
+                flag_reasons.append(
+                    f"FLAG: Suitability score for {i['shelter_name']} is out of range (0-100)."
+                )
+                flag = "REJECT"
+                
+        return flag, flag_reasons
+
     except Exception as e:
         print("Error validating AI recommendation:", e)
+        flag = "REJECT"
+        flag_reasons.append("FLAG: Unexpected error occurred.")
 
 
 def json_to_dict(json_string):
@@ -56,9 +75,7 @@ def json_to_dict(json_string):
 with open("stuff.json", "r") as f:
     stuff = json.load(f)
 # validate_ai_recommendation(json.dumps(stuff))
-validate_ai_recommendation(stuff)
-
-
+flag, flag_reasons = validate_ai_recommendation(stuff)
 
 
 # when do we flag an ai response, when only 1 shelter recommended hallucinates?
