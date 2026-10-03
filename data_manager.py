@@ -55,6 +55,13 @@ def validate_csv_filename(filename):
     except (OSError, csv.Error, UnicodeDecodeError): 
         return False,
 
+def load_shelters_from_csv(filename):
+    """Load shelters from a CSV file."""
+
+    shelters = []
+    
+
+
 
 
 
