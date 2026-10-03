@@ -55,7 +55,7 @@ def load_records(filename):
 
 
 # Maintained by Htet Shine Aung (2604711)
-# Save case records to JSON file
+# save/replace the WHOLE list
 def save_records(filename, records):
     try:
         with open(filename, "w", encoding="utf-8") as file:
@@ -66,6 +66,26 @@ def save_records(filename, records):
     except OSError:
         return False, "Unable to save records."
 
+# Maintained by Htet Shine Aung (2604711)
+# Add ONE processed record without deleting the existing records
+def add_record(filename, record):
+
+    # Load the existing records
+    records, error = load_records(filename)
+
+    # If the file does not exist, start with an empty list
+    if error == "File not found.":
+        records = []
+
+    # If there is another error, stop
+    elif error:
+        return False, error
+
+    # Add the new processed record
+    records.append(record)
+
+    # Save the updated list
+    return save_records(filename, records)
 
 # Maintained by Htet Shine Aung (2604711)
 # Check if the selected file is a valid CSV file
@@ -133,7 +153,7 @@ def load_shelters(filename):
         return [], "Unable to load shelter data."
 
 # Maintained by Htet Shine Aung (2604711)
-# Filter processed records by the outcome
+# Filter processed records by the outcome only such as "Accepted", "Rejected", or "FLAG"
 def filter_records_by_outcome(records, outcome):
     filtered_records = []
 
