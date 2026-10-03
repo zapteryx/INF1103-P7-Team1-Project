@@ -1,4 +1,3 @@
-from fileinput import filename
 import json
 import csv
 
@@ -54,7 +53,9 @@ def load_records(filename):
     except (OSError, UnicodeDecodeError, ValueError, csv.Error):
         return [], "Unable to read the file."
 
+
 # Maintained by Htet Shine Aung (2604711)
+# Save case records to JSON file
 def save_records(filename, records):
     try:
         with open(filename, "w", encoding="utf-8") as file:
@@ -64,39 +65,44 @@ def save_records(filename, records):
 
     except OSError:
         return False, "Unable to save records."
-   
+
+
 # Maintained by Htet Shine Aung (2604711)
-# if the selected file is a valid CSV file
+# Check if the selected file is a valid CSV file
 def validate_csv_filename(filename):
+
     if not filename.lower().endswith(".csv"):
         return False, "Invalid file format. Please select a CSV file."
-    
+
     try:
         with open(filename, "r", encoding="utf-8-sig") as file:
             reader = csv.reader(file)
 
-        # Check if the file has a header
-        header = next(reader, None)
+            # Check if the file has a header
+            header = next(reader, None)
 
-        if header is None:
-            return False, "The selected CSV file does not have a valid header."
+            if header is None:
+                return False, "The selected CSV file does not have a valid header."
 
-        return True,
+        return True, None
 
     except FileNotFoundError:
-        return False,
+        return False, "CSV file not found."
 
-    except (OSError, csv.Error, UnicodeDecodeError): 
-        return False,
+    except (OSError, csv.Error, UnicodeDecodeError):
+        return False, "Unable to read the CSV file."
+
 
 # Maintained by Htet Shine Aung (2604711)
 # Load shelters from CSV file
 def load_shelters(filename):
     shelters = []
 
-    # Check the file first 
-    if not validate_csv_filename(filename):
-        return shelters, "Invalid CSV file. Please select a valid CSV file."
+    # Check the file first
+    valid, error = validate_csv_filename(filename)
+
+    if not valid:
+        return [], error
 
     try:
         with open(filename, "r", encoding="utf-8-sig") as file:
@@ -106,17 +112,11 @@ def load_shelters(filename):
                 capacity = int(row.get("Maximum Capacity", 0))
                 occupants = int(row.get("Current Occupants", 0))
 
-                available = capacity - occupants
-
-                if available < 0:
-                    available = 0
-
                 shelter = {
                     "name": row.get("Shelter Name", "N/A"),
                     "category": row.get("Category", "N/A"),
                     "capacity": capacity,
                     "occupants": occupants,
-                    "available": available,
                     "requirements": row.get("Requirements", "N/A"),
                     "contact": row.get("Contact", "N/A"),
                     "location": row.get("Address", "N/A")
@@ -124,9 +124,10 @@ def load_shelters(filename):
 
                 shelters.append(shelter)
 
-        return shelters
+        return shelters, None
+
+    except FileNotFoundError:
+        return [], "CSV file not found."
 
     except (OSError, ValueError, csv.Error):
-        return []
-
-
+        return [], "Unable to load shelter data."
