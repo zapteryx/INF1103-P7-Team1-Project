@@ -2,7 +2,6 @@ import io_manager
 import json
 import jsonschema
 import logging
-from jsonschema import validate
 from dotenv import load_dotenv
 from google import genai
 
@@ -84,7 +83,7 @@ def get_shelter_recomendation(client_info: str, shelter_info: str) -> dict | Non
             output = json.loads(interaction.output_text)
 
             # Validates the api output based on response schema
-            validate(instance=output, schema=response_schema)
+            jsonschema.validate(instance=output, schema=response_schema)
             logging.info("Api call was successful and output is valid.")
             return output
 
