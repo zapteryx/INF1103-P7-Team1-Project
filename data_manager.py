@@ -55,14 +55,19 @@ def validate_csv_filename(filename):
     except (OSError, csv.Error, UnicodeDecodeError): 
         return False,
 
+# Maintained by Htet Shine Aung (2604711)
 def load_shelters_from_csv(filename):
     """Load shelters from a CSV file."""
 
     shelters = []
-    
 
 
 
 
+
+# Maintained by Htet Shine Aung (2604711)
+def load_cases_from_file(filename):
+
+    cases = []
 
    
