@@ -21,7 +21,6 @@ def load_records(filename):
                 if not isinstance(case, dict):
                     return [], "A case in the file has an invalid format."
 
-
         # Load CSV file
         elif filename.lower().endswith(".csv"):
             with open(filename, "r", encoding="utf-8-sig") as file:
@@ -54,7 +53,17 @@ def load_records(filename):
     except (OSError, UnicodeDecodeError, ValueError, csv.Error):
         return [], "Unable to read the file."
 
-    
+# Maintained by Htet Shine Aung (2604711)
+def save_records(filename, records):
+    try:
+        with open(filename, "w", encoding="utf-8") as file:
+            json.dump(records, file, indent=4)
+
+        return True, None
+
+    except OSError:
+        return False, "Unable to save records."
+   
 # Maintained by Htet Shine Aung (2604711)
 def validate_csv_filename(filename):
     if not filename.lower().endswith(".csv"):
@@ -84,14 +93,3 @@ def load_shelters_from_csv(filename):
 
     shelters = []
 
-# Maintained by Htet Shine Aung (2604711)
-def save_records(filename, records):
-    try:
-        with open(filename, "w", encoding="utf-8") as file:
-            json.dump(records, file, indent=4)
-
-        return True, None
-
-    except OSError:
-        return False, "Unable to save records."
-   
