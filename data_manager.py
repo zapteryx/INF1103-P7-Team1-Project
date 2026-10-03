@@ -31,8 +31,31 @@ def load_records():
    
     except OSError:
         return [], "Unable to open the saved file."
+    
+# Maintained by Htet Shine Aung (2604711)
+def validate_csv_filename(filename):
+    if not filename.lower().endswith(".csv"):
+        return False, "Invalid file format. Please select a CSV file."
+    
+    try:
+        with open(filename, "r", encoding="utf-8-sig") as file:
+            reader = csv.reader(file)
 
-    def validate_csv_filename(filename):
-        if not filename.lower().endswith(".csv"):
-            return False, "Invalid file format. Please select a CSV file."
-        
+        # Check if the file has a header
+        header = next(reader, None)
+
+        if header is None:
+            return False, "The selected CSV file does not have a valid header."
+
+        return True,
+
+    except FileNotFoundError:
+        return False,
+
+    except (OSError, csv.Error, UnicodeDecodeError): 
+        return False,
+
+
+
+
+   
