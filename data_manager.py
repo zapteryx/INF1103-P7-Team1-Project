@@ -1,36 +1,62 @@
+from fileinput import filename
 import json
 import csv
 
-FILENAME = "case_records.json"
-
 # Maintained by Htet Shine Aung (2604711)
-def load_records():
-    """Read all saved cases from the JSON file."""
+def load_records(filename):
+    cases = []
 
     try:
-        with open(FILENAME, "r", encoding="utf-8") as file:
-            records = json.load(file)
+        # Load JSON file
+        if filename.lower().endswith(".json"):
+            with open(filename, "r", encoding="utf-8") as file:
+                cases = json.load(file)
 
-        # The file should contain a list.
-        if not isinstance(records, list):
-            return [], "The file must contain a list of cases."
+            # Make sure the JSON contains a list
+            if not isinstance(cases, list):
+                return [], "The JSON file must contain a list of cases."
 
-        # Each case should be a dictionary.
-        for record in records:
-            if not isinstance(record, dict):
-                return [], "A case in the file has an invalid format."
+            # Make sure each case is a dictionary
+            for case in cases:
+                if not isinstance(case, dict):
+                    return [], "A case in the file has an invalid format."
 
-        return records, None
+
+        # Load CSV file
+        elif filename.lower().endswith(".csv"):
+            with open(filename, "r", encoding="utf-8-sig") as file:
+                reader = csv.DictReader(file)
+
+                for row in reader:
+                    case = {
+                        "client_id": row.get("client_id", ""),
+                        "age": int(row.get("age", 0)),
+                        "dependents": int(row.get("dependents", 0)),
+                        "care_type": row.get("care_type", ""),
+                        "special_needs": row.get("special_needs", ""),
+                        "intake_notes": row.get("intake_notes", "")
+                    }
+
+                    cases.append(case)
+
+
+        # Not JSON or CSV
+        else:
+            return [], "File must be a JSON or CSV file."
+
+
+        return cases, None
+
 
     except FileNotFoundError:
-        # On the first run, there is no file.
-        return [], None
-    
-    except (json.JSONDecodeError, UnicodeDecodeError):
-        return [], "The saved file is damaged or contains invalid JSON."
-   
-    except OSError:
-        return [], "Unable to open the saved file."
+        return [], "File not found."
+
+    except json.JSONDecodeError:
+        return [], "The JSON file is invalid."
+
+    except (OSError, UnicodeDecodeError, ValueError, csv.Error):
+        return [], "Unable to read the file."
+
     
 # Maintained by Htet Shine Aung (2604711)
 def validate_csv_filename(filename):
@@ -60,14 +86,5 @@ def load_shelters_from_csv(filename):
     """Load shelters from a CSV file."""
 
     shelters = []
-
-
-
-
-
-# Maintained by Htet Shine Aung (2604711)
-def load_cases_from_file(filename):
-
-    cases = []
 
    
