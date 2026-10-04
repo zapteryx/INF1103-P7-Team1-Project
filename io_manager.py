@@ -32,6 +32,10 @@ def get_client_records_filename (default_filename: str = "clients.json") -> str:
         validation = data_manager.validate_csv_filename(filename)
         if validation[0]:
             break
+        validation = data_manager.validate_json_filename(filename)
+        # If the file is not found, break the loop to allow the user to create a new file
+        if validation[0] or validation[1] == "JSON file not found.":
+            break
         print(f"Error: {validation[1]}")
     return filename
 
