@@ -42,8 +42,8 @@ def get_shelter_recommendation(client_info: dict, shelter_info: list[dict]) -> d
                     "type": "object",
                     "properties": {
                         "shelter_name": {
-                            "type": "string"
-                            "description:" "Must match the shelter name exactly as shown in the shelter info"
+                            "type": "string",
+                            "description": "Must match the shelter name exactly as shown in the shelter info"
                         },
                         "criteria": {
                             "type": "string",
@@ -61,19 +61,19 @@ def get_shelter_recommendation(client_info: dict, shelter_info: list[dict]) -> d
                             "type": "integer",
                             "minimum": 0, 
                             "maximum": 120,
-                            "description": "The minimum age of the client allowed in the shelter"
+                            "description": "The minimum age of the client allowed in the shelter. Use 0 if the shelter does not state a minimum age."
                         },
                         "max_age":{
                             "type": "integer",
                             "minimum": 0, 
                             "maximum": 120,
-                            "description": "The maximum age of the client allowed in the shelter"
+                            "description": "The maximum age of the client allowed in the shelter. Use 120 if the shelter does not state a maximum age."
                         },
                         "ai_confidence_score": {
                             "type": "number",
                             "minimum": 0, 
                             "maximum": 1,
-                            "description": "Ai's confidence in this match from 0.0 to 1.0, where 0.0 is not confident and 1.0 is fully confident, and must be rounded to 2 decimal place (e.g. 0.80), "
+                            "description": "Ai's confidence in this match from 0.0 to 1.0, where 0.0 is not confident and 1.0 is fully confident, and must be rounded to 2 decimal place (e.g. 0.80)"
                         },
                         "suitability_score": {
                             "type": "number", 
