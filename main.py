@@ -1,8 +1,8 @@
+import json
 import ai_manager
 import data_manager
 import io_manager
 import logic_manager
-
 
 def get_file_path(file_path):
     if file_path == "":
@@ -49,8 +49,15 @@ def main() -> None:
                 print(f"\nGetting recommendations for client {client['client_id']}...")
                 recommendation = ai_manager.get_shelter_recommendation(client, shelters[0])
                 if recommendation is not None:
-                    # TODO: wait for function update from logic manager
-                    score = logic_manager.calculate_suitability_score(client, recommendation)
+                    print(f"AI Recommendation for client {client['client_id']}:")
+                    print(json.dumps(recommendation, indent=2))
+                    print("Finding the best shelter based on AI recommendation and additional criteria...")
+                    best_shelter = logic_manager.calculate_suitability_score(client, recommendation)
+                    if best_shelter is not None:
+                        print(f"Best shelter for client {client['client_id']}:")
+                        print(json.dumps(best_shelter, indent=2))
+                    else:
+                        print(f"No suitable shelter found for client {client['client_id']} based on AI recommendation and additional criteria.")
                 else:
                     print(f"No recommendations available for client {client['client_id']}.")
         # exit

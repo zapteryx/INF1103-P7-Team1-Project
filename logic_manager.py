@@ -70,16 +70,16 @@ def validate_ai_recommendation(ai_recommendation):
             if i.get("gender_restriction") not in ["Male", "Female", "any"]:
                 flag_reasons.append(f"FLAG: AI gender restriction for {i['shelter_name']} is invalid.")
                 individual_flag = "FLAG"
-                
+
             #if the individual_flag is "FLAG", remove the shelter name from accepted_shelter_names
             if i.get("shelter_name") in accepted_shelter_names and individual_flag == "FLAG":
                 accepted_shelter_names.remove(i.get("shelter_name"))
                 flag = individual_flag
 
-        
-        
-                
-        
+
+
+
+
         print(flag_reasons, accepted_shelter_names)
         return flag, flag_reasons, accepted_shelter_names
 
@@ -90,7 +90,7 @@ def validate_ai_recommendation(ai_recommendation):
 
 
 def calculate_suitability_score(client_data, ai_recommendation):
-    
+
     flag, flag_reasons, accepted_shelter_names = validate_ai_recommendation(ai_recommendation)
     score = 0
     result = []
@@ -100,7 +100,7 @@ def calculate_suitability_score(client_data, ai_recommendation):
             print(shelter["shelter_name"])
         # ai score is weighted at 30% of the total score, while the remaining 70% is based on other factors
         shelter_score = shelter["suitability_score"] * 0.3  # Weighting factor for AI recommendation
-        
+
         with open(CSV_FILENAME, mode="r", encoding="utf-8") as file:
             reader = csv.DictReader(file)
             shelter_exists = next((row for row in reader if row.get("Shelter Name") == shelter["shelter_name"]), None)
@@ -125,11 +125,11 @@ def calculate_suitability_score(client_data, ai_recommendation):
                 "dependents_allowed": shelter["dependents_allowed"],
             }
     return None
-            
-    
-            
-    
-    
+
+
+
+
+
 
     # # Check age requirement
     # if client_data["age"] < ai_recommendation["min_age"]:
@@ -161,7 +161,7 @@ def json_to_dict(json_string):
 # with open("stuff.json", "r") as f:
 #     stuff = json.load(f)
 # validate_ai_recommendation(json.dumps(stuff))
-calculate_suitability_score({}, stuff)  # Assuming you want to calculate suitability for the same data
+# calculate_suitability_score({}, stuff)  # Assuming you want to calculate suitability for the same data
 
 
 # when do we flag an ai response, when only 1 shelter recommended hallucinates?
