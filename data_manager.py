@@ -129,8 +129,14 @@ def validate_json_filename(filename):
 
         return True, None
 
+    except FileNotFoundError:
+        return False, "JSON file not found."
 
+    except json.JSONDecodeError:
+        return False, "The JSON file is invalid."
 
+    except (OSError, UnicodeDecodeError):
+        return False, "Unable to read the JSON file."
 
 # Maintained by Htet Shine Aung (2604711)
 # Load shelters from CSV file
