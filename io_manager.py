@@ -25,7 +25,7 @@ def get_client_records_filename (default_filename: str = "clients.json") -> str:
     # Allows pressing Enter to use the default filename and validates file existence.
     print(f"\nDefault dataset: '{default_filename}'")
     while True:
-        filename = input("Enter client records JSON filename (or press Enter for default): ").strip()
+        filename = input("Enter client records filename (CSV/JSON) (or press Enter for default): ").strip()
         # Use default if user presses Enter without typing anything
         if not filename:
             filename = default_filename
