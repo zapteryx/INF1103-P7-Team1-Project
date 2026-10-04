@@ -28,7 +28,7 @@ def get_shelter_filename(default_filename: str = FILENAME) -> str:
 # CSV Reading
 def load_shelters_from_csv(filepath: str) -> list:
     shelters = []
-# Translate raw binary binary bytes into readable text characters . utf-8 : is the standard character encoding for web and modern text files, sig stands for signature
+# Translate raw binary bytes into readable text characters . utf-8 : is the standard character encoding for web and modern text files, sig stands for signature
     with open(filepath, mode="r", encoding="utf-8-sig") as file:
         reader = csv.DictReader(file)   #Creates a special object that reads a CSV file line by line and automatically converts each row into a Python dictionary
 
