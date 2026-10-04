@@ -122,7 +122,7 @@ def calculate_suitability_score(client_data, ai_recommendation):
                 "min_age": shelter["min_age"],
                 "max_age": shelter["max_age"],
                 "gender_restriction": shelter["gender_restriction"],
-                "family_only": shelter["family_only"]
+                "dependents_allowed": shelter["dependents_allowed"],
             }
     return None
             
