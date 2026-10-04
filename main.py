@@ -1,3 +1,4 @@
+import ai_manager
 import data_manager
 import io_manager
 
@@ -35,6 +36,23 @@ def main() -> None:
         # get shelter recommendations for clients
         elif choice == 4:
             file_path = get_file_path(file_path)
+            # TODO: remove hardcoded file path and use the one provided by the user
+            clients = data_manager.load_records('clients.json') # Example: loading existing records from a JSON file
+            if clients[1] is not None:
+                print(f"Error loading clients: {clients[1]}")
+            shelters = data_manager.load_shelters(file_path)
+            if shelters[1] is not None:
+                print(f"Error loading shelters: {shelters[1]}")
+            for client in clients[0]:
+                print(f"\nGetting recommendations for client {client['client_id']}...")
+                recommendation = ai_manager.get_shelter_recommendation(client, shelters[0])
+                if recommendation is not None:
+                    print(f"\nRecommendations for client {client['client_id']}:")
+                    print(f"Urgency Level: {recommendation['urgency_level']}")
+                    for criteria in recommendation['criterias_met']:
+                        print(f"Shelter: {criteria['shelter_name']}, Criteria: {criteria['criteria']}, Suitability Score: {criteria['suitability_score']}, AI Confidence Score: {criteria['ai_confidence_score']}")
+                else:
+                    print(f"No recommendations available for client {client['client_id']}.")
         # exit
         elif choice == 5:
             print("Thank you for using Social Service AI. Goodbye!")

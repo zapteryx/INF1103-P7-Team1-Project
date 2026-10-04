@@ -9,21 +9,14 @@ from google import genai
 # Reads the .env file (which contains the API key)
 load_dotenv()
 
-# Load the shelter data using functions from io_manager
-file_path = io_manager.get_shelter_filename()
-shelter_info = io_manager.load_shelters_from_csv(file_path)
-
-# Retrieve the client info using functions from io_manager
-client_info = io_manager.collect_intake_input()
-
 # Errors are written to a file, so that the messages doesn't clutter the terminal
 # Create and set log configurations based on file parameters, level of log messages, format of messages, style of format
 logging.basicConfig(
-    filename="ai_manager.log", 
-    encoding="utf-8", 
-    filemode="a", 
-    level=logging.INFO, 
-    format="{asctime} {levelname} {message}", 
+    filename="ai_manager.log",
+    encoding="utf-8",
+    filemode="a",
+    level=logging.INFO,
+    format="{asctime} {levelname} {message}",
     style="{"
 )
 
@@ -52,13 +45,13 @@ def get_shelter_recommendation(client_info: dict, shelter_info: list[dict]) -> d
                         "criteria": {"type": "string"},
                         "ai_confidence_score": {
                             "type": "number",
-                            "minimum": 0, 
+                            "minimum": 0,
                             "maximum": 1,
                             "description": "Ai's confidence in this match from 0.0 to 1.0, where 0.0 is not confident and 1.0 is fully confident"
                         },
                         "suitability_score": {
-                            "type": "number", 
-                            "minimum": 1, 
+                            "type": "number",
+                            "minimum": 1,
                             "maximum": 100,
                             "description": "How well the shelter suits this client from 1.0 to 100.0, where 1.0 is least suitable and 100.0 is most"
                         },
