@@ -18,11 +18,7 @@ def main() -> None:
         if choice == 1:
             client = io_manager.collect_intake_input()
             # TODO: ask user what file to save to
-            clients = data_manager.load_records('clients.json') # Example: loading existing records from a JSON file
-            if clients[1] is not None:
-                print(f"Error loading clients: {clients[1]}")
-            clients[0].append(client) # Add the new client to the list of existing clients
-            data_manager.save_records('clients.json', clients[0]) # Example: saving to a JSON file
+            data_manager.add_record('clients.json', client) # Example: adding a single record to a JSON file
         # view all shelters
         elif choice == 2:
             shelters = data_manager.load_shelters(get_file_path(file_path))
