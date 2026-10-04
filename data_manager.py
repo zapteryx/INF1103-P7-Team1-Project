@@ -81,9 +81,8 @@ def add_record(filename, record):
     elif error:
         return False, error
 
-    # Add the new processed record
     records.append(record)
-
+    
     # Save the updated list
     return save_records(filename, records)
 
@@ -111,6 +110,26 @@ def validate_csv_filename(filename):
 
     except (OSError, csv.Error, UnicodeDecodeError):
         return False, "Unable to read the CSV file."
+
+# Maintained by Htet Shine Aung (2604711)
+# Check if the selected file is a valid JSON file
+def validate_json_filename(filename):
+
+    # Check if the file ends with .json
+    if not filename.lower().endswith(".json"):
+        return False, "Invalid file format. Please select a JSON file."
+
+    try:
+        with open(filename, "r", encoding="utf-8") as file:
+            data = json.load(file)
+
+        # Check if the JSON contains a list
+        if not isinstance(data, list):
+            return False, "The JSON file must contain a list of records."
+
+        return True, None
+
+
 
 
 # Maintained by Htet Shine Aung (2604711)
