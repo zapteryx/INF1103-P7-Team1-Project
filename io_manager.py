@@ -29,7 +29,7 @@ def get_client_records_filename (default_filename: str = "clients.json") -> str:
         # Use default if user presses Enter without typing anything
         if not filename:
             filename = default_filename
-        validation = validation = data_manager.validate_csv_filename(filename) or data_manager.validate_json_filename(filename)
+        validation = data_manager.validate_csv_filename(filename)
         if validation[0]:
             break
         print(f"Error: {validation[1]}")
