@@ -158,8 +158,8 @@ def json_to_dict(json_string):
     print("hello")
 
 
-with open("stuff.json", "r") as f:
-    stuff = json.load(f)
+# with open("stuff.json", "r") as f:
+#     stuff = json.load(f)
 # validate_ai_recommendation(json.dumps(stuff))
 calculate_suitability_score({}, stuff)  # Assuming you want to calculate suitability for the same data
 

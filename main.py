@@ -1,6 +1,8 @@
 import ai_manager
 import data_manager
 import io_manager
+import logic_manager
+
 
 def get_file_path(file_path):
     if file_path == "":
@@ -15,7 +17,7 @@ def main() -> None:
         # new client intake
         if choice == 1:
             client = io_manager.collect_intake_input()
-            # TODO: pass client data to Data manager to save to a file. can ask user what file they want to save to.
+            # TODO: ask user what file to save to
             clients = data_manager.load_records('clients.json') # Example: loading existing records from a JSON file
             if clients[1] is not None:
                 print(f"Error loading clients: {clients[1]}")
@@ -47,10 +49,8 @@ def main() -> None:
                 print(f"\nGetting recommendations for client {client['client_id']}...")
                 recommendation = ai_manager.get_shelter_recommendation(client, shelters[0])
                 if recommendation is not None:
-                    print(f"\nRecommendations for client {client['client_id']}:")
-                    print(f"Urgency Level: {recommendation['urgency_level']}")
-                    for criteria in recommendation['criterias_met']:
-                        print(f"Shelter: {criteria['shelter_name']}, Criteria: {criteria['criteria']}, Suitability Score: {criteria['suitability_score']}, AI Confidence Score: {criteria['ai_confidence_score']}")
+                    # TODO: wait for function update from logic manager
+                    score = logic_manager.calculate_suitability_score(client, recommendation)
                 else:
                     print(f"No recommendations available for client {client['client_id']}.")
         # exit

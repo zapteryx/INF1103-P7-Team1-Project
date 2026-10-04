@@ -36,32 +36,58 @@ def get_shelter_recommendation(client_info: dict, shelter_info: list[dict]) -> d
                 "type": "integer",
                 "description": "Urgency level of case"
             },
-            "criterias_met": {
+            "criteria_met": {
                 "type": "array",
                 "items": {
                     "type": "object",
                     "properties": {
-                        "shelter_name": {"type": "string"},
-                        "criteria": {"type": "string"},
+                        "shelter_name": {
+                            "type": "string",
+                            "description": "Must match the shelter name exactly as shown in the shelter info"
+                        },
+                        "criteria": {
+                            "type": "string",
+                            "description": "The requirement of the shelter that the client met"
+                        },
+                        "gender_restriction": {
+                            "type": "string",
+                            "enum": ["Male", "Female", "Any"],
+                            "description": "Use 'Any' if the shelter has no gender restriction"
+                        },
+                        "dependents_allowed": {
+                            "type": "boolean",
+                        },
+                        "min_age":{
+                            "type": "integer",
+                            "minimum": 0, 
+                            "maximum": 120,
+                            "description": "The minimum age of the client allowed in the shelter. Use 0 if the shelter does not state a minimum age."
+                        },
+                        "max_age":{
+                            "type": "integer",
+                            "minimum": 0, 
+                            "maximum": 120,
+                            "description": "The maximum age of the client allowed in the shelter. Use 120 if the shelter does not state a maximum age."
+                        },
                         "ai_confidence_score": {
                             "type": "number",
-                            "minimum": 0,
+                            "minimum": 0, 
                             "maximum": 1,
-                            "description": "Ai's confidence in this match from 0.0 to 1.0, where 0.0 is not confident and 1.0 is fully confident"
+                            "description": "Ai's confidence in this match from 0.0 to 1.0, where 0.0 is not confident and 1.0 is fully confident, and must be rounded to 2 decimal place (e.g. 0.80)"
                         },
                         "suitability_score": {
-                            "type": "number",
-                            "minimum": 1,
+                            "type": "number", 
+                            "minimum": 1, 
                             "maximum": 100,
-                            "description": "How well the shelter suits this client from 1.0 to 100.0, where 1.0 is least suitable and 100.0 is most"
+                            "description": "How well the shelter suits this client from 1.0 to 100.0, where 1.0 is least suitable and 100.0 is most suitable, and must be rounded to 1 decimal place (e.g. 87.5)"
                         },
                     },
-                    "required": ["shelter_name", "criteria", "suitability_score", "ai_confidence_score"]
+                    "required": ["shelter_name", "criteria", "gender_restriction", "dependents_allowed", "min_age", "max_age", "ai_confidence_score", "suitability_score"]
                 },
-                "description": "Include only the criterias that are met. Exclude any shelter or criterion that is not met."
+                "description": "Include only the criteria that are met. Exclude any shelter or criterion that is not met."
             }
         },
-        "required": ["urgency_level", "criterias_met"]
+        "required": ["urgency_level", "criteria_met"]
     }
 
     # Create a prompt using the shelter and client info
