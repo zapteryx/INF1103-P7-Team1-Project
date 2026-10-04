@@ -3,11 +3,9 @@ import os
 
 import data_manager
 
-FILENAME = "singapore_shelters_directory.csv"
-
 # Maintained by Shi Ting (2600663)
 # Modified by Ming Xuan (2604426)
-def get_shelter_filename(default_filename: str = FILENAME) -> str:
+def get_shelter_filename(default_filename: str = "singapore_shelters_directory.csv") -> str:
     # Prompts the user to enter the shelter dataset filename.
     # Allows pressing Enter to use the default filename and validates file existence.
     print(f"\nDefault dataset: '{default_filename}'")
@@ -22,7 +20,7 @@ def get_shelter_filename(default_filename: str = FILENAME) -> str:
         print(f"Error: {validation[1]}")
     return filename
 
-def get_client_records_filename (default_filename: str = FILENAME) -> str:
+def get_client_records_filename (default_filename: str = "clients.json") -> str:
     # Prompts the user to enter the client records filename.
     # Allows pressing Enter to use the default filename and validates file existence.
     print(f"\nDefault dataset: '{default_filename}'")
