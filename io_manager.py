@@ -25,42 +25,13 @@ def get_shelter_filename(default_filename: str = FILENAME) -> str:
     return filename
 
 # Maintained by Shi Ting (2600663)
-# CSV Reading
-def load_shelters_from_csv(filepath: str) -> list:
-    shelters = []
-# Translate raw binary bytes into readable text characters . utf-8 : is the standard character encoding for web and modern text files, sig stands for signature
-    with open(filepath, mode="r", encoding="utf-8-sig") as file:
-        reader = csv.DictReader(file)   #Creates a special object that reads a CSV file line by line and automatically converts each row into a Python dictionary
-
-        for row in reader:
-            capacity = int(row.get ("Maximum Capacity", 0))   # It will replace the value if it can find else it will be 0 instead of crashing the entire application
-            occupants = int(row.get("Current occupants", 0))
-
-            available = capacity - occupants
-            if available < 0:
-                available = 0   # So that i won t have negative numbers
-
-            accomodations = {
-                "name": row.get("Shelter Name", "N/A"), #Looks up the "Shelter Name" column in the CSV. If found, it stores the name string else default as N/A
-                "category": row.get("Category", "N/A"),
-                "capacity": capacity,
-                "occupants": occupants,
-                "available": available,
-                "requirements": row.get("Requirements", "N/A"),
-                "contact": row.get("Contact", "N/A"),
-                "location": row.get("Location", "N/A")
-            }
-            shelters.append(accomodations)
-    return shelters
-
-# Maintained by Shi Ting (2600663)
 # Terminal Display & Formatting
 def format_shelter(shelter: dict) -> str:  #Is a hint stating that this input must be a dictionary and this functions returns a string
     info = ""
     info += "Name:   " + shelter["name"] + "\n"
     info += "Category:   " + shelter["category"] + "\n"
     info += "Requirements:   " + shelter["requirements"] + "\n"
-    info += "Available:   " + str(shelter["available"]) + " bed left (" + str(shelter["occupants"]) + "/" + str(shelter["capacity"]) + " occupied)\n"
+    info += "Available:   " + str(shelter["capacity"] - shelter["occupants"]) + " bed left (" + str(shelter["occupants"]) + "/" + str(shelter["capacity"]) + " occupied)\n"
     info += "Contact:     " + shelter["contact"] + "\n"
     info += "------------------------------------------------------"
     return info
