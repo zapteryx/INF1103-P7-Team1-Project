@@ -69,10 +69,10 @@ def validate_ai_recommendation(json_string):
             if i.get("gender_restriction") not in ["Male", "Female", "any"]:
                 flag_reasons.append(f"FLAG: AI gender restriction for {i['shelter_name']} is invalid.")
                 flag = "FLAG"
-        
-        
-                
-        
+
+
+
+
         print(flag_reasons)
         return flag, flag_reasons
 
@@ -113,10 +113,10 @@ def json_to_dict(json_string):
     print("hello")
 
 
-with open("stuff.json", "r") as f:
-    stuff = json.load(f)
+# with open("stuff.json", "r") as f:
+#     stuff = json.load(f)
 # validate_ai_recommendation(json.dumps(stuff))
-flag, flag_reasons = validate_ai_recommendation(stuff)
+# flag, flag_reasons = validate_ai_recommendation(stuff)
 
 
 # when do we flag an ai response, when only 1 shelter recommended hallucinates?
