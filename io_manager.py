@@ -68,7 +68,7 @@ def display_menu() -> int: #Is a hint stating that the function returns an integ
     print("====================================")
     print("1. New Client Intake")
     print("2. View All Shelters")
-    print("3. Update CSV File Used")
+    print("3. Update CSV/JSON File Used")
     print("4. Get Shelter recommendations for clients")
     print("5. Exit")
     print("====================================")
@@ -96,9 +96,9 @@ def collect_intake_input() -> dict:
     while gender_input not in ["male", "female", "m", "f"]:
         print("Invalid input. Please enter 'Male' or 'Female'.")
         gender_input = input("Enter Client Gender (Male / Female): ").strip().lower()
-    
+
     gender = "Male" if gender_input in ["male", "m"] else "Female"
-    
+
     #Age Input & Validation
     age_input = input("Enter Client Age: ").strip()
     while not age_input.isdigit():
