@@ -99,27 +99,35 @@ def display_menu() -> int: #Is a hint stating that the function returns an integ
 def collect_intake_input() -> dict:
     print("\n--- NEW CLIENT INTAKE---")
 
-    # Client ID Validation
+    # Client ID Unput & Validation
     client_id = input("Enter NRIC: ").strip()
     while not client_id:
         print("Client ID cannot be empty.")
         client_id = input("Enter NRIC: ").strip()
 
-    #Age Validation
+    # Gender Input &  Validation (Male / Female)
+    gender_input = input("Enter Client Gender (Male / Female): ").strip().lower()
+    while gender_input not in ["male", "female", "m", "f"]:
+        print("Invalid input. Please enter 'Male' or 'Female'.")
+        gender_input = input("Enter Client Gender (Male / Female): ").strip().lower()
+    
+    gender = "Male" if gender_input in ["male", "m"] else "Female"
+    
+    #Age Input & Validation
     age_input = input("Enter Client Age: ").strip()
     while not age_input.isdigit():
         print("Please enter a valid number for age.")
         age_input = input("Enter Client Age: ").strip()
     age = int(age_input)
 
-    # Dependents Validation
+    # Dependents Input & Validation
     dep_input = input("Enter Number of Dependents: ").strip()
     while not dep_input.isdigit():
         print("Please enter a valid number for dependents.")
         dep_input = input("Enter Number of Dependents: ").strip()
     dependents = int(dep_input)
 
-    #Type of Care Validation (Short Term / Long Term)
+    #Type of Care Inpt & Validation (Short Term / Long Term)
     care_input = input("Type of care required (Short Term / Long Term): ").strip().lower() #.lower() help to convert any uppercase to lowercase
     while care_input not in ["short term", "long term", "short", "long"]:
         print("Invalid input. Please enter Short Term or Long Term.")
@@ -130,7 +138,7 @@ def collect_intake_input() -> dict:
     else:
         care_type = "Long Term"
 
-    #Special Needs Validation (Yes / No)
+    #Special Needs Input & Validation (Yes / No)
     needs_input = input("Special Needs (Yes / No): ").strip().lower()
     while needs_input not in ["yes", "no", "y", "n"]:
         print("Invalid input. Please enter 'Yes' or 'No'.")
@@ -138,11 +146,12 @@ def collect_intake_input() -> dict:
 
     special_needs = "Yes" if needs_input in ["yes", "y"] else "No"  #Standardize special needs output text
 
-    #Intake Description / Notes
+    #Intake Description / Notes Inputs
     intakes_notes = input("Enter intake description: ").strip()
 
     return {
         "client_id": client_id,
+        "gender": gender,
         "age": age,
         "dependents": dependents,
         "care_type": care_type,
