@@ -22,6 +22,21 @@ def get_shelter_filename(default_filename: str = FILENAME) -> str:
         print(f"Error: {validation[1]}")
     return filename
 
+def get_client_records_filename (default_filename: str = FILENAME) -> str:
+    # Prompts the user to enter the client records filename.
+    # Allows pressing Enter to use the default filename and validates file existence.
+    print(f"\nDefault dataset: '{default_filename}'")
+    while True:
+        filename = input("Enter client records JSON filename (or press Enter for default): ").strip()
+        # Use default if user presses Enter without typing anything
+        if not filename:
+            filename = default_filename
+        validation = validation = data_manager.validate_csv_filename(filename) or data_manager.validate_json_filename(filename)
+        if validation[0]:
+            break
+        print(f"Error: {validation[1]}")
+    return filename
+
 # Maintained by Shi Ting (2600663)
 # Terminal Display & Formatting
 def format_shelter(shelter: dict) -> str:  #Is a hint stating that this input must be a dictionary and this functions returns a string
@@ -68,13 +83,13 @@ def display_menu() -> int: #Is a hint stating that the function returns an integ
 def collect_intake_input() -> dict:
     print("\n--- NEW CLIENT INTAKE---")
 
-    # Client ID Unput & Validation
+    # Client ID Input & Validation
     client_id = input("Enter NRIC: ").strip()
     while not client_id:
         print("Client ID cannot be empty.")
         client_id = input("Enter NRIC: ").strip()
 
-    # Gender Input &  Validation (Male / Female)
+    # Gender Input & Validation (Male / Female)
     gender_input = input("Enter Client Gender (Male / Female): ").strip().lower()
     while gender_input not in ["male", "female", "m", "f"]:
         print("Invalid input. Please enter 'Male' or 'Female'.")
@@ -96,7 +111,7 @@ def collect_intake_input() -> dict:
         dep_input = input("Enter Number of Dependents: ").strip()
     dependents = int(dep_input)
 
-    #Type of Care Inpt & Validation (Short Term / Long Term)
+    #Type of Care Input & Validation (Short Term / Long Term)
     care_input = input("Type of care required (Short Term / Long Term): ").strip().lower() #.lower() help to convert any uppercase to lowercase
     while care_input not in ["short term", "long term", "short", "long"]:
         print("Invalid input. Please enter Short Term or Long Term.")
