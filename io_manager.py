@@ -1,27 +1,25 @@
 import csv
 import os
 
+import data_manager
+
 FILENAME = "singapore_shelters_directory.csv"
 
 # Maintained by Shi Ting (2600663)
+# Modified by Ming Xuan (2604426)
 def get_shelter_filename(default_filename: str = FILENAME) -> str:
     # Prompts the user to enter the shelter dataset filename.
     # Allows pressing Enter to use the default filename and validates file existence.
-
     print(f"\nDefault dataset: '{default_filename}'")
-    filename = input("Enter shelter CSV filename (or press Enter for default): ").strip()
-
-    # Use default if user presses Enter without typing anything
-    if not filename:
-        filename = default_filename
-
-    # Validation loop: Check if the file actually exists on disk
-    while not os.path.exists(filename):
-        print(f"[!] File '{filename}' not found. Please make sure the path and filename are correct.")
+    while True:
         filename = input("Enter shelter CSV filename (or press Enter for default): ").strip()
+        # Use default if user presses Enter without typing anything
         if not filename:
             filename = default_filename
-
+        validation = data_manager.validate_csv_filename(filename)
+        if validation[0]:
+            break
+        print(f"Error: {validation[1]}")
     return filename
 
 # Maintained by Shi Ting (2600663)
