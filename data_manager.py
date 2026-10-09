@@ -230,3 +230,20 @@ def filter_records_by_outcome(records, outcome):
             filtered_records.append(record)
 
     return filtered_records
+
+# Maintained by Htet Shine Aung (2604711)
+# Get a client record by client_id
+def get_clientid(filename, client_id):
+
+    # Load existing records
+    records, error = load_records(filename)
+
+    if error:
+        return None, error
+
+    # Find the matching client record
+    for record in records:
+        if str(record.get("client_id")) == str(client_id):
+            return record, None
+
+    return None, "Client record not found."
