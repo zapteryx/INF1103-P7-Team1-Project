@@ -1,32 +1,32 @@
 {
-  "id": "v1_Chc5LXJBYXZ1cU5vTENnOFVQMXFPZjhBURIXOS1yQWF2dXFOb0xDZzhVUDFxT2Y4QVE",
+  "id": "v1_ChdWNHZJYXFybkVMN25qdU1QMWRXazRRdxIXVjR2SWFxcm5FTDduanVNUDFkV2s0UXc",
   "status": "completed",
   "usage": {
-    "total_tokens": 6645,
-    "total_input_tokens": 5812,
+    "total_tokens": 437,
+    "total_input_tokens": 181,
     "input_tokens_by_modality": [
       {
         "modality": "text",
-        "tokens": 5812
+        "tokens": 181
       }
     ],
     "total_cached_tokens": 0,
-    "total_output_tokens": 833,
+    "total_output_tokens": 256,
     "total_tool_use_tokens": 0,
     "total_thought_tokens": 0,
-    "raw_prompt_token": 6212,
+    "raw_prompt_token": 885,
     "model_invocation_token_counts": [
       {
         "prompt_tokens_details": [
           {
             "modality": "text",
-            "tokens": 6212
+            "tokens": 885
           }
         ],
         "candidates_tokens_details": [
           {
             "modality": "text",
-            "tokens": 849
+            "tokens": 274
           }
         ]
       }
@@ -36,13 +36,13 @@
         "prompt_tokens_details": [
           {
             "modality": "text",
-            "tokens": 6212
+            "tokens": 885
           }
         ],
         "candidates_tokens_details": [
           {
             "modality": "text",
-            "tokens": 849
+            "tokens": 274
           }
         ]
       }
@@ -55,7 +55,7 @@
     {
       "content": [
         {
-          "text": "{\n  \"urgency_level\": 4,\n  \"criterias_met\": [\n    {\n      \"shelter_name\": \"AWWA Senior Community Home\",\n      \"criteria\": \"Seniors aged 60 and above\",\n      \"suitability_score\": 85.0,\n      \"ai_confidence_score\": 0.95\n    },\n    {\n      \"shelter_name\": \"Geylang East Home for the Aged\",\n      \"criteria\": \"Seniors aged 60 and above\",\n      \"suitability_score\": 85.0,\n      \"ai_confidence_score\": 0.95\n    },\n    {\n      \"shelter_name\": \"Henderson Senior Citizens' Home\",\n      \"criteria\": \"Seniors aged 60 and above\",\n      \"suitability_score\": 85.0,\n      \"ai_confidence_score\": 0.95\n    },\n    {\n      \"shelter_name\": \"Lions Home for the Elders (Bishan Branch)\",\n      \"criteria\": \"Seniors aged 60 and above\",\n      \"suitability_score\": 85.0,\n      \"ai_confidence_score\": 0.95\n    },\n    {\n      \"shelter_name\": \"St. Vincent Home\",\n      \"criteria\": \"Seniors aged 60 and above\",\n      \"suitability_score\": 85.0,\n      \"ai_confidence_score\": 0.95\n    },\n    {\n      \"shelter_name\": \"Adventist Home for the Elders\",\n      \"criteria\": \"Seniors aged 60 and above\",\n      \"suitability_score\": 85.0,\n      \"ai_confidence_score\": 0.95\n    },\n    {\n      \"shelter_name\": \"Kheng Chiu Loke Tin Kee Home\",\n      \"criteria\": \"Seniors aged 60 and above\",\n      \"suitability_score\": 85.0,\n      \"ai_confidence_score\": 0.95\n    },\n    {\n      \"shelter_name\": \"Jamiyah Home for the Aged (Darul Takrim)\",\n      \"criteria\": \"Seniors aged 60 and above\",\n      \"suitability_score\": 85.0,\n      \"ai_confidence_score\": 0.95\n    },\n    {\n      \"shelter_name\": \"Apex Harmony Lodge\",\n      \"criteria\": \"Seniors aged 60 and above (Dementia care focus)\",\n      \"suitability_score\": 98.0,\n      \"ai_confidence_score\": 1.0\n    },\n    {\n      \"shelter_name\": \"Ling Kwang Home for Senior Citizens\",\n      \"criteria\": \"Seniors aged 60 and above\",\n      \"suitability_score\": 85.0,\n      \"ai_confidence_score\": 0.95\n    },\n    {\n      \"shelter_name\": \"SASCO @ Hong San Sheltered Home\",\n      \"criteria\": \"Seniors aged 60 and above\",\n      \"suitability_score\": 85.0,\n      \"ai_confidence_score\": 0.95\n    },\n    {\n      \"shelter_name\": \"Bo Tien Home for the Aged\",\n      \"criteria\": \"Seniors aged 60 and above\",\n      \"suitability_score\": 85.0,\n      \"ai_confidence_score\": 0.95\n    }\n  ]\n}",
+          "text": "{\n  \"urgency_level\": 5,\n  \"criteria_met\": [\n    {\n      \"shelter_name\": \"AWWA Senior Community Home\",\n      \"criteria\": \"Provides long-term residential care and support for elderly individuals with physical or mental disabilities, including dementia.\",\n      \"gender_restriction\": \"Any\",\n      \"dependents_allowed\": false,\n      \"min_age\": 60,\n      \"max_age\": 120,\n      \"ai_confidence_score\": 0.95,\n      \"suitability_score\": 95.0\n    },\n    {\n      \"shelter_name\": \"Metta Home for the Disabled\",\n      \"criteria\": \"Provides residential care for individuals with disabilities who require long-term assistance.\",\n      \"gender_restriction\": \"Any\",\n      \"dependents_allowed\": false,\n      \"min_age\": 18,\n      \"max_age\": 120,\n      \"ai_confidence_score\": 0.85,\n      \"suitability_score\": 75.0\n    }\n  ]\n}",
           "type": "text"
         }
       ],
