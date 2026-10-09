@@ -20,23 +20,34 @@ def get_shelter_filename(default_filename: str = "singapore_shelters_directory.c
         print(f"Error: {validation[1]}")
     return filename
 
-def get_client_records_filename (default_filename: str = "clients.json") -> str:
+# Maintained by Shi Ting (2600663)
+# Modified by Ming Xuan (2604426)
+def get_client_records_filename(accepted_filetypes: list, allow_creating_json: bool = False, default_filename: str = "clients.json") -> str:
     # Prompts the user to enter the client records filename.
     # Allows pressing Enter to use the default filename and validates file existence.
     print(f"\nDefault dataset: '{default_filename}'")
     while True:
-        filename = input("Enter client records filename (CSV/JSON) (or press Enter for default): ").strip()
+        filename = input(f"Enter client records filename ({'/'.join(accepted_filetypes).upper()}) (or press Enter for default): ").strip()
         # Use default if user presses Enter without typing anything
         if not filename:
             filename = default_filename
-        validation = data_manager.validate_csv_filename(filename)
-        if validation[0]:
-            break
-        validation = data_manager.validate_json_filename(filename)
-        # If the file is not found, break the loop to allow the user to create a new file
-        if validation[0] or validation[1] == "JSON file not found.":
-            break
-        print(f"Error: {validation[1]}")
+        # csv is an allowed filetype
+        if 'csv' in accepted_filetypes and filename.endswith('.csv'):
+            validation = data_manager.validate_csv_filename(filename)
+            # csv is valid
+            if validation[0]:
+                break
+            print(f"Error: {validation[1]}")
+            continue
+        # json is not a valid filetype, so show the user the csv validation error
+        if 'json' in accepted_filetypes and filename.endswith('.json'):
+            validation = data_manager.validate_json_filename(filename)
+            # If the file is not found, break the loop to allow the user to create a new file
+            if validation[0] or (validation[1] == "JSON file not found." and allow_creating_json):
+                break
+            print(f"Error: {validation[1]}")
+            continue
+        print(f"Error: The provided file format is not accepted. Please provide a {'/'.join(accepted_filetypes).upper()} file.")
     return filename
 
 # Maintained by Shi Ting (2600663)

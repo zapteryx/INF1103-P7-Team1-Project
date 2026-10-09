@@ -12,10 +12,7 @@ def main() -> None:
         if choice == 1:
             client = io_manager.collect_intake_input()
             # TODO: force json requirement in io manager
-            clients_file_path = io_manager.get_client_records_filename()
-            while not clients_file_path.endswith('.json'):
-                print("Error: New client intake can only be saved in JSON files. Please provide a valid JSON filename.")
-                clients_file_path = io_manager.get_client_records_filename()
+            clients_file_path = io_manager.get_client_records_filename(['json'], True)
             data_manager.add_record(clients_file_path, client)
         # view all shelters
         elif choice == 2:
@@ -27,7 +24,7 @@ def main() -> None:
         # get shelter recommendations for clients
         elif choice == 3:
             shelter_file_path = io_manager.get_shelter_filename()
-            clients_file_path = io_manager.get_client_records_filename()
+            clients_file_path = io_manager.get_client_records_filename(['csv', 'json'])
             clients = data_manager.load_records(clients_file_path) # Example: loading existing records from a JSON file
             if clients[1] is not None:
                 print(f"Error loading clients: {clients[1]}")
