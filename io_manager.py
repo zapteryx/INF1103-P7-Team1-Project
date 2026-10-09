@@ -83,12 +83,29 @@ def display_menu() -> int: #Is a hint stating that the function returns an integ
 def collect_intake_input() -> dict:
     print("\n--- NEW CLIENT INTAKE---")
 
-    # Client ID Input & Validation
-    client_id = input("Enter NRIC: ").strip()
-    while not client_id:
-        print("Client ID cannot be empty.")
-        client_id = input("Enter NRIC: ").strip()
+    # Client ID Input & NRIC Validation
+    client_id = input("Enter NRIC: ").strip().upper()
+   
+    is_valid_nric=(
+        len(client_id) == 9                 #Exactly 9 characters
+        and client_id[0] in ["S", "T"]      #First character is 'S' or 'T'
+        and client_id[1:8].isdigit()        #Middle 7 characters are digits (0-9)
+        and client_id[-1].isalpha()         #Last character is a letter (A-Z)
+    )
+    
+    #Loop until the user provides a valid NRIC format
+    while not is_valid_nric:
+        print("Invalid NRIC. Must start with S or T, followed by 7 digits and end with a letter (eg; S1234567H)")
+        client_id = input("Enter NRIC: ").strip().upper()
 
+        #Re-check validity for the next loop iteration
+        is_valid_nric = (
+            len(client_id) == 9
+            and client_id[0] in ["S", "T"]     
+            and client_id[1:8].isdigit()        
+            and client_id[-1].isalpha()
+        )
+        
     # Gender Input & Validation (Male / Female)
     gender_input = input("Enter Client Gender (Male / Female): ").strip().lower()
     while gender_input not in ["male", "female", "m", "f"]:
