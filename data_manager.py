@@ -200,6 +200,25 @@ def update_record(filename, client_id, updated_data):
 
     return False, "Record not found."
 
+# Maintained by Htet Shine Aung (2604711)
+# Remove a client record using client_id
+def remove_record(filename, client_id):
+
+    # Load existing records
+    records, error = load_records(filename)
+
+    if error:
+        return False, error
+
+    # Find and remove the client record
+    for record in records:
+        if str(record.get("client_id")) == str(client_id):
+            records.remove(record)
+
+            # Save the updated records
+            return save_records(filename, records)
+
+    return False, "Client record not found."
 
 # Maintained by Htet Shine Aung (2604711)
 # Filter processed records by the outcome only such as "Accepted", "Rejected", or "FLAG"
