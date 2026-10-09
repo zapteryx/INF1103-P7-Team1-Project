@@ -177,6 +177,49 @@ def load_shelters(filename):
     except (OSError, ValueError, csv.Error):
         return [], "Unable to load shelter data."
 
+
+# Maintained by Htet Shine Aung (2604711)
+# Update an existing client record using **kwargs
+def update_record(filename, client_id, **kwargs):
+
+    # Load existing records
+    records, error = load_records(filename)
+
+    if error:
+        return False, error
+
+    # Find the record to update
+    for record in records:
+        if str(record.get("client_id")) == str(client_id):
+
+            # Update the record with new values
+            record.update(kwargs)
+
+            # Save the updated records
+            return save_records(filename, records)
+
+    return False, "Client record not found."
+
+# Maintained by Htet Shine Aung (2604711)
+# Remove a client record using client_id
+def remove_record(filename, client_id):
+
+    # Load existing records
+    records, error = load_records(filename)
+
+    if error:
+        return False, error
+
+    # Find and remove the client record
+    for record in records:
+        if str(record.get("client_id")) == str(client_id):
+            records.remove(record)
+
+            # Save the updated records
+            return save_records(filename, records)
+
+    return False, "Client record not found."
+
 # Maintained by Htet Shine Aung (2604711)
 # Filter processed records by the outcome only such as "Accepted", "Rejected", or "FLAG"
 def filter_records_by_outcome(records, outcome):
@@ -187,3 +230,20 @@ def filter_records_by_outcome(records, outcome):
             filtered_records.append(record)
 
     return filtered_records
+
+# Maintained by Htet Shine Aung (2604711)
+# Get a client record by client_id
+def get_clientid(filename, client_id):
+
+    # Load existing records
+    records, error = load_records(filename)
+
+    if error:
+        return None, error
+
+    # Find the matching client record
+    for record in records:
+        if str(record.get("client_id")) == str(client_id):
+            return record, None
+
+    return None, "Client record not found."
