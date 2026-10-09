@@ -179,8 +179,8 @@ def load_shelters(filename):
 
 
 # Maintained by Htet Shine Aung (2604711)
-# Update an existing record using client_id
-def update_record(filename, client_id, updated_data):
+# Update an existing client record using **kwargs
+def update_record(filename, client_id, **kwargs):
 
     # Load existing records
     records, error = load_records(filename)
@@ -192,13 +192,13 @@ def update_record(filename, client_id, updated_data):
     for record in records:
         if str(record.get("client_id")) == str(client_id):
 
-            # Update the record
-            record.update(updated_data)
+            # Update the record with new values
+            record.update(kwargs)
 
             # Save the updated records
             return save_records(filename, records)
 
-    return False, "Record not found."
+    return False, "Client record not found."
 
 # Maintained by Htet Shine Aung (2604711)
 # Remove a client record using client_id
