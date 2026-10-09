@@ -5,47 +5,29 @@ import io_manager
 import logic_manager
 
 # Maintained by Ming Xuan (2604426)
-def get_shelter_file_path(file_path):
-    if file_path == "":
-        file_path = io_manager.get_shelter_filename()
-    return file_path
-
-# Maintained by Ming Xuan (2604426)
-def get_clients_file_path(file_path):
-    if file_path == "":
-        file_path = io_manager.get_client_records_filename()
-    return file_path
-
-# Maintained by Ming Xuan (2604426)
 def main() -> None:
-    shelter_file_path = ""
-    clients_file_path = ""
     while True:
         choice = io_manager.display_menu()
         # new client intake
         if choice == 1:
             client = io_manager.collect_intake_input()
-            clients_file_path = get_clients_file_path(clients_file_path)
+            # TODO: force json requirement in io manager
+            clients_file_path = io_manager.get_client_records_filename()
             while not clients_file_path.endswith('.json'):
                 print("Error: New client intake can only be saved in JSON files. Please provide a valid JSON filename.")
                 clients_file_path = io_manager.get_client_records_filename()
             data_manager.add_record(clients_file_path, client)
         # view all shelters
         elif choice == 2:
-            shelter_file_path = get_shelter_file_path(shelter_file_path)
+            shelter_file_path = io_manager.get_shelter_filename()
             shelters = data_manager.load_shelters(shelter_file_path)
             if shelters[1] is not None:
                 print(f"Error loading shelters: {shelters[1]}")
             io_manager.print_shelter_list(shelters[0])
-        # update csv file used
+        # get shelter recommendations for clients
         elif choice == 3:
-            # Direct update instead of using cache function
             shelter_file_path = io_manager.get_shelter_filename()
             clients_file_path = io_manager.get_client_records_filename()
-        # get shelter recommendations for clients
-        elif choice == 4:
-            shelter_file_path = get_shelter_file_path(shelter_file_path)
-            clients_file_path = get_clients_file_path(clients_file_path)
             clients = data_manager.load_records(clients_file_path) # Example: loading existing records from a JSON file
             if clients[1] is not None:
                 print(f"Error loading clients: {clients[1]}")
@@ -68,7 +50,7 @@ def main() -> None:
                 else:
                     print(f"No recommendations available for client {client['client_id']}.")
         # exit
-        elif choice == 5:
+        elif choice == 4:
             print("Thank you for using Social Service AI. Goodbye!")
             break
         # oob
