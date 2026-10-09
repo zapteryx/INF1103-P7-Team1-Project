@@ -177,6 +177,30 @@ def load_shelters(filename):
     except (OSError, ValueError, csv.Error):
         return [], "Unable to load shelter data."
 
+
+# Maintained by Htet Shine Aung (2604711)
+# Update an existing record using client_id
+def update_record(filename, client_id, updated_data):
+
+    # Load existing records
+    records, error = load_records(filename)
+
+    if error:
+        return False, error
+
+    # Find the record to update
+    for record in records:
+        if str(record.get("client_id")) == str(client_id):
+
+            # Update the record
+            record.update(updated_data)
+
+            # Save the updated records
+            return save_records(filename, records)
+
+    return False, "Record not found."
+
+
 # Maintained by Htet Shine Aung (2604711)
 # Filter processed records by the outcome only such as "Accepted", "Rejected", or "FLAG"
 def filter_records_by_outcome(records, outcome):
