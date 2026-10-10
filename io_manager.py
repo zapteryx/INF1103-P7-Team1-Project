@@ -222,3 +222,22 @@ def present_best_shelter(client: dict, shelter) -> bool:
         print("Invalid input. please enter 'Yes' or 'No'.")
         choice = input("Do you accept this shelter outcome (Yes / No): ").strip().lower()
     return choice in ["yes", "y"]
+
+def print_client_record (client: dict) -> None:
+    print("\n=================== CLIENT RECORD ===================")
+    print(f"Client ID     : {client.get('client_id', 'N/A')}")
+    print(f"Gender        : {client.get('gender', 'N/A')}")
+    print(f"Age           : {client.get('age', 'N/A')}")
+    print(f"Dependents    : {client.get('dependents', 'N/A')}")
+    print(f"Care Type     : {client.get('care_type', 'N/A')}")
+    print(f"Special Needs : {client.get('special_needs', 'N/A')}")
+    print(f"Notes         : {client.get('intake_notes', 'N/A')}")
+    
+    # Check if a shelter match was assigned/accepted
+    accepted_shelter = client.get("accepted_shelter")
+    if accepted_shelter:
+        print("\n[Status] Outcome: MATCHED & ACCEPTED")
+        print(format_shelter(accepted_shelter))
+    else:
+        print("\n[Status] Outcome: Pending / No Shelter Assigned")
+    print("=====================================================")
