@@ -179,6 +179,7 @@ def collect_intake_input() -> dict:
         "intake_notes": intakes_notes
     }
 
+# Maintained by Shi Ting (2600663)
 def ask_for_client_id() -> str:
     print("\n---CLIENT SEARCH---")
     client_id = input("Enter Client NRIC: ").strip().upper()
@@ -193,7 +194,7 @@ def ask_for_client_id() -> str:
        #Loop until the user provides a valid NRIC format
     while not is_valid_nric:
         print("Invalid NRIC. Must start with S or T, followed by 7 digits and end with a letter (eg; S1234567H)")
-        client_id = input("Enter NRIC: ").strip().upper()
+        client_id = input("Enter Client NRIC: ").strip().upper()
    
         #Re-check validity for the next loop iteration
         is_valid_nric = (
@@ -205,6 +206,7 @@ def ask_for_client_id() -> str:
 
     return client_id
 
+# Maintained by Shi Ting (2600663)
 def present_best_shelter(client: dict, shelter) -> bool:
     print("\n======== RECOMMENDED MATCH ========")
     print(f"Client ID: {client.get('client_id', 'N/A')}")
@@ -223,6 +225,7 @@ def present_best_shelter(client: dict, shelter) -> bool:
         choice = input("Do you accept this shelter outcome (Yes / No): ").strip().lower()
     return choice in ["yes", "y"]
 
+# Maintained by Shi Ting (2600663)
 def print_client_record (client: dict) -> None:
     print("\n=================== CLIENT RECORD ===================")
     print(f"Client ID     : {client.get('client_id', 'N/A')}")
@@ -241,3 +244,16 @@ def print_client_record (client: dict) -> None:
     else:
         print("\n[Status] Outcome: Pending / No Shelter Assigned")
     print("=====================================================")
+
+# Maintained by Shi Ting (2600663)
+def get_rerun_decision() -> bool:
+    """
+    Asks the user if they want to rerun the AI for the client.
+    Returns True if the user says yes, or False if they say no.
+    """
+    choice = input("\nWould you like to rerun the AI matching for this client? (Yes / No): ").strip().lower()
+    while choice not in ["yes", "no", "y", "n"]:
+        print("[!] Invalid input. Please enter 'Yes' or 'No'.")
+        choice = input("Would you like to rerun the AI matching for this client? (Yes / No): ").strip().lower()
+
+    return choice in ["yes", "y"]
