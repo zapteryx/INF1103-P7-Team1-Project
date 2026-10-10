@@ -65,9 +65,6 @@ def main() -> None:
         elif choice == 4:
             io_manager.print_update("Thank you for using Social Service AI. Goodbye!")
             break
-        # oob
-        else:
-            io_manager.print_error("You have entered an invalid choice. Please try again.")
 
 if __name__ == "__main__":
     main()

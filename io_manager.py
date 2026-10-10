@@ -87,14 +87,15 @@ def display_menu() -> int: #Is a hint stating that the function returns an integ
     print("1. New Client Intake")
     print("2. View All Shelters")
     print("3. Get Shelter recommendations for clients")
-    print("4. Exit")
+    print("4. Search Client by NRIC")
+    print("5. Exit")
     print("====================================")
-    choice_input = input("Select option (1-4): ").strip() #.strip removes leading and trailing whitespace eg; space, tabs or newline characters
+    choice_input = input("Select option (1-5): ").strip() #.strip removes leading and trailing whitespace eg; space, tabs or newline characters
 
     #Validate Input Menu Options
-    while not choice_input.isdigit():
-        print("Invalid option. Please enter a number between 1 and 4.")
-        choice_input = input("Select option (1-4): ").strip()
+    while not choice_input.isdigit() or int(choice_input) not in range(1, 6):
+        print("Invalid option. Please enter a number between 1 and 5.")
+        choice_input = input("Select option (1-5): ").strip()
     return int(choice_input)
 
 # Maintained by Shi Ting (2600663)
@@ -104,14 +105,14 @@ def collect_intake_input() -> dict:
 
     # Client ID Input & NRIC Validation
     client_id = input("Enter NRIC: ").strip().upper()
-   
+
     is_valid_nric=(
         len(client_id) == 9                 #Exactly 9 characters
         and client_id[0] in ["S", "T"]      #First character is 'S' or 'T'
         and client_id[1:8].isdigit()        #Middle 7 characters are digits (0-9)
         and client_id[-1].isalpha()         #Last character is a letter (A-Z)
     )
-    
+
     #Loop until the user provides a valid NRIC format
     while not is_valid_nric:
         print("Invalid NRIC. Must start with S or T, followed by 7 digits and end with a letter (eg; S1234567H)")
@@ -120,11 +121,11 @@ def collect_intake_input() -> dict:
         #Re-check validity for the next loop iteration
         is_valid_nric = (
             len(client_id) == 9
-            and client_id[0] in ["S", "T"]     
-            and client_id[1:8].isdigit()        
+            and client_id[0] in ["S", "T"]
+            and client_id[1:8].isdigit()
             and client_id[-1].isalpha()
         )
-        
+
     # Gender Input & Validation (Male / Female)
     gender_input = input("Enter Client Gender (Male / Female): ").strip().lower()
     while gender_input not in ["male", "female", "m", "f"]:
@@ -190,17 +191,17 @@ def ask_for_client_id() -> str:
            and client_id[1:8].isdigit()        #Middle 7 characters are digits (0-9)
            and client_id[-1].isalpha()         #Last character is a letter (A-Z)
        )
-       
+
        #Loop until the user provides a valid NRIC format
     while not is_valid_nric:
         print("Invalid NRIC. Must start with S or T, followed by 7 digits and end with a letter (eg; S1234567H)")
         client_id = input("Enter Client NRIC: ").strip().upper()
-   
+
         #Re-check validity for the next loop iteration
         is_valid_nric = (
             len(client_id) == 9
-            and client_id[0] in ["S", "T"]     
-            and client_id[1:8].isdigit()        
+            and client_id[0] in ["S", "T"]
+            and client_id[1:8].isdigit()
             and client_id[-1].isalpha()
         )
 
@@ -235,7 +236,7 @@ def print_client_record (client: dict) -> None:
     print(f"Care Type     : {client.get('care_type', 'N/A')}")
     print(f"Special Needs : {client.get('special_needs', 'N/A')}")
     print(f"Notes         : {client.get('intake_notes', 'N/A')}")
-    
+
     # Check if a shelter match was assigned/accepted
     accepted_shelter = client.get("accepted_shelter")
     if accepted_shelter:
