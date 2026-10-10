@@ -11,7 +11,6 @@ def main() -> None:
         # new client intake
         if choice == 1:
             client = io_manager.collect_intake_input()
-            # TODO: force json requirement in io manager
             clients_file_path = io_manager.get_client_records_filename(['json'], True)
             data_manager.add_record(clients_file_path, client)
         # view all shelters
