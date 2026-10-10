@@ -1,6 +1,3 @@
-import csv
-import os
-
 import data_manager
 
 # Maintained by Shi Ting (2600663)
