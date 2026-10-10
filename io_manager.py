@@ -1,4 +1,14 @@
+import sys
+
 import data_manager
+
+# Maintained by Ming Xuan (2604426)
+def print_error(err_title: str, err_desc: str = "") -> None:
+    print(f"Encountered an error:\n{err_title}{f": {err_desc}" if err_desc != "" else ""}", file=sys.stderr)
+
+# Maintained by Ming Xuan (2604426)
+def print_update(update_title: str, update_desc: str = "") -> None:
+    print(f"{update_title}{f": {update_desc}" if update_desc != "" else ""}")
 
 # Maintained by Shi Ting (2600663)
 # Modified by Ming Xuan (2604426)
