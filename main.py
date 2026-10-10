@@ -64,7 +64,7 @@ def main() -> None:
                 rerun = io_manager.get_rerun_decision()
                 if rerun:
                     # only rerun once more, do not ask for rerun decision again
-                    get_recommendation(client, shelters)
+                    get_recommendation(clients_file_path, client, shelters)
             time.sleep(1)
         # search for a client record by client_id
         elif choice == 4:
