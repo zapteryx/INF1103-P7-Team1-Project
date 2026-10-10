@@ -59,13 +59,27 @@ def get_client_records_filename(accepted_filetypes: list, allow_creating_json: b
 
 # Maintained by Shi Ting (2600663)
 # Terminal Display & Formatting
-def format_shelter(shelter: dict) -> str:  #Is a hint stating that this input must be a dictionary and this functions returns a string
+def format_shelter(shelter: dict) -> str:  # Replace your old function here[cite: 2]
     info = ""
-    info += "Name:   " + shelter["name"] + "\n"
-    info += "Category:   " + shelter["category"] + "\n"
-    info += "Requirements:   " + shelter["requirements"] + "\n"
-    info += "Available:   " + str(shelter["capacity"] - shelter["occupants"]) + " bed left (" + str(shelter["occupants"]) + "/" + str(shelter["capacity"]) + " occupied)\n"
-    info += "Contact:     " + shelter["contact"] + "\n"
+    
+    # Check if this is an AI-generated shelter dictionary
+    if "shelter_name" in shelter:
+        info += "Rank       : " + str(shelter.get("rank", "N/A")) + "\n"
+        info += "Name       : " + str(shelter.get("shelter_name", "N/A")) + "\n"
+        info += "AI Score   : " + str(shelter.get("ai_suitability_score", "N/A")) + "\n"
+        info += "AI Conf.   : " + str(shelter.get("ai_confidence_score", "N/A")) + "\n"
+        info += "Age Group  : " + str(shelter.get("min_age", "N/A")) + " - " + str(shelter.get("max_age", "N/A")) + "\n"
+        info += "Gender     : " + str(shelter.get("gender_restriction", "N/A")) + "\n"
+        dependents_status = "Allowed" if shelter.get("dependents_allowed") else "Not Allowed"
+        info += "Dependents : " + dependents_status + "\n"
+    else:
+        # Standard CSV shelter dictionary format
+        info += "Name:   " + shelter["name"] + "\n"
+        info += "Category:   " + shelter["category"] + "\n"
+        info += "Requirements:   " + shelter["requirements"] + "\n"
+        info += "Available:   " + str(shelter["capacity"] - shelter["occupants"]) + " bed left (" + str(shelter["occupants"]) + "/" + str(shelter["capacity"]) + " occupied)\n"
+        info += "Contact:     " + shelter["contact"] + "\n"
+        
     info += "------------------------------------------------------"
     return info
 
