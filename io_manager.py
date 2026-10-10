@@ -204,3 +204,21 @@ def ask_for_client_id() -> str:
         )
 
     return client_id
+
+def present_best_shelter(client: dict, shelter) -> bool:
+    print("\n======== RECOMMENDED MATCH ========")
+    print(f"Client ID: {client.get('client_id', 'N/A')}")
+    print(f"Care Type: {client.get('care_type', 'N/A')}")
+    print("-------------------------------------")
+
+    if not shelter:
+        print("No suitable shelter found matching the client criteria")
+        return False
+    print("Suggested Shelter Details: ")
+    print(format_shelter(shelter))
+
+    choice = input("\nDo you accept this shelter outcome? (Yes / No): ").strip().lower()
+    while choice not in ["yes", "no", "y", "n"]:
+        print("Invalid input. please enter 'Yes' or 'No'.")
+        choice = input("Do you accept this shelter outcome (Yes / No): ").strip().lower()
+    return choice in ["yes", "y"]
