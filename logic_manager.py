@@ -71,10 +71,6 @@ def validate_ai_recommendation(ai_recommendation):
                 accepted_shelter_names.remove(i.get("shelter_name"))
                 flag = individual_flag
 
-
-
-
-
         return flag, flag_reasons, accepted_shelter_names
 
     except Exception as e:
@@ -87,7 +83,6 @@ def calculate_suitability_score(client_data, ai_recommendation):
     client_dependent = 1
     
     
-    print(client_data, "11111111111111111111111111111111111111")
     flag, flag_reasons, accepted_shelter_names = validate_ai_recommendation(ai_recommendation)
     score = 0
     result = []
@@ -97,7 +92,6 @@ def calculate_suitability_score(client_data, ai_recommendation):
     for shelter in ai_recommendation["criteria_met"]:
         if shelter["shelter_name"] not in accepted_shelter_names:
             result.append({"name": shelter["shelter_name"], "score": -999})
-            print(shelter["shelter_name"])
             continue # Skip shelters that are not accepted
         
         # ai score is weighted at 30% of the total score, while the remaining 70% is based on other factors
@@ -113,7 +107,6 @@ def calculate_suitability_score(client_data, ai_recommendation):
                 
         #checks if client gender aligns with ai gender restriction        
         if shelter["gender_restriction"] not in (client_gender, "Any"):
-            print("hello")
             flag_reasons.append(f"REJECT: {client_gender} client is mismatched for {shelter['shelter_name']} ({shelter['gender_restriction']}-only).")
             result.append({"name": shelter["shelter_name"], "score": -999})
             continue
@@ -136,7 +129,6 @@ def calculate_suitability_score(client_data, ai_recommendation):
                 "gender_restriction": shelter["gender_restriction"],
                 "dependents_allowed": shelter["dependents_allowed"],
             }
-    print("ERROR: No valid shelters, all AI recommended shelters have been flagged. Requires human evaluation")
     return None
 
     # # Check age requirement
@@ -162,14 +154,17 @@ def calculate_suitability_score(client_data, ai_recommendation):
     # return score, reasons
 
 
-# def json_to_dict(json_string):
-#     if x == 3:
-#         x = 4
 
-with open("newaireco.json", "r") as f:
-    stuff = json.load(f)
-validate_ai_recommendation(json.dumps(stuff))
-print(calculate_suitability_score({}, stuff))  # Assuming you want to calculate suitability for the same data
+
+
+#IMPORTANT LOOK HERE!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+# with open("newaireco.json", "r") as f:
+#     stuff = json.load(f)
+# validate_ai_recommendation(json.dumps(stuff))
+
+
+
 
 
 # when do we flag an ai response, when only 1 shelter recommended hallucinates?
