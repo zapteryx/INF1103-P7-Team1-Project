@@ -1,0 +1,86 @@
+name: Continuous Integration & Security
+
+on: [push, pull_request]
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # 1. Native Python Testing (without Docker)
+  # ---------------------------------------------------------------------------
+  python-test:
+    name: Python Native Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run Test Suite
+        run: |
+          python test_main.py
+
+      - name: Smoke Test Program Execution
+        run: |
+          python main.py
+
+  # ---------------------------------------------------------------------------
+  # 2. Docker Build & Test Execution
+  # ---------------------------------------------------------------------------
+  docker-test:
+    name: Docker Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          tags: inf1103-teamproject:latest
+
+      - name: Run Tests inside Docker Container
+        run: |
+          docker run --rm inf1103-teamproject:latest python test_main.py
+
+      - name: Run Main Program inside Docker Container
+        run: |
+          docker run --rm inf1103-teamproject:latest python main.py
+
+  # ---------------------------------------------------------------------------
+  # 3. Security Scanning (CodeQL Analysis)
+  # ---------------------------------------------------------------------------
+  codeql-analysis:
+    name: CodeQL Security Scan
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: 'python'
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
