@@ -1,2 +1,8 @@
 # This .gitignore file will leave out the following files out of the repository, so it won't be tracked since it contains sensitive information
 .env
+# Pycache folder
+__pycache__
+# AI Manager logfile
+ai_manager.log
+# Default clients filename
+clients.json

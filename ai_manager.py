@@ -1,4 +1,3 @@
-import io_manager
 import json
 import jsonschema
 import logging
@@ -21,7 +20,7 @@ logging.basicConfig(
 )
 
 # No. of attempts to call api before using the sample api response
-max_attempts = 2
+max_attempts = 3
 
 # Maintained by Mei Qi (2605039)
 def get_shelter_recommendation(client_info: dict, shelter_info: list[dict]) -> dict | None:
