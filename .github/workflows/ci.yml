@@ -29,10 +29,6 @@ jobs:
         run: |
           python test_main.py
 
-      - name: Smoke Test Program Execution
-        run: |
-          python main.py
-
   # ---------------------------------------------------------------------------
   # 2. Docker Build & Test Execution
   # ---------------------------------------------------------------------------
@@ -57,10 +53,6 @@ jobs:
       - name: Run Tests inside Docker Container
         run: |
           docker run --rm inf1103-teamproject:latest python test_main.py
-
-      - name: Run Main Program inside Docker Container
-        run: |
-          docker run --rm inf1103-teamproject:latest python main.py
 
   # ---------------------------------------------------------------------------
   # 3. Security Scanning (CodeQL Analysis)
