@@ -71,40 +71,53 @@ def validate_ai_recommendation(ai_recommendation):
                 accepted_shelter_names.remove(i.get("shelter_name"))
                 flag = individual_flag
 
-
-
-
-
         return flag, flag_reasons, accepted_shelter_names
 
     except Exception as e:
         flag = "FLAG"
-        flag_reasons.append("FLAG: Unexpected error occurred.")
 
 
 def calculate_suitability_score(client_data, ai_recommendation):
-
+    client_age = 0
+    client_gender = "Male"
+    client_dependent = 1
+    
+    
     flag, flag_reasons, accepted_shelter_names = validate_ai_recommendation(ai_recommendation)
     score = 0
     result = []
+    with open(CSV_FILENAME, mode="r", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+        
     for shelter in ai_recommendation["criteria_met"]:
         if shelter["shelter_name"] not in accepted_shelter_names:
-            rank = "0"
+            result.append({"name": shelter["shelter_name"], "score": -999})
+            continue # Skip shelters that are not accepted
+        
         # ai score is weighted at 30% of the total score, while the remaining 70% is based on other factors
         shelter_score = shelter["suitability_score"] * 0.3  # Weighting factor for AI recommendation
 
-        with open(CSV_FILENAME, mode="r", encoding="utf-8") as file:
-            reader = csv.DictReader(file)
-            shelter_exists = next((row for row in reader if row.get("Shelter Name") == shelter["shelter_name"]), None)
+        
+        shelter_exists = next((row for row in reader if row.get("Shelter Name") == shelter["shelter_name"]), None)
 
         if shelter_exists:
             available_capacity = int(shelter_exists.get("Maximum Capacity", 0)) - int(shelter_exists.get("Current Occupants", 0))
             if available_capacity <= 0 :
-                shelter_score -= 20  # Penalize for no available capacity
+                shelter_score -= 30  # Penalize for no available capacity
+                
+        #checks if client gender aligns with ai gender restriction        
+        if shelter["gender_restriction"] not in (client_gender, "Any"):
+            flag_reasons.append(f"REJECT: {client_gender} client is mismatched for {shelter['shelter_name']} ({shelter['gender_restriction']}-only).")
+            result.append({"name": shelter["shelter_name"], "score": -999})
+            continue
+
+        #women, senior, adult, female, male, girls, children
+            
+            
         result.append({"name": shelter["shelter_name"], "score": shelter_score})
     ranked_results = sorted(result, key=lambda x: x["score"], reverse=True)
     for shelter in ai_recommendation["criteria_met"]:
-        if shelter["shelter_name"] == ranked_results[0]["name"]:
+        if shelter["shelter_name"] == ranked_results[0]["name"] and ranked_results[0]["score"] > -500:
             return {
                 "rank": "1",
                 "shelter_name": shelter["shelter_name"],
@@ -117,11 +130,6 @@ def calculate_suitability_score(client_data, ai_recommendation):
                 "dependents_allowed": shelter["dependents_allowed"],
             }
     return None
-
-
-
-
-
 
     # # Check age requirement
     # if client_data["age"] < ai_recommendation["min_age"]:
@@ -146,14 +154,17 @@ def calculate_suitability_score(client_data, ai_recommendation):
     # return score, reasons
 
 
-def json_to_dict(json_string):
-    if x == 3:
-        x = 4
 
-# with open("stuff.json", "r") as f:
+
+
+#IMPORTANT LOOK HERE!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+# with open("newaireco.json", "r") as f:
 #     stuff = json.load(f)
 # validate_ai_recommendation(json.dumps(stuff))
-# calculate_suitability_score({}, stuff)  # Assuming you want to calculate suitability for the same data
+
+
+
 
 
 # when do we flag an ai response, when only 1 shelter recommended hallucinates?

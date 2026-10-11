@@ -1,7 +1,16 @@
-import csv
-import os
+import sys
 
 import data_manager
+
+# Maintained by Ming Xuan (2604426)
+def print_error(err_title: str, err_desc: str = "") -> None:
+    desc_str = f": {err_desc}" if err_desc else ""
+    print(f"Encountered an error:\n{err_title}{desc_str}", file=sys.stderr)
+
+# Maintained by Ming Xuan (2604426)
+def print_update(update_title: str, update_desc: str = "") -> None:
+    desc_str = f": {update_desc}" if update_desc else ""
+    print(f"{update_title}{desc_str}")
 
 # Maintained by Shi Ting (2600663)
 # Modified by Ming Xuan (2604426)
@@ -52,13 +61,27 @@ def get_client_records_filename(accepted_filetypes: list, allow_creating_json: b
 
 # Maintained by Shi Ting (2600663)
 # Terminal Display & Formatting
-def format_shelter(shelter: dict) -> str:  #Is a hint stating that this input must be a dictionary and this functions returns a string
+def format_shelter(shelter: dict) -> str:  # Replace your old function here[cite: 2]
     info = ""
-    info += "Name:   " + shelter["name"] + "\n"
-    info += "Category:   " + shelter["category"] + "\n"
-    info += "Requirements:   " + shelter["requirements"] + "\n"
-    info += "Available:   " + str(shelter["capacity"] - shelter["occupants"]) + " bed left (" + str(shelter["occupants"]) + "/" + str(shelter["capacity"]) + " occupied)\n"
-    info += "Contact:     " + shelter["contact"] + "\n"
+    
+    # Check if this is an AI-generated shelter dictionary
+    if "shelter_name" in shelter:
+        info += "Rank       : " + str(shelter.get("rank", "N/A")) + "\n"
+        info += "Name       : " + str(shelter.get("shelter_name", "N/A")) + "\n"
+        info += "AI Score   : " + str(shelter.get("ai_suitability_score", "N/A")) + "\n"
+        info += "AI Conf.   : " + str(shelter.get("ai_confidence_score", "N/A")) + "\n"
+        info += "Age Group  : " + str(shelter.get("min_age", "N/A")) + " - " + str(shelter.get("max_age", "N/A")) + "\n"
+        info += "Gender     : " + str(shelter.get("gender_restriction", "N/A")) + "\n"
+        dependents_status = "Allowed" if shelter.get("dependents_allowed") else "Not Allowed"
+        info += "Dependents : " + dependents_status + "\n"
+    else:
+        # Standard CSV shelter dictionary format
+        info += "Name:   " + shelter["name"] + "\n"
+        info += "Category:   " + shelter["category"] + "\n"
+        info += "Requirements:   " + shelter["requirements"] + "\n"
+        info += "Available:   " + str(shelter["capacity"] - shelter["occupants"]) + " bed left (" + str(shelter["occupants"]) + "/" + str(shelter["capacity"]) + " occupied)\n"
+        info += "Contact:     " + shelter["contact"] + "\n"
+        
     info += "------------------------------------------------------"
     return info
 
@@ -80,14 +103,15 @@ def display_menu() -> int: #Is a hint stating that the function returns an integ
     print("1. New Client Intake")
     print("2. View All Shelters")
     print("3. Get Shelter recommendations for clients")
-    print("4. Exit")
+    print("4. Search Client by NRIC")
+    print("5. Exit")
     print("====================================")
-    choice_input = input("Select option (1-4): ").strip() #.strip removes leading and trailing whitespace eg; space, tabs or newline characters
+    choice_input = input("Select option (1-5): ").strip() #.strip removes leading and trailing whitespace eg; space, tabs or newline characters
 
     #Validate Input Menu Options
-    while not choice_input.isdigit():
-        print("Invalid option. Please enter a number between 1 and 4.")
-        choice_input = input("Select option (1-4): ").strip()
+    while not choice_input.isdigit() or int(choice_input) not in range(1, 6):
+        print("Invalid option. Please enter a number between 1 and 5.")
+        choice_input = input("Select option (1-5): ").strip()
     return int(choice_input)
 
 # Maintained by Shi Ting (2600663)
@@ -97,14 +121,14 @@ def collect_intake_input() -> dict:
 
     # Client ID Input & NRIC Validation
     client_id = input("Enter NRIC: ").strip().upper()
-   
+
     is_valid_nric=(
         len(client_id) == 9                 #Exactly 9 characters
         and client_id[0] in ["S", "T"]      #First character is 'S' or 'T'
         and client_id[1:8].isdigit()        #Middle 7 characters are digits (0-9)
         and client_id[-1].isalpha()         #Last character is a letter (A-Z)
     )
-    
+
     #Loop until the user provides a valid NRIC format
     while not is_valid_nric:
         print("Invalid NRIC. Must start with S or T, followed by 7 digits and end with a letter (eg; S1234567H)")
@@ -113,11 +137,11 @@ def collect_intake_input() -> dict:
         #Re-check validity for the next loop iteration
         is_valid_nric = (
             len(client_id) == 9
-            and client_id[0] in ["S", "T"]     
-            and client_id[1:8].isdigit()        
+            and client_id[0] in ["S", "T"]
+            and client_id[1:8].isdigit()
             and client_id[-1].isalpha()
         )
-        
+
     # Gender Input & Validation (Male / Female)
     gender_input = input("Enter Client Gender (Male / Female): ").strip().lower()
     while gender_input not in ["male", "female", "m", "f"]:
@@ -162,6 +186,7 @@ def collect_intake_input() -> dict:
     #Intake Description / Notes Inputs
     intakes_notes = input("Enter intake description: ").strip()
 
+    #Return all the parameter values back to the function
     return {
         "client_id": client_id,
         "gender": gender,
@@ -171,3 +196,79 @@ def collect_intake_input() -> dict:
         "special_needs": special_needs,
         "intake_notes": intakes_notes
     }
+
+# Maintained by Shi Ting (2600663)
+def ask_for_client_id() -> str:
+    print("\n---CLIENT SEARCH---")
+    client_id = input("Enter Client NRIC: ").strip().upper()
+
+    is_valid_nric=(
+           len(client_id) == 9                 #Exactly 9 characters
+           and client_id[0] in ["S", "T"]      #First character is 'S' or 'T'
+           and client_id[1:8].isdigit()        #Middle 7 characters are digits (0-9)
+           and client_id[-1].isalpha()         #Last character is a letter (A-Z)
+       )
+
+       #Loop until the user provides a valid NRIC format
+    while not is_valid_nric:
+        print("Invalid NRIC. Must start with S or T, followed by 7 digits and end with a letter (eg; S1234567H)")
+        client_id = input("Enter Client NRIC: ").strip().upper()
+
+        #Re-check validity for the next loop iteration
+        is_valid_nric = (
+            len(client_id) == 9
+            and client_id[0] in ["S", "T"]
+            and client_id[1:8].isdigit()
+            and client_id[-1].isalpha()
+        )
+
+    return client_id
+
+# Maintained by Shi Ting (2600663)
+def present_best_shelter(client: dict, shelter) -> bool:
+    print("\n======== RECOMMENDED MATCH ========")
+    print(f"Client ID: {client.get('client_id', 'N/A')}")
+    print(f"Care Type: {client.get('care_type', 'N/A')}")
+    print("-------------------------------------")
+
+    if not shelter:
+        print("No suitable shelter found matching the client criteria")
+        return False
+    print("Suggested Shelter Details: ")
+    print(format_shelter(shelter))
+
+    #Validation
+    choice = input("\nDo you accept this shelter outcome? (Yes / No): ").strip().lower()
+    while choice not in ["yes", "no", "y", "n"]:
+        print("Invalid input. please enter 'Yes' or 'No'.")
+        choice = input("Do you accept this shelter outcome (Yes / No): ").strip().lower()
+    return choice in ["yes", "y"]
+
+# Maintained by Shi Ting (2600663)
+def print_client_record (client: dict) -> None:
+    print("\n=================== CLIENT RECORD ===================")
+    print(f"Client ID     : {client.get('client_id', 'N/A')}")
+    print(f"Gender        : {client.get('gender', 'N/A')}")
+    print(f"Age           : {client.get('age', 'N/A')}")
+    print(f"Dependents    : {client.get('dependents', 'N/A')}")
+    print(f"Care Type     : {client.get('care_type', 'N/A')}")
+    print(f"Special Needs : {client.get('special_needs', 'N/A')}")
+    print(f"Notes         : {client.get('intake_notes', 'N/A')}")
+
+    # Check if a shelter match was assigned/accepted
+    accepted_shelter = client.get("accepted_shelter")
+    if accepted_shelter:
+        print("\n[Status] Outcome: MATCHED & ACCEPTED")
+        print(format_shelter(accepted_shelter))
+    else:
+        print("\n[Status] Outcome: Pending / No Shelter Assigned")
+    print("=====================================================")
+
+# Maintained by Shi Ting (2600663)
+def get_rerun_decision() -> bool:
+    choice = input("\nWould you like to rerun the AI matching for this client? (Yes / No): ").strip().lower()
+    while choice not in ["yes", "no", "y", "n"]:
+        print("[!] Invalid input. Please enter 'Yes' or 'No'.")
+        choice = input("Would you like to rerun the AI matching for this client? (Yes / No): ").strip().lower()
+
+    return choice in ["yes", "y"] # It will return true if the user say yes or false if they say no regarding to the user if they want to rerun thhe AI for the client
