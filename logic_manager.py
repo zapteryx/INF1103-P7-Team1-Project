@@ -118,11 +118,6 @@ def calculate_suitability_score(client_data, ai_recommendation):
             }
     return None
 
-
-
-
-
-
     # # Check age requirement
     # if client_data["age"] < ai_recommendation["min_age"]:
     #     score -= 10
@@ -146,9 +141,9 @@ def calculate_suitability_score(client_data, ai_recommendation):
     # return score, reasons
 
 
-def json_to_dict(json_string):
-    if x == 3:
-        x = 4
+# def json_to_dict(json_string):
+#     if x == 3:
+#         x = 4
 
 # with open("stuff.json", "r") as f:
 #     stuff = json.load(f)
