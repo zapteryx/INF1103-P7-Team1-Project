@@ -186,6 +186,7 @@ def collect_intake_input() -> dict:
     #Intake Description / Notes Inputs
     intakes_notes = input("Enter intake description: ").strip()
 
+    #Return all the parameter values back to the function
     return {
         "client_id": client_id,
         "gender": gender,
@@ -236,6 +237,7 @@ def present_best_shelter(client: dict, shelter) -> bool:
     print("Suggested Shelter Details: ")
     print(format_shelter(shelter))
 
+    #Validation
     choice = input("\nDo you accept this shelter outcome? (Yes / No): ").strip().lower()
     while choice not in ["yes", "no", "y", "n"]:
         print("Invalid input. please enter 'Yes' or 'No'.")
@@ -264,13 +266,9 @@ def print_client_record (client: dict) -> None:
 
 # Maintained by Shi Ting (2600663)
 def get_rerun_decision() -> bool:
-    """
-    Asks the user if they want to rerun the AI for the client.
-    Returns True if the user says yes, or False if they say no.
-    """
     choice = input("\nWould you like to rerun the AI matching for this client? (Yes / No): ").strip().lower()
     while choice not in ["yes", "no", "y", "n"]:
         print("[!] Invalid input. Please enter 'Yes' or 'No'.")
         choice = input("Would you like to rerun the AI matching for this client? (Yes / No): ").strip().lower()
 
-    return choice in ["yes", "y"]
+    return choice in ["yes", "y"] # It will return true if the user say yes or false if they say no regarding to the user if they want to rerun thhe AI for the client
