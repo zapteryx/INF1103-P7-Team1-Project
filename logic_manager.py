@@ -1,7 +1,19 @@
 import json
 import csv
+import io_manager
+import re
 
-CSV_FILENAME = "singapore_shelters_directory.csv"
+SHELTER_CSV_FILENAME = io_manager.get_shelter_filename()
+
+LONG_TERM_KEYWORDS = ["long term", "long-term", "longterm", "supportive housing"]
+
+SHORT_TERM_KEYWORDS = ["short term", "short-term", "emergency", "crisis", "transitional"]
+
+SPECIAL_NEEDS_KEYWORDS = ["disability", "wheelchair", "impairment", "assisted living"]
+
+# Point System Config
+BONUS_CARE_MATCH = +40       # Reward for explicit alignment
+PENALTY_CARE_MISMATCH = -50  # Penalty for explicit conflict
 
 
 def validate_json(json_string):
@@ -10,6 +22,14 @@ def validate_json(json_string):
         return True
     except ValueError as e:
         return False
+    
+def has_keyword(sentence, keywords: list[str]):
+    print(sentence, keywords, "222222222222222222222")
+    if not sentence or not keywords:
+        return False
+    sentence_clean = str(sentence).lower()
+    patterns = [r"\b" + re.escape(str(i).lower()) + r"\b" for i in keywords]
+    return bool(re.search("|".join(patterns), sentence_clean))
 
 
 def validate_ai_recommendation(ai_recommendation):
@@ -28,7 +48,7 @@ def validate_ai_recommendation(ai_recommendation):
         shelter_count = 0
         target_count = len(criteria_met)
         accepted_shelter_names = []
-        with open(CSV_FILENAME, mode="r", encoding="utf-8") as file:
+        with open(SHELTER_CSV_FILENAME, mode="r", encoding="utf-8") as file:
             reader = csv.DictReader(file)
             for row in reader:
                 if row["Shelter Name"] in ai_shelter_names:
@@ -62,7 +82,7 @@ def validate_ai_recommendation(ai_recommendation):
                 flag_reasons.append(f"FLAG: AI age range for {i['shelter_name']} is out of bounds.")
                 individual_flag = "FLAG"
             # sanitize and validate gender_restriction
-            if i.get("gender_restriction") not in ["Male", "Female", "any"]:
+            if i.get("gender_restriction").lower() not in ["male", "female", "any"]:
                 flag_reasons.append(f"FLAG: AI gender restriction for {i['shelter_name']} is invalid.")
                 individual_flag = "FLAG"
 
@@ -78,16 +98,20 @@ def validate_ai_recommendation(ai_recommendation):
 
 
 def calculate_suitability_score(client_data, ai_recommendation):
-    client_age = 0
-    client_gender = "Male"
-    client_dependent = 1
+    print(client_data, client_data["client_id"])
+    print(ai_recommendation, 'AHHHHHHHHHHHHHHHHHHHH')
+    client_age = int(client_data["age"])
+    client_gender = client_data["gender"]
+    client_dependent = int(client_data["dependents"])
+    client_care_type = client_data["care_type"]
+    is_special_needs = client_data["special_needs"]
     
     
     flag, flag_reasons, accepted_shelter_names = validate_ai_recommendation(ai_recommendation)
     score = 0
     result = []
-    with open(CSV_FILENAME, mode="r", encoding="utf-8") as file:
-        reader = csv.DictReader(file)
+    with open(SHELTER_CSV_FILENAME, mode="r", encoding="utf-8") as file:
+        reader = list(csv.DictReader(file))
         
     for shelter in ai_recommendation["criteria_met"]:
         if shelter["shelter_name"] not in accepted_shelter_names:
@@ -102,15 +126,42 @@ def calculate_suitability_score(client_data, ai_recommendation):
 
         if shelter_exists:
             available_capacity = int(shelter_exists.get("Maximum Capacity", 0)) - int(shelter_exists.get("Current Occupants", 0))
-            if available_capacity <= 0 :
-                shelter_score -= 30  # Penalize for no available capacity
+            if available_capacity < (client_dependent + 1):
+                shelter_score -= 60  # Penalize for no available capacity
+            
+            
                 
         #checks if client gender aligns with ai gender restriction        
-        if shelter["gender_restriction"] not in (client_gender, "Any"):
+        if shelter["gender_restriction"].lower() not in (client_gender.lower(), "any"):
             flag_reasons.append(f"REJECT: {client_gender} client is mismatched for {shelter['shelter_name']} ({shelter['gender_restriction']}-only).")
             result.append({"name": shelter["shelter_name"], "score": -999})
             continue
+        
+        
+        shelter_description = shelter_exists.get("Description")
+        #check from shelter csv for any long-term keywords, means shelter offers long-term care
+        if "long term" == client_care_type.lower():
+            if has_keyword(shelter_description, LONG_TERM_KEYWORDS):
+                shelter_score += BONUS_CARE_MATCH
+        
+            elif has_keyword(shelter_description, SHORT_TERM_KEYWORDS):
+                shelter_score += PENALTY_CARE_MISMATCH
 
+        #check from shelter csv for any short-term keywords, means shelter offers short-term care
+        elif "short term" == client_care_type.lower():
+            if has_keyword(shelter_description, SHORT_TERM_KEYWORDS):
+                shelter_score += BONUS_CARE_MATCH
+        
+            elif has_keyword(shelter_description, LONG_TERM_KEYWORDS):
+                shelter_score += PENALTY_CARE_MISMATCH
+        
+        
+        
+        
+        
+        
+        
+            
         #women, senior, adult, female, male, girls, children
             
             
@@ -129,6 +180,7 @@ def calculate_suitability_score(client_data, ai_recommendation):
                 "gender_restriction": shelter["gender_restriction"],
                 "dependents_allowed": shelter["dependents_allowed"],
             }
+    print(flag_reasons)
     return None
 
     # # Check age requirement
