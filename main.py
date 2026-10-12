@@ -15,7 +15,7 @@ def get_recommendation(clients_file_path: str, client: dict, shelters: list[dict
         return False
     # io_manager.print_update(f"AI Recommendation for client {client['client_id']}", f"\n{json.dumps(recommendation, indent=2)}")
     io_manager.print_update("Finding the best shelter based on AI recommendation and additional criteria...")
-    best_shelter = logic_manager.calculate_suitability_score(client, recommendation)
+    best_shelter = logic_manager.calculate_suitability_score(shelters, client, recommendation)
     if best_shelter is None:
         io_manager.print_error(f"No suitable shelter found for client {client['client_id']} based on AI recommendation and additional criteria.")
         return False
