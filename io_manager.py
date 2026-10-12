@@ -152,8 +152,8 @@ def collect_intake_input() -> dict:
 
     #Age Input & Validation
     age_input = input("Enter Client Age: ").strip()
-    while not age_input.isdigit():
-        print("Please enter a valid number for age.")
+    while not age_input.isdigit() or not (1 <= int(age_input) <= 125):
+        print("Please enter a valid number for age between 1 and 125.")
         age_input = input("Enter Client Age: ").strip()
     age = int(age_input)
 
