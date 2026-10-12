@@ -59,13 +59,13 @@ def main() -> None:
                 io_manager.print_error("Could not load shelters", shelters[1])
                 continue
             for client in clients[0]:
-                result = get_recommendation(clients_file_path, client, shelters)
+                result = get_recommendation(clients_file_path, client, shelters[0])
                 if result is not None:
                     continue
                 rerun = io_manager.get_rerun_decision()
                 if rerun:
                     # only rerun once more, do not ask for rerun decision again
-                    get_recommendation(clients_file_path, client, shelters)
+                    get_recommendation(clients_file_path, client, shelters[0])
             time.sleep(1)
         # search for a client record by client_id
         elif choice == 4:
