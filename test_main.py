@@ -71,7 +71,7 @@ def test_menu_options():
             while True:
                 yield "yes"                            # Outcome acceptance for each client
 
-        with patch("builtins.input", side_effect=option_3_inputs()):
+        with patch("builtins.input", side_effect=option_3_inputs()), patch("io_manager.print_error") as mock_print_error:
             # We also mock display_menu after option 3 runs once to break out and exit cleanly
             original_display_menu = main.io_manager.display_menu
             menu_calls = 0
@@ -85,6 +85,10 @@ def test_menu_options():
 
             with patch("io_manager.display_menu", side_effect=mock_display_menu):
                 main.main()
+
+            assert not mock_print_error.called, (
+                f"Option 3 failed with error(s): {mock_print_error.call_args_list}"
+            )
 
         print("✓ Option 3 executed successfully.\n")
 

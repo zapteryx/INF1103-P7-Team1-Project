@@ -159,8 +159,8 @@ def collect_intake_input() -> dict:
 
     # Dependents Input & Validation
     dep_input = input("Enter Number of Dependents: ").strip()
-    while not dep_input.isdigit():
-        print("Please enter a valid number for dependents.")
+    while not dep_input.isdigit() or not (0 <= int(dep_input) <= 20):
+        print("Please enter a valid number for dependents (cap at 20).")
         dep_input = input("Enter Number of Dependents: ").strip()
     dependents = int(dep_input)
 
