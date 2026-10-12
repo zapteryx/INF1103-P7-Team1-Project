@@ -183,7 +183,8 @@ def load_shelters(filename):
                     "occupants": occupants,
                     "requirements": row.get("Requirements", "N/A"),
                     "contact": row.get("Contact", "N/A"),
-                    "location": row.get("Address", "N/A")
+                    "location": row.get("Address", "N/A"),
+                    "outcome": row.get("outcome", "")
                 }
 
                 shelters.append(shelter)
