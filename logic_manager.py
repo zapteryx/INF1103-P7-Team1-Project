@@ -86,6 +86,8 @@ def validate_ai_recommendation(ai_recommendation, shelter_csv):
 
     except Exception as e:
         flag = "FLAG"
+        flag_reasons.append(f"FLAG: Error validating AI recommendation: {str(e)}")
+        return flag, flag_reasons, []
 
 
 def calculate_suitability_score(shelter_csv, client_data, ai_recommendation):
@@ -115,20 +117,20 @@ def calculate_suitability_score(shelter_csv, client_data, ai_recommendation):
         shelter_exists = next((row for row in shelter_csv if row.get("name") == shelter["shelter_name"]), None)
 
         if shelter_exists:
-            available_capacity = int(shelter_exists.get("Maximum Capacity", 0)) - int(shelter_exists.get("Current Occupants", 0))
+            available_capacity = int(shelter_exists.get("capacity", 0)) - int(shelter_exists.get("occupants", 0))
             if available_capacity < (client_dependent + 1):
                 shelter_score -= 60  # Penalize for no available capacity
-            
-            
-                
-        #checks if client gender aligns with ai gender restriction        
+
+
+
+        #checks if client gender aligns with ai gender restriction
         if shelter["gender_restriction"].lower() not in (client_gender.lower(), "any"):
             flag_reasons.append(f"REJECT: {client_gender} client is mismatched for {shelter['shelter_name']} ({shelter['gender_restriction']}-only).")
             result.append({"name": shelter["shelter_name"], "score": -999})
             continue
-        
-        
-        shelter_description = shelter_exists.get("Description")
+
+
+        shelter_description = shelter_exists.get("description") if shelter_exists else ""
         #checks the csv data for keywords relating gender and comparing it to the client
         client_gender_clean = client_gender.lower().strip()
         if client_gender_clean == "female":
