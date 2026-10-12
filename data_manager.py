@@ -33,7 +33,8 @@ def load_records(filename):
                         "dependents": int(row.get("dependents", 0)),
                         "care_type": row.get("care_type", ""),
                         "special_needs": row.get("special_needs", ""),
-                        "intake_notes": row.get("intake_notes", "")
+                        "intake_notes": row.get("intake_notes", ""),
+                        "outcome": row.get("outcome", ""),
                     }
 
                     cases.append(case)
@@ -184,7 +185,9 @@ def load_shelters(filename):
                     "requirements": row.get("Requirements", "N/A"),
                     "contact": row.get("Contact", "N/A"),
                     "location": row.get("Address", "N/A"),
-                    "outcome": row.get("outcome", "")
+                    "description": row.get("Description", "")
+
+
                 }
 
                 shelters.append(shelter)
@@ -194,7 +197,7 @@ def load_shelters(filename):
     except FileNotFoundError:
         return [], "CSV file not found."
 
-    except (OSError, ValueError, csv.Error):
+    except (OSError, ValueError, TypeError, UnicodeDecodeError, csv.Error):
         return [], "Unable to load shelter data."
 
 
