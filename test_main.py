@@ -10,7 +10,7 @@ FAKE_AI_RESPONSE = {
     "urgency_level": 3,
     "criteria_met": [
         {
-            "shelter_name": "Hope Haven Shelter",
+            "shelter_name": "Transit Point @ Margaret Drive (New Hope Community Services)",
             "criteria": "Met age and gender criteria",
             "gender_restriction": "Any",
             "dependents_allowed": True,
