@@ -15,7 +15,7 @@ def get_recommendation(clients_file_path: str, client: dict, shelters: list[dict
         return False
     # io_manager.print_update(f"AI Recommendation for client {client['client_id']}", f"\n{json.dumps(recommendation, indent=2)}")
     io_manager.print_update("Finding the best shelter based on AI recommendation and additional criteria...")
-    best_shelter = logic_manager.calculate_suitability_score(client, recommendation)
+    best_shelter = logic_manager.calculate_suitability_score(shelters, client, recommendation)
     if best_shelter is None:
         io_manager.print_error(f"No suitable shelter found for client {client['client_id']} based on AI recommendation and additional criteria.")
         return False
@@ -59,13 +59,13 @@ def main() -> None:
                 io_manager.print_error("Could not load shelters", shelters[1])
                 continue
             for client in clients[0]:
-                result = get_recommendation(clients_file_path, client, shelters)
+                result = get_recommendation(clients_file_path, client, shelters[0])
                 if result is not None:
                     continue
                 rerun = io_manager.get_rerun_decision()
                 if rerun:
                     # only rerun once more, do not ask for rerun decision again
-                    get_recommendation(clients_file_path, client, shelters)
+                    get_recommendation(clients_file_path, client, shelters[0])
             time.sleep(1)
         # search for a client record by client_id
         elif choice == 4:
