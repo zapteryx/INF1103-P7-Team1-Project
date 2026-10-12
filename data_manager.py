@@ -58,13 +58,32 @@ def load_records(filename):
 # save/replace the WHOLE list
 def save_records(filename, records):
     try:
-        with open(filename, "w", encoding="utf-8") as file:
-            json.dump(records, file, indent=4)
+        if filename.lower().endswith(".json"):
+            with open(filename, "w", encoding="utf-8") as file:
+                json.dump(records, file, indent=4)
+
+        elif filename.lower().endswith(".csv"):
+            if not records:
+                return False, "Cannot save an empty CSV without headers."
+
+            # Get all field names from the records
+            fieldnames = list(dict.fromkeys(
+                key for record in records for key in record
+            ))
+
+            with open(filename, "w", newline="", encoding="utf-8-sig") as file:
+                writer = csv.DictWriter(file, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(records)
+
+        else:
+            return False, "File must be JSON or CSV."
 
         return True, None
 
-    except OSError:
+    except (OSError, ValueError, TypeError, csv.Error):
         return False, "Unable to save records."
+
 
 # Maintained by Htet Shine Aung (2604711)
 # Add ONE processed record without deleting the existing records
@@ -164,7 +183,8 @@ def load_shelters(filename):
                     "occupants": occupants,
                     "requirements": row.get("Requirements", "N/A"),
                     "contact": row.get("Contact", "N/A"),
-                    "location": row.get("Address", "N/A")
+                    "location": row.get("Address", "N/A"),
+                    "outcome": row.get("outcome", "")
                 }
 
                 shelters.append(shelter)
