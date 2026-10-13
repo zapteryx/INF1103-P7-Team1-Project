@@ -1,9 +1,13 @@
 import sys
 import os
+import json
 from unittest.mock import patch
 
 import main
 
+
+# Test file for clients (separate from production data)
+TEST_CLIENTS_FILE = "clients-test.json"
 
 # Fake AI output that simulates a valid Gemini API response
 FAKE_AI_RESPONSE = {
@@ -23,7 +27,16 @@ FAKE_AI_RESPONSE = {
 }
 
 
+def setup_test_environment():
+    """Clear/initialize the test clients file before running tests"""
+    with open(TEST_CLIENTS_FILE, 'w', encoding='utf-8') as f:
+        json.dump([], f, indent=4)
+    print(f"✓ Test environment initialized: {TEST_CLIENTS_FILE} cleared\n")
+
+
 def test_menu_options():
+    # Setup clean test environment
+    setup_test_environment()
     print("==================================================")
     print("STARTING MENU OPTIONS TEST")
     print("==================================================\n")
@@ -42,7 +55,7 @@ def test_menu_options():
             "Short Term",  # Care Type
             "No",          # Special Needs
             "Test intake note", # Intake notes
-            "clients.json",# Client file path
+            TEST_CLIENTS_FILE,# Client file path
             "5"            # Select Option 5 (Exit)
         ]
         with patch("builtins.input", side_effect=inputs_option_1):
@@ -63,11 +76,11 @@ def test_menu_options():
         # Option 3: Test Get Shelter Recommendations
         print("--- Testing Option 3: Get Shelter Recommendations ---")
         # Generator dynamically yields "yes" whenever prompted for a shelter outcome,
-        # ensuring all records in clients.json are processed regardless of count.
+        # ensuring all records in clients-test.json are processed regardless of count.
         def option_3_inputs():
             yield "3"                                  # Select Option 3
             yield "singapore_shelters_directory.csv"   # Shelter file path
-            yield "clients.json"                       # Clients file path
+            yield TEST_CLIENTS_FILE                    # Clients file path
             while True:
                 yield "yes"                            # Outcome acceptance for each client
 
@@ -96,7 +109,7 @@ def test_menu_options():
         print("--- Testing Option 4: Search Client by NRIC ---")
         inputs_option_4 = [
             "4",          # Select Option 4 (Search Client)
-            "clients.json",# Client records filename
+            TEST_CLIENTS_FILE,# Client records filename
             "S1234567A",   # Client ID / NRIC
             "5"            # Select Option 5 (Exit)
         ]
