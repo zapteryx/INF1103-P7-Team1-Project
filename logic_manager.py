@@ -70,6 +70,13 @@ def check_gender_restriction(shelter):
     return []
 
 
+def validate_shelter_entry(shelter):
+    return (check_score_ranges(shelter)
+            + check_age_range(shelter)
+            + check_gender_restriction(shelter)
+    )
+
+
 def validate_ai_recommendation(ai_recommendation, shelter_csv):
     flag_reasons = []
     flag = "ACCEPT"
