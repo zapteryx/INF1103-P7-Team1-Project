@@ -77,8 +77,19 @@ def main() -> None:
                 continue
             io_manager.print_client_record(record[0])
             time.sleep(1)
-        # exit
+        # filter cases by outcome
         elif choice == 5:
+            clients_file_path = io_manager.get_client_records_filename(['csv', 'json'])
+            clients = data_manager.load_records(clients_file_path)
+            if clients[1] is not None:
+                io_manager.print_error("Could not load clients", clients[1])
+                continue
+            outcome = io_manager.ask_for_outcome_filter()
+            filtered_cases = data_manager.filter_records_by_outcome(clients[0], outcome)
+            io_manager.print_filtered_cases(filtered_cases, outcome)
+            time.sleep(1)
+        # exit
+        elif choice == 6:
             io_manager.print_update("Thank you for using Social Service AI. Goodbye!")
             break
 
