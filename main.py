@@ -34,7 +34,7 @@ def main() -> None:
         # new client intake
         if choice == 1:
             client = io_manager.collect_intake_input()
-            clients_file_path = io_manager.get_client_records_filename(['json'], True)
+            clients_file_path = io_manager.get_client_records_filename(['json', 'csv'], True)
             data_manager.add_record(clients_file_path, client)
             time.sleep(1)
         # view all shelters

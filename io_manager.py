@@ -31,7 +31,7 @@ def get_shelter_filename(default_filename: str = "singapore_shelters_directory.c
 
 # Maintained by Shi Ting (2600663)
 # Modified by Ming Xuan (2604426)
-def get_client_records_filename(accepted_filetypes: list, allow_creating_json: bool = False, default_filename: str = "clients.json") -> str:
+def get_client_records_filename(accepted_filetypes: list, allow_creating_new: bool = False, default_filename: str = "clients.json") -> str:
     # Prompts the user to enter the client records filename.
     # Allows pressing Enter to use the default filename and validates file existence.
     print(f"\nDefault dataset: '{default_filename}'")
@@ -43,16 +43,16 @@ def get_client_records_filename(accepted_filetypes: list, allow_creating_json: b
         # csv is an allowed filetype
         if 'csv' in accepted_filetypes and filename.endswith('.csv'):
             validation = data_manager.validate_csv_filename(filename)
-            # csv is valid
-            if validation[0]:
+            # csv is valid or doesn't exist but we allow creating new files
+            if validation[0] or (validation[1] == "CSV file not found." and allow_creating_new):
                 break
             print(f"Error: {validation[1]}")
             continue
-        # json is not a valid filetype, so show the user the csv validation error
+        # json is an allowed filetype
         if 'json' in accepted_filetypes and filename.endswith('.json'):
             validation = data_manager.validate_json_filename(filename)
             # If the file is not found, break the loop to allow the user to create a new file
-            if validation[0] or (validation[1] == "JSON file not found." and allow_creating_json):
+            if validation[0] or (validation[1] == "JSON file not found." and allow_creating_new):
                 break
             print(f"Error: {validation[1]}")
             continue

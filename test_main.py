@@ -5,9 +5,11 @@ from unittest.mock import patch
 
 import main
 
+# This file is maintained by Ming Xuan (2604426)
 
-# Test file for clients (separate from production data)
-TEST_CLIENTS_FILE = "clients-test.json"
+# Test files for clients (separate from production data)
+TEST_CLIENTS_JSON = "clients-test.json"
+TEST_CLIENTS_CSV = "clients-test.csv"
 
 # Fake AI output that simulates a valid Gemini API response
 FAKE_AI_RESPONSE = {
@@ -28,10 +30,19 @@ FAKE_AI_RESPONSE = {
 
 
 def setup_test_environment():
-    """Clear/initialize the test clients file before running tests"""
-    with open(TEST_CLIENTS_FILE, 'w', encoding='utf-8') as f:
+    """Clear/initialize the test clients files before running tests"""
+    # Initialize JSON test file
+    with open(TEST_CLIENTS_JSON, 'w', encoding='utf-8') as f:
         json.dump([], f, indent=4)
-    print(f"✓ Test environment initialized: {TEST_CLIENTS_FILE} cleared\n")
+    print(f"✓ Test environment initialized: {TEST_CLIENTS_JSON} cleared")
+
+    # Initialize CSV test file with headers only
+    import csv
+    with open(TEST_CLIENTS_CSV, 'w', newline='', encoding='utf-8-sig') as f:
+        writer = csv.DictWriter(f, fieldnames=['client_id', 'gender', 'age', 'dependents',
+                                                'care_type', 'special_needs', 'intake_notes', 'outcome'])
+        writer.writeheader()
+    print(f"✓ Test environment initialized: {TEST_CLIENTS_CSV} cleared\n")
 
 
 def test_menu_options():
@@ -44,8 +55,8 @@ def test_menu_options():
     # Mock ai_manager.get_shelter_recommendation so no external API calls are made
     with patch("ai_manager.get_shelter_recommendation", return_value=FAKE_AI_RESPONSE):
 
-        # Option 1: Test New Client Intake
-        print("--- Testing Option 1: New Client Intake ---")
+        # Option 1: Test New Client Intake (JSON)
+        print("--- Testing Option 1: New Client Intake (JSON) ---")
         inputs_option_1 = [
             "1",           # Select Option 1 (New Client Intake)
             "S1234567A",   # NRIC
@@ -55,12 +66,30 @@ def test_menu_options():
             "Short Term",  # Care Type
             "No",          # Special Needs
             "Test intake note", # Intake notes
-            TEST_CLIENTS_FILE,# Client file path
+            TEST_CLIENTS_JSON,# Client file path
             "5"            # Select Option 5 (Exit)
         ]
         with patch("builtins.input", side_effect=inputs_option_1):
             main.main()
-        print("✓ Option 1 executed successfully.\n")
+        print("✓ Option 1 (JSON) executed successfully.\n")
+
+        # Option 1b: Test New Client Intake (CSV)
+        print("--- Testing Option 1b: New Client Intake (CSV) ---")
+        inputs_option_1b = [
+            "1",           # Select Option 1 (New Client Intake)
+            "S9999999B",   # NRIC
+            "Female",      # Gender
+            "25",          # Age
+            "0",           # Dependents
+            "Long Term",   # Care Type
+            "Yes",         # Special Needs
+            "CSV test client", # Intake notes
+            TEST_CLIENTS_CSV,# Client file path
+            "5"            # Select Option 5 (Exit)
+        ]
+        with patch("builtins.input", side_effect=inputs_option_1b):
+            main.main()
+        print("✓ Option 1b (CSV) executed successfully.\n")
 
         # Option 2: Test View All Shelters
         print("--- Testing Option 2: View All Shelters ---")
@@ -73,14 +102,14 @@ def test_menu_options():
             main.main()
         print("✓ Option 2 executed successfully.\n")
 
-        # Option 3: Test Get Shelter Recommendations
-        print("--- Testing Option 3: Get Shelter Recommendations ---")
+        # Option 3: Test Get Shelter Recommendations (JSON)
+        print("--- Testing Option 3: Get Shelter Recommendations (JSON) ---")
         # Generator dynamically yields "yes" whenever prompted for a shelter outcome,
         # ensuring all records in clients-test.json are processed regardless of count.
         def option_3_inputs():
             yield "3"                                  # Select Option 3
             yield "singapore_shelters_directory.csv"   # Shelter file path
-            yield TEST_CLIENTS_FILE                    # Clients file path
+            yield TEST_CLIENTS_JSON                    # Clients file path
             while True:
                 yield "yes"                            # Outcome acceptance for each client
 
@@ -100,22 +129,62 @@ def test_menu_options():
                 main.main()
 
             assert not mock_print_error.called, (
-                f"Option 3 failed with error(s): {mock_print_error.call_args_list}"
+                f"Option 3 (JSON) failed with error(s): {mock_print_error.call_args_list}"
             )
 
-        print("✓ Option 3 executed successfully.\n")
+        print("✓ Option 3 (JSON) executed successfully.\n")
 
-        # Option 4: Test Search Client by NRIC
-        print("--- Testing Option 4: Search Client by NRIC ---")
+        # Option 3b: Test Get Shelter Recommendations (CSV)
+        print("--- Testing Option 3b: Get Shelter Recommendations (CSV) ---")
+        def option_3b_inputs():
+            yield "3"                                  # Select Option 3
+            yield "singapore_shelters_directory.csv"   # Shelter file path
+            yield TEST_CLIENTS_CSV                     # Clients file path
+            while True:
+                yield "yes"                            # Outcome acceptance for each client
+
+        with patch("builtins.input", side_effect=option_3b_inputs()), patch("io_manager.print_error") as mock_print_error_csv:
+            menu_calls_csv = 0
+
+            def mock_display_menu_csv():
+                nonlocal menu_calls_csv
+                menu_calls_csv += 1
+                if menu_calls_csv > 1:
+                    return 5  # Select Exit on second iteration
+                return 3      # Select Option 3 on first iteration
+
+            with patch("io_manager.display_menu", side_effect=mock_display_menu_csv):
+                main.main()
+
+            assert not mock_print_error_csv.called, (
+                f"Option 3b (CSV) failed with error(s): {mock_print_error_csv.call_args_list}"
+            )
+
+        print("✓ Option 3b (CSV) executed successfully.\n")
+
+        # Option 4: Test Search Client by NRIC (JSON)
+        print("--- Testing Option 4: Search Client by NRIC (JSON) ---")
         inputs_option_4 = [
             "4",          # Select Option 4 (Search Client)
-            TEST_CLIENTS_FILE,# Client records filename
+            TEST_CLIENTS_JSON,# Client records filename
             "S1234567A",   # Client ID / NRIC
             "5"            # Select Option 5 (Exit)
         ]
         with patch("builtins.input", side_effect=inputs_option_4):
             main.main()
-        print("✓ Option 4 executed successfully.\n")
+        print("✓ Option 4 (JSON) executed successfully.\n")
+
+        # Option 4b: Test Search Client by NRIC (CSV)
+        print("--- Testing Option 4b: Search Client by NRIC (CSV) ---")
+        inputs_option_4b = [
+            "4",          # Select Option 4 (Search Client)
+            TEST_CLIENTS_CSV,# Client records filename
+            "S9999999B",   # Client ID / NRIC
+            "5"            # Select Option 5 (Exit)
+        ]
+        with patch("builtins.input", side_effect=inputs_option_4b):
+            main.main()
+        print("✓ Option 4b (CSV) executed successfully.\n")
 
     print("==================================================")
     print("ALL TESTS COMPLETED SUCCESSFULLY!")
