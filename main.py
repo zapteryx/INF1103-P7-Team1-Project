@@ -9,7 +9,7 @@ import logic_manager
 # Maintained by Ming Xuan (2604426)
 def get_recommendation(clients_file_path: str, client: dict, shelters: list[dict]) -> bool | None:
     io_manager.print_update(f"Getting recommendations for client {client['client_id']}...")
-    recommendation = ai_manager.get_shelter_recommendation(client, shelters[0])
+    recommendation = ai_manager.get_shelter_recommendation(client, shelters)
     if recommendation is None:
         io_manager.print_error(f"AI recommendation failed for client {client['client_id']}.")
         return False
