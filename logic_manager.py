@@ -22,10 +22,19 @@ def has_keyword(sentence, keywords: list[str]):
     patterns = [r"\b" + re.escape(str(i).lower()) + r"\b" for i in keywords]
     return bool(re.search("|".join(patterns), sentence_clean))
 
+
 def check_urgency_level(ai_recommendation):
     if not 0 < ai_recommendation.get("urgency_level") < 6:
         return ["FLAG: Urgency level is out of range (1-5)."]
     return []
+
+
+def check_shelter_names(criteria_met, shelter_csv):
+    ai_shelter_names = {item["shelter_name"] for item in criteria_met}
+    shelter_count = 0
+    target_count = len(criteria_met)
+    accepted_shelter_names = []
+    reasons = []
 
 
 def validate_ai_recommendation(ai_recommendation, shelter_csv):
