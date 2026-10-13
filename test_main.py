@@ -71,7 +71,7 @@ def test_menu_options():
         ]
         with patch("builtins.input", side_effect=inputs_option_1):
             main.main()
-        print("✓ Option 1 (JSON) executed successfully.\n")
+        print("PASS: Option 1 (JSON) executed successfully.\n")
 
         # Option 1b: Test New Client Intake (CSV)
         print("--- Testing Option 1b: New Client Intake (CSV) ---")
@@ -89,7 +89,7 @@ def test_menu_options():
         ]
         with patch("builtins.input", side_effect=inputs_option_1b):
             main.main()
-        print("✓ Option 1b (CSV) executed successfully.\n")
+        print("PASS: Option 1b (CSV) executed successfully.\n")
 
         # Option 2: Test View All Shelters
         print("--- Testing Option 2: View All Shelters ---")
@@ -100,7 +100,7 @@ def test_menu_options():
         ]
         with patch("builtins.input", side_effect=inputs_option_2):
             main.main()
-        print("✓ Option 2 executed successfully.\n")
+        print("PASS: Option 2 executed successfully.\n")
 
         # Option 3: Test Get Shelter Recommendations (JSON)
         print("--- Testing Option 3: Get Shelter Recommendations (JSON) ---")
@@ -132,7 +132,7 @@ def test_menu_options():
                 f"Option 3 (JSON) failed with error(s): {mock_print_error.call_args_list}"
             )
 
-        print("✓ Option 3 (JSON) executed successfully.\n")
+        print("PASS: Option 3 (JSON) executed successfully.\n")
 
         # Option 3b: Test Get Shelter Recommendations (CSV)
         print("--- Testing Option 3b: Get Shelter Recommendations (CSV) ---")
@@ -160,7 +160,7 @@ def test_menu_options():
                 f"Option 3b (CSV) failed with error(s): {mock_print_error_csv.call_args_list}"
             )
 
-        print("✓ Option 3b (CSV) executed successfully.\n")
+        print("PASS: Option 3b (CSV) executed successfully.\n")
 
         # Option 4: Test Search Client by NRIC (JSON)
         print("--- Testing Option 4: Search Client by NRIC (JSON) ---")
@@ -172,7 +172,7 @@ def test_menu_options():
         ]
         with patch("builtins.input", side_effect=inputs_option_4):
             main.main()
-        print("✓ Option 4 (JSON) executed successfully.\n")
+        print("PASS: Option 4 (JSON) executed successfully.\n")
 
         # Option 4b: Test Search Client by NRIC (CSV)
         print("--- Testing Option 4b: Search Client by NRIC (CSV) ---")
@@ -184,7 +184,7 @@ def test_menu_options():
         ]
         with patch("builtins.input", side_effect=inputs_option_4b):
             main.main()
-        print("✓ Option 4b (CSV) executed successfully.\n")
+        print("PASS: Option 4b (CSV) executed successfully.\n")
 
         # Option 5: Test Filter Cases by Outcome (JSON)
         print("--- Testing Option 5: Filter Cases by Outcome (JSON) ---")
@@ -196,7 +196,7 @@ def test_menu_options():
         ]
         with patch("builtins.input", side_effect=inputs_option_5):
             main.main()
-        print("✓ Option 5 (JSON) executed successfully.\n")
+        print("PASS: Option 5 (JSON) executed successfully.\n")
 
         # Option 5b: Test Filter Cases by Outcome (CSV)
         print("--- Testing Option 5b: Filter Cases by Outcome (CSV) ---")
@@ -208,7 +208,7 @@ def test_menu_options():
         ]
         with patch("builtins.input", side_effect=inputs_option_5b):
             main.main()
-        print("✓ Option 5b (CSV) executed successfully.\n")
+        print("PASS: Option 5b (CSV) executed successfully.\n")
 
     print("==================================================")
     print("ALL TESTS COMPLETED SUCCESSFULLY!")
