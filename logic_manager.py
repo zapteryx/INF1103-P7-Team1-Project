@@ -97,32 +97,11 @@ def validate_ai_recommendation(ai_recommendation, shelter_csv):
 
         # validate ai_confidence_score and suitability_score within range
         for i in criteria_met:
-            individual_flag = "ACCEPT"
-            if not 0 <= i.get("ai_confidence_score", 0) <= 1:
-                flag_reasons.append(
-                    f"FLAG: AI confidence score for {i['shelter_name']} is out of range (0-1)."
-                )
-                individual_flag = "FLAG"
-            if not 0 <= i.get("suitability_score", 0) <= 100:
-                flag_reasons.append(
-                    f"FLAG: AI suitability score for {i['shelter_name']} is out of range (0-100)."
-                )
-                individual_flag = "FLAG"
-            # sanitize and validate min_age and max_age
-            min_age = i.get("min_age", 0)
-            max_age = i.get("max_age", 120)
-            if  min_age > max_age or min_age < 0 or min_age > 100 or max_age < 1 or max_age > 120:
-                flag_reasons.append(f"FLAG: AI age range for {i['shelter_name']} is out of bounds.")
-                individual_flag = "FLAG"
-            # sanitize and validate gender_restriction
-            if i.get("gender_restriction").lower() not in ["male", "female", "any"]:
-                flag_reasons.append(f"FLAG: AI gender restriction for {i['shelter_name']} is invalid.")
-                individual_flag = "FLAG"
-
-            #if the individual_flag is "FLAG", remove the shelter name from accepted_shelter_names
-            if i.get("shelter_name") in accepted_shelter_names and individual_flag == "FLAG":
-                accepted_shelter_names.remove(i.get("shelter_name"))
-                flag = individual_flag
+                    reasons = validate_shelter_entry(i)
+                    flag_reasons += reasons
+                    if reasons and i.get("shelter_name") in accepted_shelter_names:
+                        accepted_shelter_names.remove(i.get("shelter_name"))
+                        flag = "FLAG"
 
         return flag, flag_reasons, accepted_shelter_names
 
