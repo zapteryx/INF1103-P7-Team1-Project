@@ -56,6 +56,14 @@ def check_score_ranges(shelter):
     return reasons
 
 
+def check_age_range(shelter):
+    min_age = shelter.get("min_age", 0)
+    max_age = shelter.get("max_age", 120)
+    if min_age > max_age or min_age < 0 or min_age > 100 or max_age < 1 or max_age > 120:
+        return [f"FLAG: AI age range for {shelter['shelter_name']} is out of bounds."]
+    return []
+
+
 def validate_ai_recommendation(ai_recommendation, shelter_csv):
     flag_reasons = []
     flag = "ACCEPT"
