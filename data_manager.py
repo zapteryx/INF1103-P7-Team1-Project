@@ -310,17 +310,27 @@ def remove_record(filename, client_id):
 
 # Maintained by Htet Shine Aung (2604711)
 # Modified by Ming Xuan (2604426)
-# Filter processed records by the outcome only such as "Accepted", "Rejected", or "FLAG"
+# Filter processed records by the outcome
+# Outcome mapping: True = Accepted, False = Rejected, None/Missing = Pending
 def filter_records_by_outcome(records, outcome):
     filtered_records = []
 
     for record in records:
-        record_outcome = record.get("outcome", "")
-        # Convert to string if it's a boolean
-        if isinstance(record_outcome, bool):
-            record_outcome = str(record_outcome)
-        if str(record_outcome).lower() == outcome.lower():
-            filtered_records.append(record)
+        record_outcome = record.get("outcome", None)
+
+        # Match based on outcome type
+        if outcome is None:
+            # Filter for pending (missing/empty outcome)
+            if record_outcome is None or record_outcome == "":
+                filtered_records.append(record)
+        elif outcome is True:
+            # Filter for accepted
+            if record_outcome is True:
+                filtered_records.append(record)
+        elif outcome is False:
+            # Filter for rejected
+            if record_outcome is False:
+                filtered_records.append(record)
 
     return filtered_records
 

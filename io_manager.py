@@ -247,6 +247,7 @@ def present_best_shelter(client: dict, shelter) -> bool:
     return choice in ["yes", "y"]
 
 # Maintained by Shi Ting (2600663)
+# Modified by Ming Xuan (2604426)
 def print_client_record (client: dict) -> None:
     print("\n=================== CLIENT RECORD ===================")
     print(f"Client ID     : {client.get('client_id', 'N/A')}")
@@ -257,13 +258,17 @@ def print_client_record (client: dict) -> None:
     print(f"Special Needs : {client.get('special_needs', 'N/A')}")
     print(f"Notes         : {client.get('intake_notes', 'N/A')}")
 
-    # Check if a shelter match was assigned/accepted
+    # Check outcome and display appropriately
+    outcome = client.get("outcome")
     accepted_shelter = client.get("accepted_shelter")
-    if accepted_shelter:
-        print("\n[Status] Outcome: MATCHED & ACCEPTED")
+
+    if outcome is True and accepted_shelter:
+        print("\n[Status] Outcome: Accepted")
         print(format_shelter(accepted_shelter))
+    elif outcome is False:
+        print("\n[Status] Outcome: Rejected")
     else:
-        print("\n[Status] Outcome: Pending / No Shelter Assigned")
+        print("\n[Status] Outcome: Pending")
     print("=====================================================")
 
 # Maintained by Shi Ting (2600663)
@@ -277,24 +282,44 @@ def get_rerun_decision() -> bool:
 
 # Maintained by Ming Xuan (2604426)
 # Based on code from Shi Ting (2600663)
-def ask_for_outcome_filter() -> str:
+def ask_for_outcome_filter() -> bool | None:
     print("\n--- FILTER CASES BY OUTCOME ---")
-    outcome = input("Enter outcome to filter by (e.g., Accepted, Rejected, Pending): ").strip()
+    print("Options: Accepted, Rejected, Pending")
 
-    while not outcome:
-        print("Outcome cannot be empty. Please enter a valid outcome.")
-        outcome = input("Enter outcome to filter by: ").strip()
+    while True:
+        outcome = input("Enter outcome to filter by: ").strip().lower()
 
-    return outcome
+        if not outcome:
+            print("Outcome cannot be empty. Please enter a valid outcome.")
+            continue
+
+        # Map user input to boolean values
+        if outcome in ['accepted', 'accept', 'yes', 'true']:
+            return True
+        elif outcome in ['rejected', 'reject', 'no', 'false']:
+            return False
+        elif outcome in ['pending', 'none', 'empty']:
+            return None
+        else:
+            print(f"Invalid outcome '{outcome}'. Please enter: Accepted, Rejected, or Pending.")
+            continue
 
 # Maintained by Ming Xuan (2604426)
 # Based on code from Shi Ting (2600663)
-def print_filtered_cases(cases: list, outcome: str) -> None:
+def print_filtered_cases(cases: list, outcome: bool | None) -> None:
+    # Map boolean outcome to display string
+    if outcome is True:
+        outcome_display = "Accepted"
+    elif outcome is False:
+        outcome_display = "Rejected"
+    else:
+        outcome_display = "Pending"
+
     if not cases:
-        print(f"\nNo cases found with outcome: {outcome}")
+        print(f"\nNo cases found with outcome: {outcome_display}")
         return
 
-    print(f"\n===== CASES WITH OUTCOME: {outcome.upper()} =====")
+    print(f"\n===== CASES WITH OUTCOME: {outcome_display} =====")
     print(f"Total cases found: {len(cases)}\n")
 
     for case in cases:
