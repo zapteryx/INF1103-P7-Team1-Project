@@ -64,6 +64,12 @@ def check_age_range(shelter):
     return []
 
 
+def check_gender_restriction(shelter):
+    if shelter.get("gender_restriction") not in ["male", "female", "any"]:
+        return [f"FLAG: AI gender restriction for {shelter['shelter_name']} is invalid."]
+    return []
+
+
 def validate_ai_recommendation(ai_recommendation, shelter_csv):
     flag_reasons = []
     flag = "ACCEPT"
