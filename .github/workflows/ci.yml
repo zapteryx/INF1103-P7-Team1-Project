@@ -1,6 +1,10 @@
 name: Continuous Integration & Security
 
-on: [push, pull_request]
+on:
+  pull_request:
+  push:
+    branches:
+      - main
 
 jobs:
   # ---------------------------------------------------------------------------
