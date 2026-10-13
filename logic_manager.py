@@ -45,7 +45,15 @@ def check_shelter_names(criteria_met, shelter_csv):
             if i["shelter_name"] not in accepted_shelter_names:
                 reasons.append(f"FLAG: {i['shelter_name']} does not exist.")
     return flagged, reasons, accepted_shelter_names
-    
+
+
+def check_score_ranges(shelter):
+    reasons = []
+    if not 0 <= shelter.get("ai_confidence_score", 0) <= 1:
+        reasons.append(f"FLAG: AI confidence score for {shelter['shelter_name']} is out of range (0-1).")
+    if not 0 <= shelter.get("suitability_score", 0) <= 100:
+        reasons.append(f"FLAG: AI suitability score for {shelter['shelter_name']} is out of range (0-100).")
+    return reasons
 
 
 def validate_ai_recommendation(ai_recommendation, shelter_csv):
