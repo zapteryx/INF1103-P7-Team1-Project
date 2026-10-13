@@ -191,7 +191,7 @@ def test_menu_options():
         inputs_option_5 = [
             "5",          # Select Option 5 (Filter Cases by Outcome)
             TEST_CLIENTS_JSON,# Client records filename
-            "Accepted",    # Outcome to filter by
+            "True",        # Outcome to filter by (True = Accepted)
             "6"            # Select Option 6 (Exit)
         ]
         with patch("builtins.input", side_effect=inputs_option_5):
@@ -203,7 +203,7 @@ def test_menu_options():
         inputs_option_5b = [
             "5",          # Select Option 5 (Filter Cases by Outcome)
             TEST_CLIENTS_CSV,# Client records filename
-            "Accepted",    # Outcome to filter by
+            "Accepted",    # Outcome to filter by (alternative input format)
             "6"            # Select Option 6 (Exit)
         ]
         with patch("builtins.input", side_effect=inputs_option_5b):

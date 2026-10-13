@@ -21,9 +21,13 @@ def get_recommendation(clients_file_path: str, client: dict, shelters: list[dict
         return False
     # io_manager.print_update(f"Best shelter for client {client['client_id']}", f"\n{json.dumps(best_shelter, indent=2)}")
     outcome = io_manager.present_best_shelter(client, best_shelter)
-    if outcome:
-        data_manager.update_record(clients_file_path, client['client_id'], outcome=outcome, accepted_shelter=best_shelter)
-        io_manager.print_update(f"Client {client['client_id']} record updated with outcome: {outcome} and accepted shelter: {best_shelter['shelter_name']}")
+    if outcome is True:
+        data_manager.update_record(clients_file_path, client['client_id'], outcome=True, accepted_shelter=best_shelter)
+        io_manager.print_update(f"Client {client['client_id']} record updated with outcome: Accepted and accepted shelter: {best_shelter['shelter_name']}")
+        return True
+    elif outcome is False:
+        data_manager.update_record(clients_file_path, client['client_id'], outcome=False)
+        io_manager.print_update(f"Client {client['client_id']} record updated with outcome: Rejected")
         return True
     return None
 
