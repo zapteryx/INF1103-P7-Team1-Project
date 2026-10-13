@@ -1,11 +1,4 @@
 import json
-import csv
-
-CSV_FILENAME = "singapore_shelters_directory.csv"
-
-def load_shelter_rows():
-    with open(CSV_FILENAME, mode="r", encoding="utf-8") as file:
-        return list(csv.DictReader(file))
 
 
 def validate_json(json_string):
@@ -22,16 +15,16 @@ def check_urgency_level(ai_recommendation):
     return []
 
 
-def check_shelter_names(criteria_met):
+def check_shelter_names(criteria_met, shelter_csv):
     ai_shelter_names = {item["shelter_name"] for item in criteria_met}
     shelter_count = 0
     target_count = len(criteria_met)
     accepted_shelter_names = []
     reasons = []
-    for row in load_shelter_rows():
-        if row["Shelter Name"] in ai_shelter_names:
+    for row in shelter_csv:
+        if row["name"] in ai_shelter_names:
             shelter_count += 1
-            accepted_shelter_names.append(row["Shelter Name"])
+            accepted_shelter_names.append(row["name"])
     flagged = shelter_count < target_count
     if flagged:
         for i in criteria_met:
@@ -58,7 +51,7 @@ def check_age_range(shelter):
 
 
 def check_gender_restriction(shelter):
-    if shelter.get("gender_restriction") not in ["Male", "Female", "any"]:
+    if shelter.get("gender_restriction") not in ["male", "female", "any"]:
         return [f"FLAG: AI gender restriction for {shelter['shelter_name']} is invalid."]
     return []
 
@@ -70,7 +63,7 @@ def validate_shelter_entry(shelter):
     )
 
 
-def validate_ai_recommendation(ai_recommendation):
+def validate_ai_recommendation(ai_recommendation, shelter_csv):
     flag_reasons = []
     flag = "ACCEPT"
     try:
@@ -83,7 +76,7 @@ def validate_ai_recommendation(ai_recommendation):
 
         # validate shelter names against CSV file
         criteria_met = ai_recommendation.get("criteria_met", [])
-        name_flagged, name_reasons, accepted_shelter_names = check_shelter_names(criteria_met)
+        name_flagged, name_reasons, accepted_shelter_names = check_shelter_names(criteria_met, shelter_csv)
         flag_reasons += name_reasons
         if name_flagged:
             flag = "FLAG"
@@ -100,6 +93,8 @@ def validate_ai_recommendation(ai_recommendation):
 
     except Exception as e:
         flag = "FLAG"
+        flag_reasons.append(f"FLAG: Error validating AI recommendation: {str(e)}")
+        return flag, flag_reasons, []
 
 
 def calculate_suitability_score(client_data, ai_recommendation):
