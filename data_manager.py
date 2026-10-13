@@ -309,12 +309,17 @@ def remove_record(filename, client_id):
     return False, "Client record not found."
 
 # Maintained by Htet Shine Aung (2604711)
+# Modified by Ming Xuan (2604426)
 # Filter processed records by the outcome only such as "Accepted", "Rejected", or "FLAG"
 def filter_records_by_outcome(records, outcome):
     filtered_records = []
 
     for record in records:
-        if record.get("outcome", "").lower() == outcome.lower():
+        record_outcome = record.get("outcome", "")
+        # Convert to string if it's a boolean
+        if isinstance(record_outcome, bool):
+            record_outcome = str(record_outcome)
+        if str(record_outcome).lower() == outcome.lower():
             filtered_records.append(record)
 
     return filtered_records
