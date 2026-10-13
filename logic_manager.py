@@ -90,22 +90,9 @@ def validate_ai_recommendation(ai_recommendation, shelter_csv):
 
         # validate shelter names against CSV file
         criteria_met = ai_recommendation.get("criteria_met", [])
-        ai_shelter_names = {item["shelter_name"] for item in criteria_met}
-        shelter_count = 0
-        target_count = len(criteria_met)
-        accepted_shelter_names = []
-        # with open(SHELTER_CSV_FILENAME, mode="r", encoding="utf-8") as file:
-        #     reader = csv.DictReader(file)
-        for i in shelter_csv:
-            if i["name"] in ai_shelter_names:
-                shelter_count += 1
-                accepted_shelter_names.append(i["name"])
-        # if there is an incorrect shelter name, the name will be added to flag_reasons
-        if shelter_count < target_count:
-            for i in criteria_met:
-                if i["shelter_name"] not in accepted_shelter_names:
-                    flag_reason = f"FLAG: {i['shelter_name']} does not exist."
-                    flag_reasons.append(flag_reason)
+        name_flagged, name_reasons, accepted_shelter_names = check_shelter_names(criteria_met, shelter_csv)
+        flag_reasons += name_reasons
+        if name_flagged:
             flag = "FLAG"
 
         # validate ai_confidence_score and suitability_score within range
