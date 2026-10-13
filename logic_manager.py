@@ -25,7 +25,6 @@ def has_keyword(sentence, keywords: list[str]):
 
 # Maintained by Mahima (2604701)
 # Based on code from Ezell (2601622)
-# Modified by Ming Xuan (2604426)
 def check_urgency_level(ai_recommendation):
     urgency_level = ai_recommendation.get("urgency_level")
     if urgency_level is None or not (1 <= urgency_level <= 5):
@@ -76,7 +75,6 @@ def check_age_range(shelter):
 
 # Maintained by Mahima (2604701)
 # Based on code from Ezell (2601622)
-# Modified by Ming Xuan (2604426)
 def check_gender_restriction(shelter):
     gender_restriction = shelter.get("gender_restriction")
     if gender_restriction is None or gender_restriction.lower() not in ["male", "female", "any"]:
@@ -130,39 +128,37 @@ def validate_ai_recommendation(ai_recommendation, shelter_csv):
 
 
 # Maintained by Ezell (2601622)
-# Modified by Mahima (2604701)
-# Modified by Ming Xuan (2604426)
 def calculate_suitability_score(shelter_csv, client_data, ai_recommendation):
     client_age = int(client_data["age"])
     client_gender = client_data["gender"]
     client_dependent = int(client_data["dependents"])
     client_care_type = client_data["care_type"]
     is_special_needs = client_data["special_needs"]
-    
-    
+
+
     flag, flag_reasons, accepted_shelter_names = validate_ai_recommendation(ai_recommendation, shelter_csv)
     score = 0
     result = []
     # with open(SHELTER_CSV_FILENAME, mode="r", encoding="utf-8") as file:
     #     reader = list(csv.DictReader(file))
-    
+
     #create a dict so i can lookup a name without for loop
     shelter_lookup = {}
     for row in shelter_csv:
         if "name" in row:
             shelter_name = row["name"]
             shelter_lookup[shelter_name] = row
-        
+
     for ai_shelter in ai_recommendation["criteria_met"]:
         if ai_shelter["shelter_name"] not in accepted_shelter_names:
             result.append({"name": ai_shelter["shelter_name"], "score": -999})
             continue # Skip shelters that are not accepted
-        
+
         # ai score is weighted at 30% of the total score, while the remaining 70% is based on other factors
         shelter_score = ai_shelter["suitability_score"] * 0.4  # Weighting factor for AI recommendation
         shelter_score += ai_shelter["ai_confidence_score"] * 30
 
-        
+
         shelter_exists = shelter_lookup.get(ai_shelter["shelter_name"])
         if shelter_exists:
             available_capacity = int(shelter_exists.get("capacity", 0)) - int(shelter_exists.get("occupants", 0))
@@ -190,7 +186,7 @@ def calculate_suitability_score(shelter_csv, client_data, ai_recommendation):
                     continue
                 elif has_keyword(shelter_description, ONLY_WOMEN_KEYWORDS):
                     shelter_score += BONUS_POINTS_MATCH
-                    
+
             elif client_gender_clean == "male":
                 if has_keyword(shelter_description, ONLY_WOMEN_KEYWORDS):
                     result.append({"name": ai_shelter["shelter_name"], "score": -999})
@@ -198,14 +194,14 @@ def calculate_suitability_score(shelter_csv, client_data, ai_recommendation):
                     continue
                 elif has_keyword(shelter_description, ONLY_MEN_KEYWORDS):
                     shelter_score += BONUS_POINTS_MATCH
-                
-            
-            
+
+
+
             #check from shelter csv for any long-term keywords, means shelter offers long-term care
             if "long term" == client_care_type.lower():
                 if has_keyword(shelter_description, LONG_TERM_KEYWORDS):
                     shelter_score += BONUS_POINTS_MATCH
-            
+
                 elif has_keyword(shelter_description, SHORT_TERM_KEYWORDS):
                     shelter_score += PENALTY_POINTS_MISMATCH
 
@@ -213,16 +209,16 @@ def calculate_suitability_score(shelter_csv, client_data, ai_recommendation):
             elif "short term" == client_care_type.lower():
                 if has_keyword(shelter_description, SHORT_TERM_KEYWORDS):
                     shelter_score += BONUS_POINTS_MATCH
-            
+
                 elif has_keyword(shelter_description, LONG_TERM_KEYWORDS):
                     shelter_score += PENALTY_POINTS_MISMATCH
-                    
-                    
-            
-                
+
+
+
+
             #women, senior, adult, female, male, girls, children
-            
-            
+
+
             result.append({"name": ai_shelter["shelter_name"], "score": shelter_score})
         else:
             result.append({"name": ai_shelter["shelter_name"], "score": -999})
