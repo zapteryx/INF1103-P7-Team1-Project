@@ -42,7 +42,7 @@ def main() -> None:
             shelter_file_path = io_manager.get_shelter_filename()
             shelters = data_manager.load_shelters(shelter_file_path)
             if shelters[1] is not None:
-                print(f"Error loading shelters: {shelters[1]}")
+                io_manager.print_error("Could not load shelters", shelters[1])
                 continue
             io_manager.print_shelter_list(shelters[0])
             time.sleep(1)
