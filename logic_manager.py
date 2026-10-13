@@ -24,7 +24,8 @@ def has_keyword(sentence, keywords: list[str]):
 
 
 def check_urgency_level(ai_recommendation):
-    if not 0 < ai_recommendation.get("urgency_level") < 6:
+    urgency_level = ai_recommendation.get("urgency_level")
+    if urgency_level is None or not (1 <= urgency_level <= 5):
         return ["FLAG: Urgency level is out of range (1-5)."]
     return []
 
@@ -65,7 +66,8 @@ def check_age_range(shelter):
 
 
 def check_gender_restriction(shelter):
-    if shelter.get("gender_restriction").lower() not in ["male", "female", "any"]:
+    gender_restriction = shelter.get("gender_restriction")
+    if gender_restriction is None or gender_restriction.lower() not in ["male", "female", "any"]:
         return [f"FLAG: AI gender restriction for {shelter['shelter_name']} is invalid."]
     return []
 
@@ -97,11 +99,11 @@ def validate_ai_recommendation(ai_recommendation, shelter_csv):
 
         # validate ai_confidence_score and suitability_score within range
         for i in criteria_met:
-                    reasons = validate_shelter_entry(i)
-                    flag_reasons += reasons
-                    if reasons and i.get("shelter_name") in accepted_shelter_names:
-                        accepted_shelter_names.remove(i.get("shelter_name"))
-                        flag = "FLAG"
+            reasons = validate_shelter_entry(i)
+            flag_reasons += reasons
+            if reasons and i.get("shelter_name") in accepted_shelter_names:
+                accepted_shelter_names.remove(i.get("shelter_name"))
+                flag = "FLAG"
 
         return flag, flag_reasons, accepted_shelter_names
 
@@ -151,7 +153,8 @@ def calculate_suitability_score(shelter_csv, client_data, ai_recommendation):
 
 
             #checks if client gender aligns with ai gender restriction
-            if ai_shelter["gender_restriction"].lower() not in (client_gender.lower(), "any"):
+            ai_gender_restriction = ai_shelter.get("gender_restriction")
+            if ai_gender_restriction and ai_gender_restriction.lower() not in (client_gender.lower(), "any"):
                 flag_reasons.append(f"REJECT: {client_gender} client is mismatched for {ai_shelter['shelter_name']} ({ai_shelter['gender_restriction']}-only).")
                 result.append({"name": ai_shelter["shelter_name"], "score": -999})
                 continue
