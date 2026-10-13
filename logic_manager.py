@@ -83,8 +83,9 @@ def validate_ai_recommendation(ai_recommendation, shelter_csv):
     try:
         # data = json.loads(json_string)
         # validate urgency level within range 1-5
-        if not 0 < ai_recommendation.get("urgency_level") < 6:
-            flag_reasons.append("FLAG: Urgency level is out of range (1-5).")
+        urgency_reasons = check_urgency_level(ai_recommendation)
+        if urgency_reasons:
+            flag_reasons += urgency_reasons
             flag = "FLAG"
 
         # validate shelter names against CSV file
