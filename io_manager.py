@@ -63,7 +63,7 @@ def get_client_records_filename(accepted_filetypes: list, allow_creating_new: bo
 # Terminal Display & Formatting
 def format_shelter(shelter: dict) -> str:  # Replace your old function here[cite: 2]
     info = ""
-    
+
     # Check if this is an AI-generated shelter dictionary
     if "shelter_name" in shelter:
         info += "Rank       : " + str(shelter.get("rank", "N/A")) + "\n"
@@ -81,7 +81,7 @@ def format_shelter(shelter: dict) -> str:  # Replace your old function here[cite
         info += "Requirements:   " + shelter["requirements"] + "\n"
         info += "Available:   " + str(shelter["capacity"] - shelter["occupants"]) + " bed left (" + str(shelter["occupants"]) + "/" + str(shelter["capacity"]) + " occupied)\n"
         info += "Contact:     " + shelter["contact"] + "\n"
-        
+
     info += "------------------------------------------------------"
     return info
 
@@ -96,6 +96,7 @@ def print_shelter_list(shelters: list) -> None: # :list is a type hint stating t
         print(format_shelter(shelter))
 
 # Maintained by Shi Ting (2600663)
+# Modified by Ming Xuan (2604426)
 def display_menu() -> int: #Is a hint stating that the function returns an integer
     print("====================================")
     print("         Social Service AI          ")
@@ -104,14 +105,15 @@ def display_menu() -> int: #Is a hint stating that the function returns an integ
     print("2. View All Shelters")
     print("3. Get Shelter recommendations for clients")
     print("4. Search Client by NRIC")
-    print("5. Exit")
+    print("5. Filter Cases by Outcome")
+    print("6. Exit")
     print("====================================")
-    choice_input = input("Select option (1-5): ").strip() #.strip removes leading and trailing whitespace eg; space, tabs or newline characters
+    choice_input = input("Select option (1-6): ").strip() #.strip removes leading and trailing whitespace eg; space, tabs or newline characters
 
     #Validate Input Menu Options
-    while not choice_input.isdigit() or int(choice_input) not in range(1, 6):
-        print("Invalid option. Please enter a number between 1 and 5.")
-        choice_input = input("Select option (1-5): ").strip()
+    while not choice_input.isdigit() or int(choice_input) not in range(1, 7):
+        print("Invalid option. Please enter a number between 1 and 6.")
+        choice_input = input("Select option (1-6): ").strip()
     return int(choice_input)
 
 # Maintained by Shi Ting (2600663)
@@ -272,3 +274,29 @@ def get_rerun_decision() -> bool:
         choice = input("Would you like to rerun the AI matching for this client? (Yes / No): ").strip().lower()
 
     return choice in ["yes", "y"] # It will return true if the user say yes or false if they say no regarding to the user if they want to rerun thhe AI for the client
+
+# Maintained by Ming Xuan (2604426)
+# Based on code from Shi Ting (2600663)
+def ask_for_outcome_filter() -> str:
+    print("\n--- FILTER CASES BY OUTCOME ---")
+    outcome = input("Enter outcome to filter by (e.g., Accepted, Rejected, Pending): ").strip()
+
+    while not outcome:
+        print("Outcome cannot be empty. Please enter a valid outcome.")
+        outcome = input("Enter outcome to filter by: ").strip()
+
+    return outcome
+
+# Maintained by Ming Xuan (2604426)
+# Based on code from Shi Ting (2600663)
+def print_filtered_cases(cases: list, outcome: str) -> None:
+    if not cases:
+        print(f"\nNo cases found with outcome: {outcome}")
+        return
+
+    print(f"\n===== CASES WITH OUTCOME: {outcome.upper()} =====")
+    print(f"Total cases found: {len(cases)}\n")
+
+    for case in cases:
+        print_client_record(case)
+        print()  # Add spacing between records

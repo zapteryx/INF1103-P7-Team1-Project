@@ -34,7 +34,7 @@ def setup_test_environment():
     # Initialize JSON test file
     with open(TEST_CLIENTS_JSON, 'w', encoding='utf-8') as f:
         json.dump([], f, indent=4)
-    print(f"✓ Test environment initialized: {TEST_CLIENTS_JSON} cleared")
+    print(f"PASS: Test environment initialized: {TEST_CLIENTS_JSON} cleared")
 
     # Initialize CSV test file with headers only
     import csv
@@ -42,7 +42,7 @@ def setup_test_environment():
         writer = csv.DictWriter(f, fieldnames=['client_id', 'gender', 'age', 'dependents',
                                                 'care_type', 'special_needs', 'intake_notes', 'outcome'])
         writer.writeheader()
-    print(f"✓ Test environment initialized: {TEST_CLIENTS_CSV} cleared\n")
+    print(f"PASS: Test environment initialized: {TEST_CLIENTS_CSV} cleared\n")
 
 
 def test_menu_options():
@@ -67,7 +67,7 @@ def test_menu_options():
             "No",          # Special Needs
             "Test intake note", # Intake notes
             TEST_CLIENTS_JSON,# Client file path
-            "5"            # Select Option 5 (Exit)
+            "6"            # Select Option 6 (Exit)
         ]
         with patch("builtins.input", side_effect=inputs_option_1):
             main.main()
@@ -85,7 +85,7 @@ def test_menu_options():
             "Yes",         # Special Needs
             "CSV test client", # Intake notes
             TEST_CLIENTS_CSV,# Client file path
-            "5"            # Select Option 5 (Exit)
+            "6"            # Select Option 6 (Exit)
         ]
         with patch("builtins.input", side_effect=inputs_option_1b):
             main.main()
@@ -96,7 +96,7 @@ def test_menu_options():
         inputs_option_2 = [
             "2",          # Select Option 2 (View All Shelters)
             "singapore_shelters_directory.csv", # Shelter CSV filename
-            "5"            # Select Option 5 (Exit)
+            "6"            # Select Option 6 (Exit)
         ]
         with patch("builtins.input", side_effect=inputs_option_2):
             main.main()
@@ -122,7 +122,7 @@ def test_menu_options():
                 nonlocal menu_calls
                 menu_calls += 1
                 if menu_calls > 1:
-                    return 5  # Select Exit on second iteration
+                    return 6  # Select Exit on second iteration
                 return 3      # Select Option 3 on first iteration
 
             with patch("io_manager.display_menu", side_effect=mock_display_menu):
@@ -150,7 +150,7 @@ def test_menu_options():
                 nonlocal menu_calls_csv
                 menu_calls_csv += 1
                 if menu_calls_csv > 1:
-                    return 5  # Select Exit on second iteration
+                    return 6  # Select Exit on second iteration
                 return 3      # Select Option 3 on first iteration
 
             with patch("io_manager.display_menu", side_effect=mock_display_menu_csv):
@@ -168,7 +168,7 @@ def test_menu_options():
             "4",          # Select Option 4 (Search Client)
             TEST_CLIENTS_JSON,# Client records filename
             "S1234567A",   # Client ID / NRIC
-            "5"            # Select Option 5 (Exit)
+            "6"            # Select Option 6 (Exit)
         ]
         with patch("builtins.input", side_effect=inputs_option_4):
             main.main()
@@ -180,11 +180,35 @@ def test_menu_options():
             "4",          # Select Option 4 (Search Client)
             TEST_CLIENTS_CSV,# Client records filename
             "S9999999B",   # Client ID / NRIC
-            "5"            # Select Option 5 (Exit)
+            "6"            # Select Option 6 (Exit)
         ]
         with patch("builtins.input", side_effect=inputs_option_4b):
             main.main()
         print("✓ Option 4b (CSV) executed successfully.\n")
+
+        # Option 5: Test Filter Cases by Outcome (JSON)
+        print("--- Testing Option 5: Filter Cases by Outcome (JSON) ---")
+        inputs_option_5 = [
+            "5",          # Select Option 5 (Filter Cases by Outcome)
+            TEST_CLIENTS_JSON,# Client records filename
+            "Accepted",    # Outcome to filter by
+            "6"            # Select Option 6 (Exit)
+        ]
+        with patch("builtins.input", side_effect=inputs_option_5):
+            main.main()
+        print("✓ Option 5 (JSON) executed successfully.\n")
+
+        # Option 5b: Test Filter Cases by Outcome (CSV)
+        print("--- Testing Option 5b: Filter Cases by Outcome (CSV) ---")
+        inputs_option_5b = [
+            "5",          # Select Option 5 (Filter Cases by Outcome)
+            TEST_CLIENTS_CSV,# Client records filename
+            "Accepted",    # Outcome to filter by
+            "6"            # Select Option 6 (Exit)
+        ]
+        with patch("builtins.input", side_effect=inputs_option_5b):
+            main.main()
+        print("✓ Option 5b (CSV) executed successfully.\n")
 
     print("==================================================")
     print("ALL TESTS COMPLETED SUCCESSFULLY!")
