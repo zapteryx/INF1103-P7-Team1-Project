@@ -8,7 +8,27 @@ on:
 
 jobs:
   # ---------------------------------------------------------------------------
-  # 1. Native Python Testing (without Docker)
+  # 1. Code Style: I/O Separation Check
+  # ---------------------------------------------------------------------------
+  io-separation-check:
+    name: Check I/O Separation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Check I/O Separation
+        run: |
+          python check_io_separation.py
+
+  # ---------------------------------------------------------------------------
+  # 2. Native Python Testing (without Docker)
   # ---------------------------------------------------------------------------
   python-test:
     name: Python Native Tests
