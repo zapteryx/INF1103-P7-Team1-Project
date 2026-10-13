@@ -14,7 +14,7 @@ BONUS_POINTS_MATCH = +40       # Reward for explicit alignment
 PENALTY_POINTS_MISMATCH = -50  # Penalty for explicit conflict
 
 
-    
+# Maintained by Ezell (2601622)
 def has_keyword(sentence, keywords: list[str]):
     if not sentence or not keywords:
         return False
@@ -23,6 +23,9 @@ def has_keyword(sentence, keywords: list[str]):
     return bool(re.search("|".join(patterns), sentence_clean))
 
 
+# Maintained by Mahima (2604701)
+# Based on code from Ezell (2601622)
+# Modified by Ming Xuan (2604426)
 def check_urgency_level(ai_recommendation):
     urgency_level = ai_recommendation.get("urgency_level")
     if urgency_level is None or not (1 <= urgency_level <= 5):
@@ -30,6 +33,8 @@ def check_urgency_level(ai_recommendation):
     return []
 
 
+# Maintained by Mahima (2604701)
+# Based on code from Ezell (2601622)
 def check_shelter_names(criteria_met, shelter_csv):
     ai_shelter_names = {item["shelter_name"] for item in criteria_met}
     shelter_count = 0
@@ -48,6 +53,8 @@ def check_shelter_names(criteria_met, shelter_csv):
     return flagged, reasons, accepted_shelter_names
 
 
+# Maintained by Mahima (2604701)
+# Based on code from Ezell (2601622)
 def check_score_ranges(shelter):
     reasons = []
     if not 0 <= shelter.get("ai_confidence_score", 0) <= 1:
@@ -57,6 +64,8 @@ def check_score_ranges(shelter):
     return reasons
 
 
+# Maintained by Mahima (2604701)
+# Based on code from Ezell (2601622)
 def check_age_range(shelter):
     min_age = shelter.get("min_age", 0)
     max_age = shelter.get("max_age", 120)
@@ -65,6 +74,9 @@ def check_age_range(shelter):
     return []
 
 
+# Maintained by Mahima (2604701)
+# Based on code from Ezell (2601622)
+# Modified by Ming Xuan (2604426)
 def check_gender_restriction(shelter):
     gender_restriction = shelter.get("gender_restriction")
     if gender_restriction is None or gender_restriction.lower() not in ["male", "female", "any"]:
@@ -72,6 +84,7 @@ def check_gender_restriction(shelter):
     return []
 
 
+# Maintained by Mahima (2604701)
 def validate_shelter_entry(shelter):
     return (check_score_ranges(shelter)
             + check_age_range(shelter)
@@ -79,6 +92,9 @@ def validate_shelter_entry(shelter):
     )
 
 
+# Maintained by Ezell (2601622)
+# Modified by Mahima (2604701)
+# Modified by Ming Xuan (2604426)
 def validate_ai_recommendation(ai_recommendation, shelter_csv):
     flag_reasons = []
     flag = "ACCEPT"
@@ -113,6 +129,9 @@ def validate_ai_recommendation(ai_recommendation, shelter_csv):
         return flag, flag_reasons, []
 
 
+# Maintained by Ezell (2601622)
+# Modified by Mahima (2604701)
+# Modified by Ming Xuan (2604426)
 def calculate_suitability_score(shelter_csv, client_data, ai_recommendation):
     client_age = int(client_data["age"])
     client_gender = client_data["gender"]
