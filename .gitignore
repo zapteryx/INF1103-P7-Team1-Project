@@ -6,3 +6,6 @@ __pycache__
 ai_manager.log
 # Default clients filename
 clients.json
+# Clients filename for unit tests
+clients-test.json
+clients-test.csv
