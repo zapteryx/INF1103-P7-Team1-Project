@@ -35,6 +35,17 @@ def check_shelter_names(criteria_met, shelter_csv):
     target_count = len(criteria_met)
     accepted_shelter_names = []
     reasons = []
+    for row in shelter_csv:
+        if row["name"] in ai_shelter_names:
+            shelter_count += 1
+            accepted_shelter_names.append(row["name"])
+    flagged = shelter_count < target_count
+    if flagged:
+        for i in criteria_met:
+            if i["shelter_name"] not in accepted_shelter_names:
+                reasons.append(f"FLAG: {i['shelter_name']} does not exist.")
+    return flagged, reasons, accepted_shelter_names
+    
 
 
 def validate_ai_recommendation(ai_recommendation, shelter_csv):
