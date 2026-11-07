@@ -113,9 +113,9 @@ def test_menu_options():
             while True:
                 yield "yes"                            # Outcome acceptance for each client
 
-        with patch("builtins.input", side_effect=option_3_inputs()), patch("io_manager.print_error") as mock_print_error:
+        with patch("builtins.input", side_effect=option_3_inputs()), patch("io_manager.IOManager.print_error") as mock_print_error:
             # We also mock display_menu after option 3 runs once to break out and exit cleanly
-            original_display_menu = main.io_manager.display_menu
+            original_display_menu = main.IOManager.display_menu
             menu_calls = 0
 
             def mock_display_menu():
@@ -125,7 +125,7 @@ def test_menu_options():
                     return 6  # Select Exit on second iteration
                 return 3      # Select Option 3 on first iteration
 
-            with patch("io_manager.display_menu", side_effect=mock_display_menu):
+            with patch("io_manager.IOManager.display_menu", side_effect=mock_display_menu):
                 main.main()
 
             assert not mock_print_error.called, (
@@ -143,7 +143,7 @@ def test_menu_options():
             while True:
                 yield "yes"                            # Outcome acceptance for each client
 
-        with patch("builtins.input", side_effect=option_3b_inputs()), patch("io_manager.print_error") as mock_print_error_csv:
+        with patch("builtins.input", side_effect=option_3b_inputs()), patch("io_manager.IOManager.print_error") as mock_print_error_csv:
             menu_calls_csv = 0
 
             def mock_display_menu_csv():
@@ -153,7 +153,7 @@ def test_menu_options():
                     return 6  # Select Exit on second iteration
                 return 3      # Select Option 3 on first iteration
 
-            with patch("io_manager.display_menu", side_effect=mock_display_menu_csv):
+            with patch("io_manager.IOManager.display_menu", side_effect=mock_display_menu_csv):
                 main.main()
 
             assert not mock_print_error_csv.called, (
