@@ -28,3 +28,15 @@ class User:
     
     def get_account_status(self):
         return self.__account_status
+
+    def set_recovery_phone(self, recovery_phone):
+        self.__recovery_phone = recovery_phone
+
+    def set_recovery_email(self, recovery_email):
+        self.__recovery_email = recovery_email
+
+    def activate_account(self):
+        self.__account_status = True
+
+    def deactivate_account(self):
+        self.__account_status = False
