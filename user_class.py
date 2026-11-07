@@ -8,6 +8,7 @@ class User:
         self.__registration_date = registration_date
         self.__account_status = account_status
 
+    # Getters to access private user info
     def get_user_id(self):
         return self.__user_id
 
@@ -29,14 +30,18 @@ class User:
     def get_account_status(self):
         return self.__account_status
 
+    # Setters to update recovery contact details
     def set_recovery_phone(self, recovery_phone):
         self.__recovery_phone = recovery_phone
 
     def set_recovery_email(self, recovery_email):
         self.__recovery_email = recovery_email
 
+    # Account status management methods: True or False
     def activate_account(self):
         self.__account_status = True
 
     def deactivate_account(self):
         self.__account_status = False
+
+# Necessary for now: Everything except recovery contact details getting and setting.
