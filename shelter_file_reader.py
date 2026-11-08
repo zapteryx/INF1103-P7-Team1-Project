@@ -2,7 +2,7 @@ import csv
 import json
 from pathlib import Path
 
-
+# Maintained by Htet Shine Aung (2604711)
 class ShelterFileReader:
     REQUIRED_FIELDS = (
     "Category",
@@ -14,7 +14,8 @@ class ShelterFileReader:
     "Address",
     "Contact"
 )
-    
+
+# Maintained by Htet Shine Aung (2604711)    
     def validate_csv_filename(self, filename):
         if not isinstance(filename, (str, Path)):
             return False, "Invalid filename."
@@ -27,6 +28,7 @@ class ShelterFileReader:
 
         return True, None
 
+# Maintained by Htet Shine Aung (2604711)
     def validate_json_filename(self, filename):
         if not isinstance(filename, (str, Path)):
             return False, "Invalid filename."
@@ -39,6 +41,7 @@ class ShelterFileReader:
 
         return True, None
 
+# Maintained by Htet Shine Aung (2604711)
     def load_shelters(self, filename):
         if not isinstance(filename, (str, Path)):
             return [], "Invalid filename."
@@ -76,6 +79,7 @@ class ShelterFileReader:
         except (OSError, UnicodeError) as error:
             return [], f"Unable to read shelter file: {error}"
 
+# Maintained by Htet Shine Aung (2604711)
     def _load_csv(self, filename):
         """
         Read shelter information from CSV.
@@ -120,6 +124,7 @@ class ShelterFileReader:
 
             return shelters
 
+# Maintained by Htet Shine Aung (2604711)
     def _load_json(self, filename):
         with open(
             filename,
@@ -146,3 +151,59 @@ class ShelterFileReader:
             )
 
         return shelters
+
+# Maintained by Htet Shine Aung (2604711)
+    def _normalise_shelter(self, shelter, row_number):
+        missing_fields = [
+            field for field in self.REQUIRED_FIELDS
+            if field not in shelter
+        ]
+
+        if missing_fields:
+            raise ValueError(
+                f"Row {row_number}: missing fields "
+                + ", ".join(missing_fields)
+            )
+
+        result = dict(shelter)
+
+        name = result.get("Shelter Name")
+
+        if not isinstance(name, str) or not name.strip():
+            raise ValueError(
+                f"Row {row_number}: shelter name is required."
+            )
+
+        result["Shelter Name"] = name.strip()
+
+        for field in ("Current Occupants", "Maximum Capacity"):
+            value = result.get(field)
+
+            if isinstance(value, bool):
+                raise ValueError(
+                    f"Row {row_number}: {field} must be an integer."
+                )
+
+            try:
+                number = int(value)
+            except (ValueError, TypeError, OverflowError):
+                raise ValueError(
+                    f"Row {row_number}: {field} must be an integer."
+                )
+
+            if number < 0:
+                raise ValueError(
+                    f"Row {row_number}: {field} cannot be negative."
+                )
+
+            result[field] = number
+
+        if (
+            result["Current Occupants"]
+            > result["Maximum Capacity"]
+        ):
+            raise ValueError(
+                f"Row {row_number}: occupants exceed capacity."
+            )
+
+        return result
