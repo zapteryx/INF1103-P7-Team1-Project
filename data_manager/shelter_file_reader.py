@@ -4,6 +4,9 @@ from pathlib import Path
 
 # Maintained by Htet Shine Aung (2604711)
 class ShelterFileReader:
+    def __init__(self):
+        pass
+
     REQUIRED_FIELDS = (
         "Category",
         "Shelter Name",
@@ -16,7 +19,8 @@ class ShelterFileReader:
     )
 
     # Maintained by Htet Shine Aung (2604711)
-    def validate_csv_filename(self, filename):
+    @staticmethod
+    def validate_csv_filename(filename):
         if not isinstance(filename, (str, Path)):
             return False, "Invalid filename."
 
@@ -29,7 +33,8 @@ class ShelterFileReader:
         return True, None
 
     # Maintained by Htet Shine Aung (2604711)
-    def validate_json_filename(self, filename):
+    @staticmethod
+    def validate_json_filename(filename):
         if not isinstance(filename, (str, Path)):
             return False, "Invalid filename."
 
