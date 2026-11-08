@@ -6,7 +6,7 @@ class Authentication:
     # Need to retrieve from DB to check whether username alr exists (Unique)
     def is_username_available(self, username):
         pass
-
+    
     # Function called into I/O for user to know why password isn't accepted (Must be strong)
     def check_password_strength(self, password):
         errors = []
@@ -42,3 +42,15 @@ class Authentication:
             errors.append("* Must contain at least 1 symbol")
 
         return errors
+
+    def passwords_match(self, password, confirm_password):
+        return password == confirm_password
+        # Returns True or False
+
+    def register_user(self, name, username, password):
+        if self.is_username_available(username) is False:
+            return False, ["Username already exists."]
+
+        password_errors = self.check_password_strength(password)
+        if password_errors:
+            return False, password_errors
