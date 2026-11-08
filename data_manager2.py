@@ -77,3 +77,22 @@ class DataManager:
                 return self.save_records(records)
 
         return False, "Client record not found."
+
+    def remove_record(self, client_id):
+        records, error = self.load_records()
+
+        if error:
+            return False, error
+
+        client_id = str(client_id).strip()
+
+        for index, record in enumerate(records):
+            existing_id = str(
+                record.get("client_id", "")
+            ).strip()
+
+            if existing_id == client_id:
+                records.pop(index)
+                return self.save_records(records)
+
+        return False, "Client record not found."
