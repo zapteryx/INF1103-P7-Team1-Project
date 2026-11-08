@@ -15,9 +15,10 @@ class ShelterFileReader:
         "Contact"
     )
 
-    def __init__(self):
-        pass
+    def __init__(self, filename):
+        self._filename = filename
 
+    # TODO: This method can be used for non-shelter files. Consider moving it to a general utility class
     # Maintained by Htet Shine Aung (2604711)
     @staticmethod
     def validate_csv_filename(filename):
@@ -32,6 +33,7 @@ class ShelterFileReader:
 
         return True, None
 
+    # TODO: This method can be used for non-shelter files. Consider moving it to a general utility class
     # Maintained by Htet Shine Aung (2604711)
     @staticmethod
     def validate_json_filename(filename):
@@ -47,7 +49,8 @@ class ShelterFileReader:
         return True, None
 
     # Maintained by Htet Shine Aung (2604711)
-    def load_shelters(self, filename):
+    def load_shelters(self):
+        filename = self._filename
         if not isinstance(filename, (str, Path)):
             return [], "Invalid filename."
 
@@ -63,9 +66,9 @@ class ShelterFileReader:
 
         try:
             if suffix == ".csv":
-                shelters = self._load_csv(filename)
+                shelters = self._load_csv()
             else:
-                shelters = self._load_json(filename)
+                shelters = self._load_json()
 
             return shelters, None
 
@@ -85,10 +88,11 @@ class ShelterFileReader:
             return [], f"Unable to read shelter file: {error}"
 
     # Maintained by Htet Shine Aung (2604711)
-    def _load_csv(self, filename):
+    def _load_csv(self):
         """
         Read shelter information from CSV.
         """
+        filename = self._filename
         with open(
             filename,
             "r",
@@ -130,7 +134,8 @@ class ShelterFileReader:
             return shelters
 
     # Maintained by Htet Shine Aung (2604711)
-    def _load_json(self, filename):
+    def _load_json(self):
+        filename = self._filename
         with open(
             filename,
             "r",
