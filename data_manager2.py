@@ -14,10 +14,38 @@ class DataManager:
         return self._storage.load_records()
 
     def save_records(self, records):
-            if not isinstance(records, list):
-                return False, "Records must be a list."
+        if not isinstance(records, list):
+            return False, "Records must be a list."
     
-            if not all(isinstance(record, dict) for record in records):
-                return False, "Every record must be a dictionary."
+        if not all(isinstance(record, dict) for record in records):
+            return False, "Every record must be a dictionary."
     
-            return self._storage.save_records(records)
+        return self._storage.save_records(records)
+
+    def add_record(self, record):
+        if not isinstance(record, dict):
+            return False, "Record must be a dictionary."
+
+        client_id = str(record.get("client_id", "")).strip()
+
+        if not client_id:
+            return False, "Client ID cannot be empty."
+
+        records, error = self.load_records()
+
+        if error == "File not found.":
+            records = []
+        elif error:
+            return False, error
+
+        for existing_record in records:
+            existing_id = str(
+                existing_record.get("client_id", "")
+            ).strip()
+
+            if existing_id == client_id:
+                return False, "Client ID already exists."
+
+        records.append(record)
+
+        return self.save_records(records)
