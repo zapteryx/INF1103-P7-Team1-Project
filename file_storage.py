@@ -8,6 +8,7 @@ class FileStorage(Storage):
     def __init__(self, filename):
         self._filename = filename
 
+# Maintained by Htet Shine Aung (2604711)
     def load_records(self):
         filename = self._filename
         cases = []
@@ -101,4 +102,89 @@ class FileStorage(Storage):
 
         except (OSError, UnicodeDecodeError, ValueError, csv.Error):
             return [], "Unable to read the file."
-   
+        
+# Maintained by Htet Shine Aung (2604711)   
+    def save_records(self, records):
+        filename = self._filename
+
+        try:
+            # Save JSON file
+            if filename.lower().endswith(".json"):
+                with open(filename, "w", encoding="utf-8") as file:
+                    json.dump(records, file, indent=4)
+
+            # Save CSV file
+            elif filename.lower().endswith(".csv"):
+
+                if not records:
+                    return False, "Cannot save an empty CSV without headers."
+
+                # Mapping for flattening shelter information
+                shelter_fields = {
+                    "rank": "accepted_shelter_rank",
+                    "shelter_name": "accepted_shelter_name",
+                    "ai_suitability_score": "accepted_shelter_ai_score",
+                    "calculated_suitability_score": "accepted_shelter_calc_score",
+                    "ai_confidence_score": "accepted_shelter_confidence",
+                    "min_age": "accepted_shelter_min_age",
+                    "max_age": "accepted_shelter_max_age",
+                    "gender_restriction": "accepted_shelter_gender",
+                    "dependents_allowed": "accepted_shelter_dependents"
+                }
+
+                flattened_records = []
+
+                for record in records:
+                    # Copy all fields except accepted_shelter
+                    flat_record = {
+                        k: v for k, v in record.items()
+                        if k != "accepted_shelter"
+                    }
+
+                    accepted_shelter = record.get("accepted_shelter")
+
+                    if accepted_shelter and isinstance(accepted_shelter, dict):
+
+                        for orig_key, flat_key in shelter_fields.items():
+                            value = accepted_shelter.get(orig_key, "")
+
+                            if orig_key == "dependents_allowed":
+                                flat_record[flat_key] = str(value)
+                            else:
+                                flat_record[flat_key] = value
+
+                    else:
+                        for flat_key in shelter_fields.values():
+                            flat_record[flat_key] = ""
+
+                    flattened_records.append(flat_record)
+
+                # Collect all column names
+                fieldnames = list(dict.fromkeys(
+                    key
+                    for record in flattened_records
+                    for key in record
+                ))
+
+                with open(
+                    filename,
+                    "w",
+                    newline="",
+                    encoding="utf-8-sig"
+                ) as file:
+
+                    writer = csv.DictWriter(
+                        file,
+                        fieldnames=fieldnames
+                    )
+
+                    writer.writeheader()
+                    writer.writerows(flattened_records)
+
+            else:
+                return False, "File must be JSON or CSV."
+
+            return True, None
+
+        except (OSError, ValueError, TypeError, csv.Error):
+            return False, "Unable to save records."
