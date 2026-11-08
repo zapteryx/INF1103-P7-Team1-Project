@@ -2,6 +2,10 @@
 .env
 # Pycache folder
 __pycache__
+# venv folder
+venv
+# .idea folder (IntelliJ IDEs)
+.idea
 # AI Manager logfile
 ai_manager.log
 # Default clients filename
