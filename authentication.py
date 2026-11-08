@@ -1,0 +1,44 @@
+class Authentication:
+    # No user logged in
+    def __init__(self):
+        self.__current_user = None
+
+    # Need to retrieve from DB to check whether username alr exists (Unique)
+    def is_username_available(self, username):
+        pass
+
+    # Function called into I/O for user to know why password isn't accepted (Must be strong)
+    def check_password_strength(self, password):
+        errors = []
+        
+        if len(password) < 12:
+            errors.append("* Must contain at least 12 characters.")
+
+        contains_uppercase = False
+        contains_lowercase = False
+        contains_digit = False
+        contains_symbol = False
+
+        for each_char in password:
+            if each_char.isupper():
+                contains_uppercase = True
+            if each_char.islower():
+                contains_lowercase = True
+            if each_char.isdigit():
+                contains_digit = True
+            if not each_char.isalnum() and not each_char.isspace():
+                contains_symbol = True
+
+        if contains_uppercase == False:
+            errors.append("* Must contain at least 1 uppercase letter")
+
+        if contains_lowercase == False:
+            errors.append("* Must contain at least 1 lowercase letter")
+
+        if contains_digit == False:
+            errors.append("* Must contain at least 1 numerical digit")
+
+        if contains_symbol == False:
+            errors.append("* Must contain at least 1 symbol")
+
+        return errors
