@@ -1,6 +1,8 @@
 #Data Manager uses  storage.py, file_storage.py, data_manager.py, and shelter_file_reader.py
 
-from data_manager.storage import Storage
+from .storage import Storage
+from .file_storage import FileStorage
+from .shelter_file_reader import ShelterFileReader
 
 # Maintained by Htet Shine Aung (2604711)
 class DataManager:
@@ -149,3 +151,5 @@ class DataManager:
                     filtered_records.append(record)
 
         return filtered_records
+
+__all__ = ["Storage", "DataManager", "ShelterFileReader", "FileStorage"]

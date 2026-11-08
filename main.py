@@ -2,7 +2,7 @@ import json
 import time
 
 import ai_manager
-import data_manager
+from data_manager import DataManager, ShelterFileReader, FileStorage
 from io_manager import IOManager
 import logic_manager
 
@@ -39,12 +39,14 @@ def main() -> None:
         if choice == 1:
             client = IOManager.collect_intake_input()
             clients_file_path = IOManager.get_client_records_filename(['json', 'csv'], True)
-            data_manager.add_record(clients_file_path, client)
+            data_manager = DataManager(FileStorage(clients_file_path))
+            data_manager.add_record(client)
             time.sleep(1)
         # view all shelters
         elif choice == 2:
             shelter_file_path = IOManager.get_shelter_filename()
-            shelters = data_manager.load_shelters(shelter_file_path)
+            shelter_reader = ShelterFileReader(shelter_file_path)
+            shelters = shelter_reader.load_shelters()
             if shelters[1] is not None:
                 IOManager.print_error("Could not load shelters", shelters[1])
                 continue
@@ -54,11 +56,13 @@ def main() -> None:
         elif choice == 3:
             shelter_file_path = IOManager.get_shelter_filename()
             clients_file_path = IOManager.get_client_records_filename(['csv', 'json'])
-            clients = data_manager.load_records(clients_file_path)
+            data_manager = DataManager(FileStorage(clients_file_path))
+            clients = data_manager.load_records()
             if clients[1] is not None:
                 IOManager.print_error("Could not load clients", clients[1])
                 continue
-            shelters = data_manager.load_shelters(shelter_file_path)
+            shelter_reader = ShelterFileReader(shelter_file_path)
+            shelters = shelter_reader.load_shelters()
             if shelters[1] is not None:
                 IOManager.print_error("Could not load shelters", shelters[1])
                 continue
@@ -75,7 +79,8 @@ def main() -> None:
         elif choice == 4:
             clients_file_path = IOManager.get_client_records_filename(['csv', 'json'])
             client_id = IOManager.ask_for_client_id()
-            record = data_manager.get_clientid(clients_file_path, client_id)
+            data_manager = DataManager(FileStorage(clients_file_path))
+            record = data_manager.get_clientid(client_id)
             if record[1] is not None:
                 IOManager.print_error(f"Could not find client record for client_id {client_id}", record[1])
                 continue
@@ -84,7 +89,8 @@ def main() -> None:
         # filter cases by outcome
         elif choice == 5:
             clients_file_path = IOManager.get_client_records_filename(['csv', 'json'])
-            clients = data_manager.load_records(clients_file_path)
+            data_manager = DataManager(FileStorage(clients_file_path))
+            clients = data_manager.load_records()
             if clients[1] is not None:
                 IOManager.print_error("Could not load clients", clients[1])
                 continue

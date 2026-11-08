@@ -1,7 +1,7 @@
 import json
 import csv
 
-from storage import Storage
+from .storage import Storage
 
 # Maintained by Htet Shine Aung (2604711)
 class FileStorage(Storage):
