@@ -114,3 +114,29 @@ class DataManager:
                 return record, None
 
         return None, "Client record not found."
+    
+    def filter_records_by_outcome(self, records, outcome):
+        if not isinstance(records, list):
+            return []
+
+        filtered_records = []
+
+        for record in records:
+            if not isinstance(record, dict):
+                continue
+
+            record_outcome = record.get("outcome")
+
+            if outcome is None:
+                if record_outcome is None or record_outcome == "":
+                    filtered_records.append(record)
+
+            elif outcome is True:
+                if record_outcome is True:
+                    filtered_records.append(record)
+
+            elif outcome is False:
+                if record_outcome is False:
+                    filtered_records.append(record)
+
+        return filtered_records
