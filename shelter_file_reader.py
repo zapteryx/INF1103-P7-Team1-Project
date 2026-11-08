@@ -15,4 +15,14 @@ class ShelterFileReader:
     "Contact"
 )
     
+    def validate_csv_filename(self, filename):
+        if not isinstance(filename, (str, Path)):
+            return False, "Invalid filename."
 
+        if not str(filename).strip():
+            return False, "Filename cannot be empty."
+
+        if Path(filename).suffix.lower() != ".csv":
+            return False, "File must be a CSV file."
+
+        return True, None
