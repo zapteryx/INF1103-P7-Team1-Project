@@ -49,3 +49,31 @@ class DataManager:
         records.append(record)
 
         return self.save_records(records)
+
+    def update_record(self, client_id, **kwargs):
+        if not kwargs:
+            return False, "No fields provided for update."
+
+        records, error = self.load_records()
+
+        if error:
+            return False, error
+
+        client_id = str(client_id).strip()
+
+        for record in records:
+            existing_id = str(
+                record.get("client_id", "")
+            ).strip()
+
+            if existing_id == client_id:
+
+                # Prevent changing the primary identifier
+                if "client_id" in kwargs:
+                    return False, "Client ID cannot be changed."
+
+                record.update(kwargs)
+
+                return self.save_records(records)
+
+        return False, "Client record not found."
