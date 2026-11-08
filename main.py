@@ -4,8 +4,7 @@ import time
 import ai_manager
 from data_manager import DataManager, ShelterFileReader, FileStorage
 from io_manager import IOManager
-import logic_manager
-
+from logic_manager import LogicManager
 # Maintained by Ming Xuan (2604426)
 def get_recommendation(clients_file_path: str, client: dict, shelters: list[dict]) -> bool | None:
     IOManager.print_update(f"Getting recommendations for client {client['client_id']}...")
@@ -15,7 +14,8 @@ def get_recommendation(clients_file_path: str, client: dict, shelters: list[dict
         return False
     # IOManager.print_update(f"AI Recommendation for client {client['client_id']}", f"\n{json.dumps(recommendation, indent=2)}")
     IOManager.print_update("Finding the best shelter based on AI recommendation and additional criteria...")
-    best_shelter = logic_manager.calculate_suitability_score(shelters, client, recommendation)
+    manager = LogicManager()
+    best_shelter = manager.calculate_suitability_score(shelters, client, recommendation)
     if best_shelter is None:
         IOManager.print_error(f"No suitable shelter found for client {client['client_id']} based on AI recommendation and additional criteria.")
         return False
