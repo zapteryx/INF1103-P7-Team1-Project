@@ -335,3 +335,5 @@ class IOManager:
         for case in cases:
             IOManager.print_client_record(case)
             print()
+
+__all__ = ["IOManager", "ShelterBase", "CsvShelter", "AIShelter"]
