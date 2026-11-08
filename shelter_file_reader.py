@@ -26,3 +26,15 @@ class ShelterFileReader:
             return False, "File must be a CSV file."
 
         return True, None
+
+    def validate_json_filename(self, filename):
+        if not isinstance(filename, (str, Path)):
+            return False, "Invalid filename."
+
+        if not str(filename).strip():
+            return False, "Filename cannot be empty."
+
+        if Path(filename).suffix.lower() != ".json":
+            return False, "File must be a JSON file."
+
+        return True, None
