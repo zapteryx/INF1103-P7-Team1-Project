@@ -216,4 +216,16 @@ class ShelterFileReader:
                 f"Row {row_number}: occupants exceed capacity."
             )
 
-        return result
+        # Normalize keys to lowercase format expected by other modules
+        normalized = {
+            "name": result["Shelter Name"],
+            "category": result["Category"],
+            "requirements": result["Requirements"],
+            "capacity": result["Maximum Capacity"],
+            "occupants": result["Current Occupants"],
+            "description": result["Description"],
+            "address": result["Address"],
+            "contact": result["Contact"]
+        }
+
+        return normalized
