@@ -75,3 +75,47 @@ class ShelterFileReader:
 
         except (OSError, UnicodeError) as error:
             return [], f"Unable to read shelter file: {error}"
+
+    def _load_csv(self, filename):
+        """
+        Read shelter information from CSV.
+        """
+        with open(
+            filename,
+            "r",
+            newline="",
+            encoding="utf-8-sig"
+        ) as file:
+
+            reader = csv.DictReader(file)
+
+            if reader.fieldnames is None:
+                raise ValueError("CSV file has no headers.")
+
+            missing_fields = [
+                field for field in self.REQUIRED_FIELDS
+                if field not in reader.fieldnames
+            ]
+
+            if missing_fields:
+                raise ValueError(
+                    "Missing required columns: "
+                    + ", ".join(missing_fields)
+                )
+
+            shelters = []
+
+            for row_number, row in enumerate(reader, start=2):
+                if None in row:
+                    raise ValueError(
+                        f"Unexpected extra columns at row {row_number}."
+                    )
+
+                shelter = self._normalise_shelter(
+                    row,
+                    row_number
+                )
+
+                shelters.append(shelter)
+
+            return shelters
