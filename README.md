@@ -1,7 +1,7 @@
 # Team Project
 
 ## Quick Start (Running pre-built Docker image):
-Our CI/CD pipeline builds a Docker image and pushes it to GitHub Container Registy (GHCR).
+Our CI/CD pipeline builds a Docker image and pushes it to GitHub Container Registry (GHCR).
 
 To pull the latest image and run it, use the following command:
 ```bash
