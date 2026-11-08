@@ -96,3 +96,21 @@ class DataManager:
                 return self.save_records(records)
 
         return False, "Client record not found."
+
+    def get_clientid(self, client_id):
+        records, error = self.load_records()
+
+        if error:
+            return None, error
+
+        client_id = str(client_id).strip()
+
+        for record in records:
+            existing_id = str(
+                record.get("client_id", "")
+            ).strip()
+
+            if existing_id == client_id:
+                return record, None
+
+        return None, "Client record not found."
