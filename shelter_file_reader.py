@@ -119,3 +119,30 @@ class ShelterFileReader:
                 shelters.append(shelter)
 
             return shelters
+
+    def _load_json(self, filename):
+        with open(
+            filename,
+            "r",
+            encoding="utf-8-sig"
+        ) as file:
+            data = json.load(file)
+
+        if not isinstance(data, list):
+            raise ValueError(
+                "Shelter JSON must contain a list."
+            )
+
+        shelters = []
+
+        for index, shelter in enumerate(data, start=1):
+            if not isinstance(shelter, dict):
+                raise ValueError(
+                    f"Shelter {index} must be a dictionary."
+                )
+
+            shelters.append(
+                self._normalise_shelter(shelter, index)
+            )
+
+        return shelters
