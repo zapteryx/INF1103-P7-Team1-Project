@@ -8,4 +8,9 @@ class DataManager:
                 "storage must be an instance of Storage"
             )
 
-        self._storage = storage  
+        self._storage = storage
+
+    def load_records(self):
+        return self._storage.load_records()
+
+    
