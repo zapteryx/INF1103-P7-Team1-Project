@@ -5,17 +5,17 @@ from pathlib import Path
 # Maintained by Htet Shine Aung (2604711)
 class ShelterFileReader:
     REQUIRED_FIELDS = (
-    "Category",
-    "Shelter Name",
-    "Current Occupants",
-    "Maximum Capacity",
-    "Requirements",
-    "Description",
-    "Address",
-    "Contact"
-)
+        "Category",
+        "Shelter Name",
+        "Current Occupants",
+        "Maximum Capacity",
+        "Requirements",
+        "Description",
+        "Address",
+        "Contact"
+    )
 
-# Maintained by Htet Shine Aung (2604711)    
+    # Maintained by Htet Shine Aung (2604711)
     def validate_csv_filename(self, filename):
         if not isinstance(filename, (str, Path)):
             return False, "Invalid filename."
@@ -28,7 +28,7 @@ class ShelterFileReader:
 
         return True, None
 
-# Maintained by Htet Shine Aung (2604711)
+    # Maintained by Htet Shine Aung (2604711)
     def validate_json_filename(self, filename):
         if not isinstance(filename, (str, Path)):
             return False, "Invalid filename."
@@ -41,7 +41,7 @@ class ShelterFileReader:
 
         return True, None
 
-# Maintained by Htet Shine Aung (2604711)
+    # Maintained by Htet Shine Aung (2604711)
     def load_shelters(self, filename):
         if not isinstance(filename, (str, Path)):
             return [], "Invalid filename."
@@ -79,7 +79,7 @@ class ShelterFileReader:
         except (OSError, UnicodeError) as error:
             return [], f"Unable to read shelter file: {error}"
 
-# Maintained by Htet Shine Aung (2604711)
+    # Maintained by Htet Shine Aung (2604711)
     def _load_csv(self, filename):
         """
         Read shelter information from CSV.
@@ -124,7 +124,7 @@ class ShelterFileReader:
 
             return shelters
 
-# Maintained by Htet Shine Aung (2604711)
+    # Maintained by Htet Shine Aung (2604711)
     def _load_json(self, filename):
         with open(
             filename,
@@ -152,7 +152,7 @@ class ShelterFileReader:
 
         return shelters
 
-# Maintained by Htet Shine Aung (2604711)
+    # Maintained by Htet Shine Aung (2604711)
     def _normalise_shelter(self, shelter, row_number):
         missing_fields = [
             field for field in self.REQUIRED_FIELDS

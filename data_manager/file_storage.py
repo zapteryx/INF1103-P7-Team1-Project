@@ -8,7 +8,7 @@ class FileStorage(Storage):
     def __init__(self, filename):
         self._filename = filename
 
-# Maintained by Htet Shine Aung (2604711)
+    # Maintained by Htet Shine Aung (2604711)
     def load_records(self):
         filename = self._filename
         cases = []
@@ -27,7 +27,7 @@ class FileStorage(Storage):
                 for case in cases:
                     if not isinstance(case, dict):
                         return [], "A case in the file has an invalid format."
-        # Load CSV file
+            # Load CSV file
             elif filename.lower().endswith(".csv"):
 
                 # Mapping for reconstructing accepted_shelter
@@ -102,8 +102,8 @@ class FileStorage(Storage):
 
         except (OSError, UnicodeDecodeError, ValueError, csv.Error):
             return [], "Unable to read the file."
-        
-# Maintained by Htet Shine Aung (2604711)   
+
+    # Maintained by Htet Shine Aung (2604711)
     def save_records(self, records):
         filename = self._filename
 

@@ -1,6 +1,6 @@
 #Data Manager uses  storage.py, file_storage.py, data_manager.py, and shelter_file_reader.py
 
-from storage import Storage
+from data_manager.storage import Storage
 
 # Maintained by Htet Shine Aung (2604711)
 class DataManager:
@@ -12,21 +12,21 @@ class DataManager:
 
         self._storage = storage
 
-# Maintained by Htet Shine Aung (2604711)
+    # Maintained by Htet Shine Aung (2604711)
     def load_records(self):
         return self._storage.load_records()
 
-# Maintained by Htet Shine Aung (2604711)
+    # Maintained by Htet Shine Aung (2604711)
     def save_records(self, records):
         if not isinstance(records, list):
             return False, "Records must be a list."
-    
+
         if not all(isinstance(record, dict) for record in records):
             return False, "Every record must be a dictionary."
-    
+
         return self._storage.save_records(records)
 
-# Maintained by Htet Shine Aung (2604711)
+    # Maintained by Htet Shine Aung (2604711)
     def add_record(self, record):
         if not isinstance(record, dict):
             return False, "Record must be a dictionary."
@@ -55,7 +55,7 @@ class DataManager:
 
         return self.save_records(records)
 
-# Maintained by Htet Shine Aung (2604711)
+    # Maintained by Htet Shine Aung (2604711)
     def update_record(self, client_id, **kwargs):
         if not kwargs:
             return False, "No fields provided for update."
@@ -84,7 +84,7 @@ class DataManager:
 
         return False, "Client record not found."
 
-# Maintained by Htet Shine Aung (2604711)
+    # Maintained by Htet Shine Aung (2604711)
     def remove_record(self, client_id):
         records, error = self.load_records()
 
@@ -104,7 +104,7 @@ class DataManager:
 
         return False, "Client record not found."
 
-# Maintained by Htet Shine Aung (2604711)
+    # Maintained by Htet Shine Aung (2604711)
     def get_clientid(self, client_id):
         records, error = self.load_records()
 
@@ -123,7 +123,7 @@ class DataManager:
 
         return None, "Client record not found."
 
- # Maintained by Htet Shine Aung (2604711)   
+    # Maintained by Htet Shine Aung (2604711)
     def filter_records_by_outcome(self, records, outcome):
         if not isinstance(records, list):
             return []
