@@ -4,9 +4,6 @@ from pathlib import Path
 
 # Maintained by Htet Shine Aung (2604711)
 class ShelterFileReader:
-    def __init__(self):
-        pass
-
     REQUIRED_FIELDS = (
         "Category",
         "Shelter Name",
@@ -17,6 +14,9 @@ class ShelterFileReader:
         "Address",
         "Contact"
     )
+
+    def __init__(self):
+        pass
 
     # Maintained by Htet Shine Aung (2604711)
     @staticmethod
