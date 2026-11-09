@@ -2,13 +2,18 @@ from argon2 import PasswordHasher
 
 class Authentication:
     # No user logged in
-    def __init__(self):
+    def __init__(self, database):
         self.__current_user = None
         self.__password_hasher = PasswordHasher()
+        self.__database = database
 
     # Need to retrieve from DB to check whether username alr exists (Unique)
     def is_username_available(self, username):
-        pass
+        user = self.__database.get_user_by_username(username)
+        if user is None:
+            return True
+        else:
+            return False
     
     # Function called into I/O for user to know why password isn't accepted (Must be strong)
     def check_password_strength(self, password):
@@ -59,3 +64,11 @@ class Authentication:
             return False, password_errors
 
         password_hash = self.__password_hasher.hash(password)
+
+    def login(self, username, password):
+        pass
+        
+
+
+    def logout(self):
+        self.__current_user = None
