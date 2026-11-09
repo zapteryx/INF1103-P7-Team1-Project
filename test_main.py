@@ -1,5 +1,3 @@
-import sys
-import os
 import json
 from unittest.mock import patch
 
@@ -53,7 +51,7 @@ def test_menu_options():
     print("==================================================\n")
 
     # Mock ai_manager.get_shelter_recommendation so no external API calls are made
-    with patch("ai_manager.get_shelter_recommendation", return_value=FAKE_AI_RESPONSE):
+    with patch("ai_manager.AIManager.get_shelter_recommendation", return_value=FAKE_AI_RESPONSE):
 
         # Option 1: Test New Client Intake (JSON)
         print("--- Testing Option 1: New Client Intake (JSON) ---")
