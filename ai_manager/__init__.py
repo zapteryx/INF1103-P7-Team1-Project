@@ -90,3 +90,21 @@ class AIManager:
     def _validate(self, output: dict) -> None:
         for validator in self._validators:  # polymorphism: no type checks needed
             validator.validate(output)
+
+__all__ = [
+    "AIManager",
+    "AIClient",
+    "GeminiClient",
+    "SampleResponseClient",
+    "AIError",
+    "AIServiceError",
+    "DuplicateShelterError",
+    "InvalidAIOutputError",
+    "MalformedJSONError",
+    "SchemaViolationError",
+    "PromptBuilder",
+    "ResponseSchema",
+    "NoDuplicateSheltersValidator",
+    "OutputValidator",
+    "SchemaValidator",
+]
