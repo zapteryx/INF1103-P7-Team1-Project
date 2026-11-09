@@ -1,6 +1,5 @@
-import json
 import time
-import ai_manager
+from ai_manager import AIManager, GeminiClient, SampleResponseClient
 from data_manager import DataManager, ShelterFileReader, FileStorage
 from io_manager import IOManager
 from logic_manager import LogicManager
@@ -8,6 +7,7 @@ from logic_manager import LogicManager
 # Maintained by Ming Xuan (2604426)
 def get_recommendation(clients_file_path: str, client: dict, shelters: list[dict]) -> bool | None:
     IOManager.print_update(f"Getting recommendations for client {client['client_id']}...")
+    ai_manager = AIManager(GeminiClient(), SampleResponseClient())
     recommendation = ai_manager.get_shelter_recommendation(client, shelters)
     if recommendation is None:
         IOManager.print_error(f"AI recommendation failed for client {client['client_id']}.")
