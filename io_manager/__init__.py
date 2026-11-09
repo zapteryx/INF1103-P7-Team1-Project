@@ -1,11 +1,11 @@
 import sys
 from abc import ABC, abstractmethod
-import data_manager
+from data_manager import ShelterFileReader, FileValidator
 
 
 class ShelterBase(ABC):
     """defining the contract for shelter data representations."""
-    
+
     def __init__(self, data: dict):
         self.data = data
 
@@ -16,7 +16,7 @@ class ShelterBase(ABC):
 
 class CsvShelter(ShelterBase):
     """Represents a standard CSV-loaded shelter record."""
-    
+
     def format_details(self) -> str:
         name = self.data.get("name", "N/A")
         category = self.data.get("category", "N/A")
@@ -36,7 +36,7 @@ class CsvShelter(ShelterBase):
 
 class AIShelter(ShelterBase):
     """Represents an AI-manager-generated shelter recommendation record."""
-    
+
     def format_details(self) -> str:
         rank = self.data.get("rank", "N/A")
         name = self.data.get("shelter_name", "N/A")
@@ -92,7 +92,7 @@ class IOManager:
             filename = input("Enter shelter CSV filename (or press Enter for default): ").strip()
             if not filename:
                 filename = default_filename
-            validation = data_manager.validate_csv_filename(filename)
+            validation = FileValidator.validate_csv_filename(filename)
             if validation[0]:
                 break
             print(f"Error: {validation[1]}")
@@ -106,20 +106,20 @@ class IOManager:
             if not filename:
                 filename = default_filename
             if 'csv' in accepted_filetypes and filename.endswith('.csv'):
-                validation = data_manager.validate_csv_filename(filename)
+                validation = FileValidator.validate_csv_filename(filename)
                 if validation[0] or (validation[1] == "CSV file not found." and allow_creating_new):
                     break
                 print(f"Error: {validation[1]}")
                 continue
             if 'json' in accepted_filetypes and filename.endswith('.json'):
-                validation = data_manager.validate_json_filename(filename)
+                validation = FileValidator.validate_json_filename(filename)
                 if validation[0] or (validation[1] == "JSON file not found." and allow_creating_new):
                     break
                 print(f"Error: {validation[1]}")
                 continue
             print(f"Error: The provided file format is not accepted. Please provide a {'/'.join(accepted_filetypes).upper()} file.")
         return filename
-    
+
     @staticmethod
     def format_shelter(shelter: dict | ShelterBase) -> str:
         """Polymorphically formats any shelter input (dictionary or object)."""
@@ -351,3 +351,5 @@ class IOManager:
         for case in cases:
             IOManager.print_client_record(case)
             print()
+
+__all__ = ["IOManager", "ShelterBase", "CsvShelter", "AIShelter"]
