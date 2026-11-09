@@ -139,7 +139,15 @@ class IOManager:
             "username": username,
             "password": password
         }
-    
+
+    @staticmethod
+    def display_login_status(success: bool, username: str = "") -> None:
+        """Displays login outcome messages."""
+        if success:
+            print(f"\n[✓] Login Successful! Welcome back, {username}.")
+        else:
+            print("\n[!] Login Failed: Invalid username or password.")
+
     @staticmethod
     def get_shelter_filename(default_filename: str = "singapore_shelters_directory.csv") -> str:
         print(f"\nDefault dataset: '{default_filename}'")
