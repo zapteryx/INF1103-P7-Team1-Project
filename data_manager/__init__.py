@@ -168,4 +168,10 @@ class DataManager:
 
         return filtered_records
 
-__all__ = ["Storage", "DataManager", "ShelterFileReader", "FileStorage"]
+__all__ = [
+    "Storage",
+    "DataManager",
+    "ShelterFileReader",
+    "FileStorage",
+    "FileValidator"
+]

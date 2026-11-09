@@ -1,6 +1,7 @@
 import sys
 from abc import ABC, abstractmethod
 from data_manager import ShelterFileReader
+from data_manager import ShelterFileReader, FileValidator
 
 
 class ShelterBase(ABC):

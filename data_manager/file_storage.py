@@ -10,9 +10,7 @@ class FileStorage(Storage):
         self._filename = filename
 
     # Maintained by Htet Shine Aung (2604711)
-    def load_records(
-    self
-) -> tuple[list[dict[str, Any]], str | None]:
+    def load_records(self) -> tuple[list[dict[str, Any]], str | None]:
         filename = self._filename
         cases = []
 
