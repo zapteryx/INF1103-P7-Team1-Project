@@ -1,6 +1,7 @@
 import csv
 import json
 from pathlib import Path
+from typing import Any
 
 # Maintained by Htet Shine Aung (2604711)
 class ShelterFileReader:
@@ -15,13 +16,16 @@ class ShelterFileReader:
         "Contact"
     )
 
-    def __init__(self, filename):
+    def __init__(self, filename: str | Path) -> None:
         self._filename = filename
 
     # TODO: This method can be used for non-shelter files. Consider moving it to a general utility class
     # Maintained by Htet Shine Aung (2604711)
     @staticmethod
-    def validate_csv_filename(filename):
+    def validate_csv_filename(
+    filename: str | Path
+) -> tuple[bool, str | None]:
+        
         if not isinstance(filename, (str, Path)):
             return False, "Invalid filename."
 
@@ -36,7 +40,10 @@ class ShelterFileReader:
     # TODO: This method can be used for non-shelter files. Consider moving it to a general utility class
     # Maintained by Htet Shine Aung (2604711)
     @staticmethod
-    def validate_json_filename(filename):
+    def validate_json_filename(
+    filename: str | Path
+) -> tuple[bool, str | None]:
+
         if not isinstance(filename, (str, Path)):
             return False, "Invalid filename."
 
@@ -49,7 +56,10 @@ class ShelterFileReader:
         return True, None
 
     # Maintained by Htet Shine Aung (2604711)
-    def load_shelters(self):
+    def load_shelters(
+    self
+) -> tuple[list[dict[str, Any]], str | None]:
+
         filename = self._filename
         if not isinstance(filename, (str, Path)):
             return [], "Invalid filename."
@@ -88,7 +98,7 @@ class ShelterFileReader:
             return [], f"Unable to read shelter file: {error}"
 
     # Maintained by Htet Shine Aung (2604711)
-    def _load_csv(self):
+    def _load_csv(self) -> list[dict[str, Any]]:
         """
         Read shelter information from CSV.
         """
@@ -134,7 +144,7 @@ class ShelterFileReader:
             return shelters
 
     # Maintained by Htet Shine Aung (2604711)
-    def _load_json(self):
+    def _load_json(self) -> list[dict[str, Any]]:
         filename = self._filename
         with open(
             filename,
@@ -163,7 +173,11 @@ class ShelterFileReader:
         return shelters
 
     # Maintained by Htet Shine Aung (2604711)
-    def _normalise_shelter(self, shelter, row_number):
+    def _normalise_shelter(
+    self,
+    shelter: dict[str, Any],
+    row_number: int
+) -> dict[str, Any]:
         missing_fields = [
             field for field in self.REQUIRED_FIELDS
             if field not in shelter
