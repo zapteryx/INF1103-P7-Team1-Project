@@ -3,6 +3,7 @@
 from .storage import Storage
 from .file_storage import FileStorage
 from .shelter_file_reader import ShelterFileReader
+from .file_validator import FileValidator
 from typing import Any
 
 # Maintained by Htet Shine Aung (2604711)
