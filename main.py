@@ -5,7 +5,7 @@ from io_manager import IOManager
 from logic_manager import LogicManager
 
 # Maintained by Ming Xuan (2604426)
-def get_recommendation(clients_file_path: str, client: dict, shelters: list[dict]) -> bool | None:
+def get_recommendation(clients_file_path: str, client: dict, shelters: list[dict], tries = 0) -> bool | None:
     IOManager.print_update(f"Getting recommendations for client {client['client_id']}...")
     ai_manager = AIManager(GeminiClient(), SampleResponseClient())
     recommendation = ai_manager.get_shelter_recommendation(client, shelters)
@@ -27,6 +27,8 @@ def get_recommendation(clients_file_path: str, client: dict, shelters: list[dict
         IOManager.print_update(f"Client {client['client_id']} record updated with outcome: Accepted and accepted shelter: {best_shelter['shelter_name']}")
         return True
     elif outcome is False:
+        if tries < 1:  # If the outcome is False, try again
+            return get_recommendation(clients_file_path, client, shelters, tries + 1)
         data_manager.update_record(client['client_id'], outcome=False)
         IOManager.print_update(f"Client {client['client_id']} record updated with outcome: Rejected")
         return True
