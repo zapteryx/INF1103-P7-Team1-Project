@@ -62,7 +62,7 @@ class AIManager:
         self._logger.error("All api attempts failed and no valid fallback was available.")
         raise AIServiceError("Unable to get a valid API response.")
 
-    # Parses and validates the API output. If
+    # Parses and validates the API output
     # Passes -> log success msg and returns dict. Fails -> logs error and retries. All attempts failed -> returns none
     def _try_client(self, client: AIClient, prompt: str, attempts: int) -> dict | None:
         for attempt in range(1, attempts + 1):
@@ -80,7 +80,7 @@ class AIManager:
 
     # Converts API output to dictionary
     @staticmethod
-    def _parse(raw: str) -> dict:
+    def _parse(raw: str | None) -> dict:
         try:
             return json.loads(raw)
         except (json.JSONDecodeError, TypeError) as e:

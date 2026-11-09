@@ -15,9 +15,9 @@ class AIClient(ABC):
 class GeminiClient(AIClient):
     def __init__(self, model: str = "gemini-3.1-flash-lite") -> None:
         self._model = model
-        self._client = None
+        self._client = genai.Client | None = None
 
-    def _get_client(self):
+    def _get_client(self) -> genai.Client:
         if self._client is None:
             load_dotenv()  # reads the .env file (which contains the API key)
             self._client = genai.Client()
