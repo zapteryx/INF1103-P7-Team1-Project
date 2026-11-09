@@ -75,6 +75,8 @@ class Authentication:
             return False, ["Unable to create an account."]
 
     def login(self, username, password):
+        self.__current_user = None
+
         user = self.__database.get_user_by_username(username)
 
         # Checks if username exists in DB
