@@ -1,4 +1,5 @@
 from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
 
 class Authentication:
     # No user logged in
@@ -74,8 +75,27 @@ class Authentication:
             return False, ["Unable to create an account."]
 
     def login(self, username, password):
-        pass
-        
+        user = self.__database.get_user_by_username(username)
+
+        # Checks if username exists in DB
+        if user is None:
+            return False, "Invalid username or password"
+
+        # Checks if password_hash stored in DB matches entered password
+        try:
+            self.__password_hasher.verify(user.get_password_hash(), password)
+
+        except VerifyMismatchError:
+            return False, "Invalid username or password"
+
+        if user.get_account_status() is False:
+            return False, "Account is inactive"
+
+        self.__current_user = user
+        return True, "Login successful."
+
+    def get_current_user(self):
+        return self.__current_user
 
 
     def logout(self):
