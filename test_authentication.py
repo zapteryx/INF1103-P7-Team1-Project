@@ -30,7 +30,7 @@ success, errors = authentication.register_user(
 )
 
 print(success)
-print(errors)
+assert errors == []
 
 user = database.get_user_by_username("samdenby123")
 
@@ -82,7 +82,7 @@ success, errors = authentication.register_user(
 )
 
 print(success)
-print(errors)
+assert errors == ["Username already exists."]
 
 # Test weak password
 success, errors = authentication.register_user(
@@ -92,7 +92,11 @@ success, errors = authentication.register_user(
 )
 
 print(success)
-print(errors)
+assert errors == [
+    "* Must contain at least 12 characters.",
+    "* Must contain at least 1 uppercase letter",
+    "* Must contain at least 1 symbol"
+]
 
 # Verify account not save in DB
 user = database.get_user_by_username("janetan123")
