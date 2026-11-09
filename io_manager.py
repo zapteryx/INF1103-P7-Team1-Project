@@ -70,6 +70,22 @@ class IOManager:
         print(f"{update_title}{desc_str}")
 
     @staticmethod
+    def display_auth_menu() -> int:
+        print("\n====================================")
+        print("    ShelterFlow AI - Access Portal  ")
+        print("====================================")
+        print("1. Register")
+        print("2. Login")
+        print("3. Exit System")
+        print("====================================")
+        choice_input = input("Select option (1-3): ").strip()
+
+        while not choice_input.isdigit() or int(choice_input) not in range(1, 4):
+            print("Invalid option. Please enter a number between 1 and 3.")
+            choice_input = input("Select option (1-3): ").strip()
+        return int(choice_input)
+
+    @staticmethod
     def get_shelter_filename(default_filename: str = "singapore_shelters_directory.csv") -> str:
         print(f"\nDefault dataset: '{default_filename}'")
         while True:
