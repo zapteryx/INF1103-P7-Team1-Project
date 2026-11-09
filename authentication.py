@@ -65,6 +65,14 @@ class Authentication:
 
         password_hash = self.__password_hasher.hash(password)
 
+        user_id = self.__database.create_user(name, username, password_hash)
+
+        if user_id is not None:
+            return True, []
+        
+        else:
+            return False, ["Unable to create an account."]
+
     def login(self, username, password):
         pass
         
