@@ -1,6 +1,6 @@
 import sys
 from abc import ABC, abstractmethod
-from data_manager import ShelterFileReader
+from data_manager import ShelterFileReader, FileValidator
 
 
 class ShelterBase(ABC):
@@ -76,7 +76,7 @@ class IOManager:
             filename = input("Enter shelter CSV filename (or press Enter for default): ").strip()
             if not filename:
                 filename = default_filename
-            validation = ShelterFileReader.validate_csv_filename(filename)
+            validation = FileValidator.validate_csv_filename(filename)
             if validation[0]:
                 break
             print(f"Error: {validation[1]}")
@@ -90,13 +90,13 @@ class IOManager:
             if not filename:
                 filename = default_filename
             if 'csv' in accepted_filetypes and filename.endswith('.csv'):
-                validation = ShelterFileReader.validate_csv_filename(filename)
+                validation = FileValidator.validate_csv_filename(filename)
                 if validation[0] or (validation[1] == "CSV file not found." and allow_creating_new):
                     break
                 print(f"Error: {validation[1]}")
                 continue
             if 'json' in accepted_filetypes and filename.endswith('.json'):
-                validation = ShelterFileReader.validate_json_filename(filename)
+                validation = FileValidator.validate_json_filename(filename)
                 if validation[0] or (validation[1] == "JSON file not found." and allow_creating_new):
                     break
                 print(f"Error: {validation[1]}")

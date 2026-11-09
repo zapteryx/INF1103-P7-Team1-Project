@@ -1,15 +1,16 @@
 import json
 import csv
+from typing import Any
 
 from .storage import Storage
 
 # Maintained by Htet Shine Aung (2604711)
 class FileStorage(Storage):
-    def __init__(self, filename):
+    def __init__(self, filename: str) -> None:
         self._filename = filename
 
     # Maintained by Htet Shine Aung (2604711)
-    def load_records(self):
+    def load_records(self) -> tuple[list[dict[str, Any]], str | None]:
         filename = self._filename
         cases = []
 
@@ -104,7 +105,10 @@ class FileStorage(Storage):
             return [], "Unable to read the file."
 
     # Maintained by Htet Shine Aung (2604711)
-    def save_records(self, records):
+    def save_records(
+    self, records: list[dict[str, Any]]
+) -> tuple[bool, str | None]:
+        
         filename = self._filename
 
         try:

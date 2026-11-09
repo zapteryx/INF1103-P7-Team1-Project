@@ -3,10 +3,12 @@
 from .storage import Storage
 from .file_storage import FileStorage
 from .shelter_file_reader import ShelterFileReader
+from .file_validator import FileValidator
+from typing import Any
 
 # Maintained by Htet Shine Aung (2604711)
 class DataManager:
-    def __init__(self, storage: Storage):
+    def __init__(self, storage: Storage) -> None:
         if not isinstance(storage, Storage):
             raise TypeError(
                 "storage must be an instance of Storage"
@@ -15,11 +17,13 @@ class DataManager:
         self._storage = storage
 
     # Maintained by Htet Shine Aung (2604711)
-    def load_records(self):
+    def load_records(self) -> tuple[list[dict[str, Any]], str | None]:
         return self._storage.load_records()
 
     # Maintained by Htet Shine Aung (2604711)
-    def save_records(self, records):
+    def save_records(
+    self, records: list[dict[str, Any]]
+) -> tuple[bool, str | None]:
         if not isinstance(records, list):
             return False, "Records must be a list."
 
@@ -29,7 +33,9 @@ class DataManager:
         return self._storage.save_records(records)
 
     # Maintained by Htet Shine Aung (2604711)
-    def add_record(self, record):
+    def add_record(
+    self, record: dict[str, Any]
+) -> tuple[bool, str | None]:
         if not isinstance(record, dict):
             return False, "Record must be a dictionary."
 
@@ -58,7 +64,9 @@ class DataManager:
         return self.save_records(records)
 
     # Maintained by Htet Shine Aung (2604711)
-    def update_record(self, client_id, **kwargs):
+    def update_record(
+    self, client_id: str, **kwargs: Any
+) -> tuple[bool, str | None]:
         if not kwargs:
             return False, "No fields provided for update."
 
@@ -87,7 +95,9 @@ class DataManager:
         return False, "Client record not found."
 
     # Maintained by Htet Shine Aung (2604711)
-    def remove_record(self, client_id):
+    def remove_record(
+    self, client_id: str
+) -> tuple[bool, str | None]:
         records, error = self.load_records()
 
         if error:
@@ -107,7 +117,9 @@ class DataManager:
         return False, "Client record not found."
 
     # Maintained by Htet Shine Aung (2604711)
-    def get_clientid(self, client_id):
+    def get_clientid(
+    self, client_id: str
+) -> tuple[dict[str, Any] | None, str | None]:
         records, error = self.load_records()
 
         if error:
@@ -126,7 +138,11 @@ class DataManager:
         return None, "Client record not found."
 
     # Maintained by Htet Shine Aung (2604711)
-    def filter_records_by_outcome(self, records, outcome):
+    def filter_records_by_outcome(
+    self,
+    records: list[dict[str, Any]],
+    outcome: bool | None
+) -> list[dict[str, Any]]:
         if not isinstance(records, list):
             return []
 
@@ -152,4 +168,10 @@ class DataManager:
 
         return filtered_records
 
-__all__ = ["Storage", "DataManager", "ShelterFileReader", "FileStorage"]
+__all__ = [
+    "Storage",
+    "DataManager",
+    "ShelterFileReader",
+    "FileStorage",
+    "FileValidator"
+]
