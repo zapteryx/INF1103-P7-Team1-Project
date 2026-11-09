@@ -118,13 +118,24 @@ class IOManager:
             confirm_password = input("Confirm Password: ").strip()
 
             if password == confirm_password:
-                print("[✓] Passwords match successfully.")
+                print("Passwords match successfully.")
                 break
             else:
-                print("[!] Registration Error: Passwords do not match. Please try again.\n")
+                print("Registration Error: Passwords do not match. Please try again.\n")
 
         return {
             "name": name,
+            "username": username,
+            "password": password
+        }
+    
+    @staticmethod
+    def collect_login_input() -> dict:
+        """Collects login credentials (username & password)."""
+        print("\n--- ACCOUNT LOGIN ---")
+        username = input("Username: ").strip()
+        password = input("Password: ").strip()
+        return {
             "username": username,
             "password": password
         }
