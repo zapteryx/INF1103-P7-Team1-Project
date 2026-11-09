@@ -1,7 +1,10 @@
+from argon2 import PasswordHasher
+
 class Authentication:
     # No user logged in
     def __init__(self):
         self.__current_user = None
+        self.__password_hasher = PasswordHasher()
 
     # Need to retrieve from DB to check whether username alr exists (Unique)
     def is_username_available(self, username):
@@ -54,3 +57,5 @@ class Authentication:
         password_errors = self.check_password_strength(password)
         if password_errors:
             return False, password_errors
+
+        password_hash = self.__password_hasher.hash(password)
