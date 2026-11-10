@@ -92,10 +92,10 @@ class PromptBuilder:
         client_text = json.dumps(client_info, indent=2, default=str)
         shelter_text = json.dumps(shelter_info, indent=2, default=str)
         return (
-            f"""Based on the client and shelter information shown, determine the urgency level of the case
-            (from 1-5, where 5 is the most urgent and 1 is the least urgent). Give a structured JSON
-            dictionary that lists only the shelters and criteria that the client meets. Do not include any
-            shelter or criterion that is not met. In the output each shelter must be shown at most once.
-            Client info: {client_text}
-            Shelter info: {shelter_text}"""
+            "Based on the client and shelter information shown, determine the urgency level of the case "
+            "(from 1-5, where 5 is the most urgent and 1 is the least urgent). Give a structured JSON "
+            "dictionary that lists only the shelters and criteria that the client meets. Do not include any "
+            "shelter or criterion that is not met. In the output each shelter must be shown at most once. "
+            f"Client info: {client_text}"
+            f"Shelter info: {shelter_text}"
         )

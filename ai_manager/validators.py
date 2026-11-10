@@ -13,7 +13,7 @@ class OutputValidator(ABC):
     def validate(self, output: dict) -> None:
         pass
 
-    def _fail(self, message: str, error_type=InvalidAIOutputError) -> None:
+    def _fail(self, message: str, error_type: type[InvalidAIOutputError] = InvalidAIOutputError) -> None:
         raise error_type(f"{self.name}: {message}")
 
 # Maintained by Mei Qi (2605039)

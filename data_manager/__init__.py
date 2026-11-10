@@ -5,6 +5,8 @@ from .file_storage import FileStorage
 from .shelter_file_reader import ShelterFileReader
 from .file_validator import FileValidator
 from typing import Any
+from .sqlite_storage import SQLiteStorage
+from .user_manager import User, UserManager
 
 # Maintained by Htet Shine Aung (2604711)
 class DataManager:
@@ -173,5 +175,8 @@ __all__ = [
     "DataManager",
     "ShelterFileReader",
     "FileStorage",
-    "FileValidator"
+    "FileValidator",
+    "SQLiteStorage",
+    "User",
+    "UserManager"
 ]

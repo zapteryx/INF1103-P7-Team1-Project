@@ -70,6 +70,85 @@ class IOManager:
         print(f"{update_title}{desc_str}")
 
     @staticmethod
+    def display_auth_menu() -> int:
+        print("\n====================================")
+        print("    ShelterFlow AI - Access Portal  ")
+        print("====================================")
+        print("1. Register")
+        print("2. Login")
+        print("3. Exit System")
+        print("====================================")
+        choice_input = input("Select option (1-3): ").strip()
+
+        while not choice_input.isdigit() or int(choice_input) not in range(1, 4):
+            print("Invalid option. Please enter a number between 1 and 3.")
+            choice_input = input("Select option (1-3): ").strip()
+        return int(choice_input)
+
+    @staticmethod
+    def collect_registration_input(existing_usernames: list = None) -> dict:
+        """
+        Collects user registration inputs (name, username, password, confirm_password).
+        Validates non-empty fields, username uniqueness, and password matching with retry loops.
+        """
+        if existing_usernames is None:
+            existing_usernames = []
+
+        print("\n--- ACCOUNT REGISTRATION ---")
+        
+        name = input("Enter Full Name: ").strip()
+        while not name:
+            print("[!] Name cannot be empty.")
+            name = input("Enter Full Name: ").strip()
+
+        username = input("Enter Username: ").strip()
+        while not username or username.lower() in [u.lower() for u in existing_usernames]:
+            if not username:
+                print("[!] Username cannot be empty.")
+            else:
+                print("[!] Username already taken. Please choose another username.")
+            username = input("Enter Username: ").strip()
+
+        while True:
+            password = input("Enter Password: ").strip()
+            while not password:
+                print("[!] Password cannot be empty.")
+                password = input("Enter Password: ").strip()
+
+            confirm_password = input("Confirm Password: ").strip()
+
+            if password == confirm_password:
+                print("Passwords match successfully.")
+                break
+            else:
+                print("Registration Error: Passwords do not match. Please try again.\n")
+
+        return {
+            "name": name,
+            "username": username,
+            "password": password
+        }
+    
+    @staticmethod
+    def collect_login_input() -> dict:
+        """Collects login credentials (username & password)."""
+        print("\n--- ACCOUNT LOGIN ---")
+        username = input("Username: ").strip()
+        password = input("Password: ").strip()
+        return {
+            "username": username,
+            "password": password
+        }
+
+    @staticmethod
+    def display_login_status(success: bool, username: str = "") -> None:
+        """Displays login outcome messages."""
+        if success:
+            print(f"\n[✓] Login Successful! Welcome back, {username}.")
+        else:
+            print("\n[!] Login Failed: Invalid username or password.")
+
+    @staticmethod
     def get_shelter_filename(default_filename: str = "singapore_shelters_directory.csv") -> str:
         print(f"\nDefault dataset: '{default_filename}'")
         while True:
