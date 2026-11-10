@@ -58,16 +58,11 @@ def authenticate_user() -> User | None:
 
         # Register
         if choice == 1:
-            registration_data = IOManager.collect_registration_input()
+            registration_data = IOManager.collect_registration_input(
+                password_validator=auth.check_password_strength
+            )
 
-            # Validate password strength
-            password_errors = auth.check_password_strength(registration_data["password"])
-            if password_errors:
-                error_details = "\n".join(password_errors)
-                IOManager.print_error("Password does not meet security requirements", error_details)
-                continue
-
-            # Register user
+            # Register user (password already validated during input collection)
             success, errors = auth.register_user(
                 registration_data["name"],
                 registration_data["username"],
@@ -77,6 +72,7 @@ def authenticate_user() -> User | None:
             if success:
                 IOManager.print_update("Registration successful! Please login to continue.")
             else:
+                # This should only fail for database issues now, not password issues
                 IOManager.print_error("Registration failed", "\n".join(errors))
 
         # Login

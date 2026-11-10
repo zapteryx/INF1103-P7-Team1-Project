@@ -86,16 +86,20 @@ class IOManager:
         return int(choice_input)
 
     @staticmethod
-    def collect_registration_input(existing_usernames: list = None) -> dict:
+    def collect_registration_input(existing_usernames: list = None, password_validator=None) -> dict:
         """
         Collects user registration inputs (name, username, password, confirm_password).
-        Validates non-empty fields, username uniqueness, and password matching with retry loops.
+        Validates non-empty fields, username uniqueness, password strength, and password matching with retry loops.
+
+        Args:
+            existing_usernames: List of existing usernames to check against
+            password_validator: Optional callable that takes password and returns list of errors (empty if valid)
         """
         if existing_usernames is None:
             existing_usernames = []
 
         print("\n--- ACCOUNT REGISTRATION ---")
-        
+
         name = input("Enter Full Name: ").strip()
         while not name:
             print("[!] Name cannot be empty.")
@@ -109,19 +113,35 @@ class IOManager:
                 print("[!] Username already taken. Please choose another username.")
             username = input("Enter Username: ").strip()
 
+        # Password collection with strength validation
         while True:
             password = input("Enter Password: ").strip()
             while not password:
                 print("[!] Password cannot be empty.")
                 password = input("Enter Password: ").strip()
 
-            confirm_password = input("Confirm Password: ").strip()
+            # Validate password strength if validator provided
+            if password_validator:
+                password_errors = password_validator(password)
+                if password_errors:
+                    print("\n[!] Password does not meet security requirements:")
+                    for error in password_errors:
+                        print(f"  {error}")
+                    print()
+                    continue  # Reprompt for password only
 
-            if password == confirm_password:
-                print("Passwords match successfully.")
-                break
-            else:
-                print("Registration Error: Passwords do not match. Please try again.\n")
+            # Password is valid or no validator, now confirm
+            while True:
+                confirm_password = input("Confirm Password: ").strip()
+
+                if password == confirm_password:
+                    print("Passwords match successfully.")
+                    break
+                else:
+                    print("[!] Passwords do not match. Please re-enter confirmation.\n")
+
+            # Both password valid and confirmed, exit outer loop
+            break
 
         return {
             "name": name,
