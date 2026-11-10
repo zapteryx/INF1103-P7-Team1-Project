@@ -72,7 +72,7 @@ class IOManager:
     @staticmethod
     def display_auth_menu() -> int:
         print("\n====================================")
-        print("    ShelterFlow AI - Access Portal  ")
+        print("    Social Service AI - Access Portal  ")
         print("====================================")
         print("1. Register")
         print("2. Login")
