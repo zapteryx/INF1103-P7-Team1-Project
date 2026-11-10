@@ -170,13 +170,20 @@ class IOManager:
                 filename = default_filename
             if 'csv' in accepted_filetypes and filename.endswith('.csv'):
                 validation = FileValidator.validate_csv_filename(filename)
-                if validation[0] or (validation[1] == "CSV file not found." and allow_creating_new):
+                if validation[0] or (validation[1] == "Invalid filename." and allow_creating_new):
                     break
                 print(f"Error: {validation[1]}")
                 continue
             if 'json' in accepted_filetypes and filename.endswith('.json'):
                 validation = FileValidator.validate_json_filename(filename)
-                if validation[0] or (validation[1] == "JSON file not found." and allow_creating_new):
+                if validation[0] or (validation[1] == "Invalid filename." and allow_creating_new):
+                    break
+                print(f"Error: {validation[1]}")
+                continue
+            # SQLite Database (.db) Validation
+            if 'db' in accepted_filetypes and filename.endswith('.db'):
+                validation = FileValidator.validate_db_filename(filename)
+                if validation[0] or (validation[1] == "Invalid filename." and allow_creating_new):
                     break
                 print(f"Error: {validation[1]}")
                 continue

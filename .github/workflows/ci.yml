@@ -25,7 +25,7 @@ jobs:
 
       - name: Check I/O Separation
         run: |
-          python check_io_separation.py
+          python scripts/check_io_separation.py
 
   # ---------------------------------------------------------------------------
   # 2. Native Python Testing (without Docker)
@@ -51,7 +51,7 @@ jobs:
 
       - name: Run Test Suite
         run: |
-          python test_main.py
+          python scripts/test_main.py
 
   # ---------------------------------------------------------------------------
   # 2. Docker Build & Test Execution
@@ -76,7 +76,7 @@ jobs:
 
       - name: Run Tests inside Docker Container
         run: |
-          docker run --rm inf1103-teamproject:latest python test_main.py
+          docker run --rm inf1103-teamproject:latest python scripts/test_main.py
 
   # ---------------------------------------------------------------------------
   # 3. Security Scanning (CodeQL Analysis)
