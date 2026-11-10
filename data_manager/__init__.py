@@ -175,6 +175,8 @@ __all__ = [
     "DataManager",
     "ShelterFileReader",
     "FileStorage",
-    "FileValidator"
-    "SQLiteStorage"
+    "FileValidator",
+    "SQLiteStorage",
+    "User",
+    "UserManager"
 ]
