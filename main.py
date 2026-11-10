@@ -1,8 +1,17 @@
 import time
 from ai_manager import AIManager, GeminiClient, SampleResponseClient
-from data_manager import DataManager, ShelterFileReader, FileStorage
+from data_manager import DataManager, ShelterFileReader, FileStorage, SQLiteStorage
 from io_manager import IOManager
 from logic_manager import LogicManager
+
+# Maintained by Ming Xuan (2604426)
+def get_suitable_storage(filename: str) -> FileStorage | SQLiteStorage:
+    if filename.endswith('.json') or filename.endswith('.csv'):
+        return FileStorage(filename)
+    elif filename.endswith('.db'):
+        return SQLiteStorage(filename)
+    else:
+        raise ValueError("Unsupported file format. Please provide a .json, .csv, or .db file.")
 
 # Maintained by Ming Xuan (2604426)
 def get_recommendation(clients_file_path: str, client: dict, shelters: list[dict], tries = 0) -> bool | None:
@@ -21,7 +30,8 @@ def get_recommendation(clients_file_path: str, client: dict, shelters: list[dict
         return False
     # IOManager.print_update(f"Best shelter for client {client['client_id']}", f"\n{json.dumps(best_shelter, indent=2)}")
     outcome = IOManager.present_best_shelter(client, best_shelter)
-    data_manager = DataManager(FileStorage(clients_file_path))
+    storage = get_suitable_storage(clients_file_path)
+    data_manager = DataManager(storage)
     if outcome is True:
         data_manager.update_record(client['client_id'], outcome=True, accepted_shelter=best_shelter)
         IOManager.print_update(f"Client {client['client_id']} record updated with outcome: Accepted and accepted shelter: {best_shelter['shelter_name']}")
@@ -41,8 +51,9 @@ def main() -> None:
         # new client intake
         if choice == 1:
             client = IOManager.collect_intake_input()
-            clients_file_path = IOManager.get_client_records_filename(['json', 'csv'], True)
-            data_manager = DataManager(FileStorage(clients_file_path))
+            clients_file_path = IOManager.get_client_records_filename(['json', 'csv', 'db'], True)
+            storage = get_suitable_storage(clients_file_path)
+            data_manager = DataManager(storage)
             data_manager.add_record(client)
             time.sleep(1)
         # view all shelters
@@ -58,8 +69,9 @@ def main() -> None:
         # get shelter recommendations for clients
         elif choice == 3:
             shelter_file_path = IOManager.get_shelter_filename()
-            clients_file_path = IOManager.get_client_records_filename(['csv', 'json'])
-            data_manager = DataManager(FileStorage(clients_file_path))
+            clients_file_path = IOManager.get_client_records_filename(['csv', 'json', 'db'])
+            storage = get_suitable_storage(clients_file_path)
+            data_manager = DataManager(storage)
             clients = data_manager.load_records()
             if clients[1] is not None:
                 IOManager.print_error("Could not load clients", clients[1])
@@ -80,9 +92,10 @@ def main() -> None:
             time.sleep(1)
         # search for a client record by client_id
         elif choice == 4:
-            clients_file_path = IOManager.get_client_records_filename(['csv', 'json'])
+            clients_file_path = IOManager.get_client_records_filename(['csv', 'json', 'db'])
             client_id = IOManager.ask_for_client_id()
-            data_manager = DataManager(FileStorage(clients_file_path))
+            storage = get_suitable_storage(clients_file_path)
+            data_manager = DataManager(storage)
             record = data_manager.get_clientid(client_id)
             if record[1] is not None:
                 IOManager.print_error(f"Could not find client record for client_id {client_id}", record[1])
@@ -91,8 +104,9 @@ def main() -> None:
             time.sleep(1)
         # filter cases by outcome
         elif choice == 5:
-            clients_file_path = IOManager.get_client_records_filename(['csv', 'json'])
-            data_manager = DataManager(FileStorage(clients_file_path))
+            clients_file_path = IOManager.get_client_records_filename(['csv', 'json', 'db'])
+            storage = get_suitable_storage(clients_file_path)
+            data_manager = DataManager(storage)
             clients = data_manager.load_records()
             if clients[1] is not None:
                 IOManager.print_error("Could not load clients", clients[1])
