@@ -259,3 +259,49 @@ class SQLiteStorage(Storage):
 
         except (sqlite3.Error, ValueError, TypeError) as error:
             return None, f"SQLite lookup failed: {error}"
+
+    def update_record(
+        self,
+        client_id: str,
+        **changes: Any
+    ) -> tuple[bool, str | None]:
+        if not changes:
+            return False, "No fields provided for update."
+
+        if "client_id" in changes:
+            return False, "Client ID cannot be changed."
+
+        record, error = self.get_record(client_id)
+
+        if error:
+            return False, error
+
+        record.update(changes)
+
+        try:
+            values = self._encode(record)
+
+            with self._connect() as connection:
+                connection.execute("""
+                    UPDATE clients
+                    SET gender = ?,
+                        age = ?,
+                        dependents = ?,
+                        care_type = ?,
+                        special_needs = ?,
+                        intake_notes = ?,
+                        outcome = ?,
+                        accepted_shelter = ?,
+                        extra_fields = ?
+                    WHERE client_id = ?
+                """, values[1:] + (values[0],))
+
+            return True, None
+
+        except (
+            sqlite3.Error,
+            ValueError,
+            TypeError,
+            OverflowError
+        ) as error:
+            return False, f"SQLite update failed: {error}"
