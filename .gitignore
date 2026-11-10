@@ -13,3 +13,4 @@ clients.json
 # Clients filename for unit tests
 clients-test.json
 clients-test.csv
+clients.db
