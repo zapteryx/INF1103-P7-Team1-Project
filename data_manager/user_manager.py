@@ -3,8 +3,10 @@ import sqlite3
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+from contextlib import closing
 
 
+# Maintained by Htet Shine Aung (2604711)
 @dataclass(frozen=True)
 class User:
     user_id: int
@@ -19,7 +21,9 @@ class User:
         return self.account_status == 1
 
 
+# Maintained by Htet Shine Aung (2604711)
 class UserManager:
+
     def __init__(self, database_path: str = "clients.db"):
         self._database_path = str(database_path)
 
@@ -30,6 +34,7 @@ class UserManager:
 
         self._initialize_database()
 
+    # Maintained by Htet Shine Aung (2604711)
     def _connect(self):
         connection = sqlite3.connect(
             self._database_path,
@@ -38,40 +43,46 @@ class UserManager:
         connection.row_factory = sqlite3.Row
         return connection
 
+    # Maintained by Htet Shine Aung (2604711)
     def _initialize_database(self):
-        with self._connect() as connection:
-            # Create the users table
-            connection.execute("""
-                CREATE TABLE IF NOT EXISTS users (
-                    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL,
-                    username TEXT NOT NULL UNIQUE,
-                    password_hash TEXT NOT NULL,
-                    registration_date TEXT NOT NULL,
-                    account_status INTEGER NOT NULL DEFAULT 1
-                        CHECK (account_status IN (0, 1))
-                )
-            """)
+        with closing(self._connect()) as connection:
+            with connection:
 
-            # Make the first generated user ID 1001
-            connection.execute("""
-                INSERT OR IGNORE INTO sqlite_sequence
-                    (name, seq)
-                VALUES ('users', 1000)
-            """)
+                # Create the users table
+                connection.execute("""
+                    CREATE TABLE IF NOT EXISTS users (
+                        user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        name TEXT NOT NULL,
+                        username TEXT NOT NULL UNIQUE,
+                        password_hash TEXT NOT NULL,
+                        registration_date TEXT NOT NULL,
+                        account_status INTEGER NOT NULL DEFAULT 1
+                            CHECK (account_status IN (0, 1))
+                    )
+                """)
 
-            connection.execute("""
-                UPDATE sqlite_sequence
-                SET seq = 1000
-                WHERE name = 'users'
-                  AND seq < 1000
-            """)
-        
- # Return a User object if found, otherwise None.  
+                # Make the first generated user ID 1001
+                connection.execute("""
+                    INSERT OR IGNORE INTO sqlite_sequence
+                        (name, seq)
+                    VALUES ('users', 1000)
+                """)
+
+                # Do not reset existing user IDs
+                connection.execute("""
+                    UPDATE sqlite_sequence
+                    SET seq = 1000
+                    WHERE name = 'users'
+                      AND seq < 1000
+                """)
+
+    # Maintained by Htet Shine Aung (2604711)
+    # Return a User object if found, otherwise None.
     def get_user_by_username(
         self,
         username: str
     ) -> User | None:
+
         if not isinstance(username, str):
             return None
 
@@ -80,7 +91,7 @@ class UserManager:
         if not username:
             return None
 
-        with self._connect() as connection:
+        with closing(self._connect()) as connection:
             row = connection.execute("""
                 SELECT
                     user_id,
@@ -105,15 +116,16 @@ class UserManager:
             account_status=row["account_status"]
         )
 
-    
-# Register a new user.
-# Returns user_id on success, None on failure.
+    # Maintained by Htet Shine Aung (2604711)
+    # Register a new user.
+    # Returns user_id on success, None on failure.
     def create_user(
         self,
         name: str,
         username: str,
         password_hash: str
     ) -> int | None:
+
         if not all(
             isinstance(value, str)
             for value in (name, username, password_hash)
@@ -131,34 +143,39 @@ class UserManager:
         )
 
         try:
-            with self._connect() as connection:
-                cursor = connection.execute("""
-                    INSERT INTO users (
+            with closing(self._connect()) as connection:
+                with connection:
+                    cursor = connection.execute("""
+                        INSERT INTO users (
+                            name,
+                            username,
+                            password_hash,
+                            registration_date,
+                            account_status
+                        )
+                        VALUES (?, ?, ?, ?, 1)
+                    """, (
                         name,
                         username,
                         password_hash,
-                        registration_date,
-                        account_status
-                    )
-                    VALUES (?, ?, ?, ?, 1)
-                """, (
-                    name,
-                    username,
-                    password_hash,
-                    registration_date
-                ))
+                        registration_date
+                    ))
 
-                return cursor.lastrowid
+                    user_id = cursor.lastrowid
+
+            return user_id
 
         except sqlite3.Error:
             return None
 
- #Set account_status to 1 (active) or 0 (inactive)      
-    def update_account_status( 
+    # Maintained by Htet Shine Aung (2604711)
+    # Set account_status to 1 (active) or 0 (inactive).
+    def update_account_status(
         self,
         user_id: int,
         account_status: int
     ) -> bool:
+
         if (
             type(user_id) is not int
             or type(account_status) is not int
@@ -167,14 +184,20 @@ class UserManager:
             return False
 
         try:
-            with self._connect() as connection:
-                cursor = connection.execute("""
-                    UPDATE users
-                    SET account_status = ?
-                    WHERE user_id = ?
-                """, (account_status, user_id))
+            with closing(self._connect()) as connection:
+                with connection:
+                    cursor = connection.execute("""
+                        UPDATE users
+                        SET account_status = ?
+                        WHERE user_id = ?
+                    """, (
+                        account_status,
+                        user_id
+                    ))
 
-                return cursor.rowcount > 0
+                    updated = cursor.rowcount > 0
+
+            return updated
 
         except sqlite3.Error:
             return False
