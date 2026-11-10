@@ -1,5 +1,6 @@
 import csv
 import json
+import os
 import sys
 from pathlib import Path
 from unittest.mock import patch
@@ -10,12 +11,14 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 import main
+from data_manager.sqlite_storage import SQLiteStorage
 
-# This file is maintained by Ming Xuan (2604426)
+# Maintained by Max (2604426)
 
-# Test files for clients resolved relative to project root
+# Test files resolved relative to project root
 TEST_CLIENTS_JSON = str(PROJECT_ROOT / "clients-test.json")
 TEST_CLIENTS_CSV = str(PROJECT_ROOT / "clients-test.csv")
+TEST_CLIENTS_DB = str(PROJECT_ROOT / "clients-test.db")
 SHELTER_DIR_CSV = str(PROJECT_ROOT / "singapore_shelters_directory.csv")
 
 # Fake AI output that simulates a valid Gemini API response
@@ -37,7 +40,7 @@ FAKE_AI_RESPONSE = {
 
 
 def setup_test_environment():
-    """Clear/initialize the test clients files before running tests"""
+    """Clear/initialize JSON, CSV, and SQLite test files before running tests."""
     # Initialize JSON test file
     with open(TEST_CLIENTS_JSON, "w", encoding="utf-8") as f:
         json.dump([], f, indent=4)
@@ -59,14 +62,27 @@ def setup_test_environment():
             ],
         )
         writer.writeheader()
-    print(f"PASS: Test environment initialized: {TEST_CLIENTS_CSV} cleared\n")
+    print(f"PASS: Test environment initialized: {TEST_CLIENTS_CSV} cleared")
+
+    # Clean up stale DB and re-initialize SQLite test database schema
+    if os.path.exists(TEST_CLIENTS_DB):
+        try:
+            os.remove(TEST_CLIENTS_DB)
+        except OSError:
+            pass
+
+    db_storage = SQLiteStorage(TEST_CLIENTS_DB)
+    if hasattr(db_storage, "close") and callable(getattr(db_storage, "close")):
+        db_storage.close()
+
+    print(f"PASS: Test environment initialized: {TEST_CLIENTS_DB} cleared & schema created\n")
 
 
 def test_menu_options():
-    # Setup clean test environment
+    # Setup clean test environment across all formats
     setup_test_environment()
     print("==================================================")
-    print("STARTING MENU OPTIONS TEST")
+    print("STARTING MENU OPTIONS TEST (JSON, CSV, & SQLITE)")
     print("==================================================\n")
 
     # Mock ai_manager.get_shelter_recommendation so no external API calls are made
@@ -75,7 +91,7 @@ def test_menu_options():
         return_value=FAKE_AI_RESPONSE,
     ):
 
-        # Option 1: Test New Client Intake (JSON)
+        # --- OPTION 1: NEW CLIENT INTAKE ---
         print("--- Testing Option 1: New Client Intake (JSON) ---")
         inputs_option_1 = [
             "1",  # Select Option 1 (New Client Intake)
@@ -93,25 +109,41 @@ def test_menu_options():
             main.main()
         print("PASS: Option 1 (JSON) executed successfully.\n")
 
-        # Option 1b: Test New Client Intake (CSV)
         print("--- Testing Option 1b: New Client Intake (CSV) ---")
         inputs_option_1b = [
-            "1",  # Select Option 1 (New Client Intake)
-            "S9999999B",  # NRIC
-            "Female",  # Gender
-            "25",  # Age
-            "0",  # Dependents
-            "Long Term",  # Care Type
-            "Yes",  # Special Needs
-            "CSV test client",  # Intake notes
-            TEST_CLIENTS_CSV,  # Client file path
-            "6",  # Select Option 6 (Exit)
+            "1",
+            "S9999999B",
+            "Female",
+            "25",
+            "0",
+            "Long Term",
+            "Yes",
+            "CSV test client",
+            TEST_CLIENTS_CSV,
+            "6",
         ]
         with patch("builtins.input", side_effect=inputs_option_1b):
             main.main()
         print("PASS: Option 1b (CSV) executed successfully.\n")
 
-        # Option 2: Test View All Shelters
+        print("--- Testing Option 1c: New Client Intake (SQLite DB) ---")
+        inputs_option_1c = [
+            "1",
+            "S8888888C",
+            "Male",
+            "40",
+            "2",
+            "Short Term",
+            "No",
+            "SQLite test client",
+            TEST_CLIENTS_DB,
+            "6",
+        ]
+        with patch("builtins.input", side_effect=inputs_option_1c):
+            main.main()
+        print("PASS: Option 1c (SQLite DB) executed successfully.\n")
+
+        # --- OPTION 2: VIEW ALL SHELTERS ---
         print("--- Testing Option 2: View All Shelters ---")
         inputs_option_2 = [
             "2",  # Select Option 2 (View All Shelters)
@@ -122,15 +154,15 @@ def test_menu_options():
             main.main()
         print("PASS: Option 2 executed successfully.\n")
 
-        # Option 3: Test Get Shelter Recommendations (JSON)
+        # --- OPTION 3: SHELTER RECOMMENDATIONS ---
         print("--- Testing Option 3: Get Shelter Recommendations (JSON) ---")
 
         def option_3_inputs():
-            yield "3"  # Select Option 3
-            yield SHELTER_DIR_CSV  # Shelter file path
-            yield TEST_CLIENTS_JSON  # Clients file path
+            yield "3"
+            yield SHELTER_DIR_CSV
+            yield TEST_CLIENTS_JSON
             while True:
-                yield "yes"  # Outcome acceptance for each client
+                yield "yes"
 
         with patch(
             "builtins.input", side_effect=option_3_inputs()
@@ -141,8 +173,8 @@ def test_menu_options():
                 nonlocal menu_calls
                 menu_calls += 1
                 if menu_calls > 1:
-                    return 6  # Select Exit on second iteration
-                return 3  # Select Option 3 on first iteration
+                    return 6
+                return 3
 
             with patch.object(
                 main.IOManager, "display_menu", side_effect=mock_display_menu
@@ -155,15 +187,14 @@ def test_menu_options():
 
         print("PASS: Option 3 (JSON) executed successfully.\n")
 
-        # Option 3b: Test Get Shelter Recommendations (CSV)
         print("--- Testing Option 3b: Get Shelter Recommendations (CSV) ---")
 
         def option_3b_inputs():
-            yield "3"  # Select Option 3
-            yield SHELTER_DIR_CSV  # Shelter file path
-            yield TEST_CLIENTS_CSV  # Clients file path
+            yield "3"
+            yield SHELTER_DIR_CSV
+            yield TEST_CLIENTS_CSV
             while True:
-                yield "yes"  # Outcome acceptance for each client
+                yield "yes"
 
         with patch(
             "builtins.input", side_effect=option_3b_inputs()
@@ -174,8 +205,8 @@ def test_menu_options():
                 nonlocal menu_calls_csv
                 menu_calls_csv += 1
                 if menu_calls_csv > 1:
-                    return 6  # Select Exit on second iteration
-                return 3  # Select Option 3 on first iteration
+                    return 6
+                return 3
 
             with patch.object(
                 main.IOManager, "display_menu", side_effect=mock_display_menu_csv
@@ -188,53 +219,75 @@ def test_menu_options():
 
         print("PASS: Option 3b (CSV) executed successfully.\n")
 
-        # Option 4: Test Search Client by NRIC (JSON)
+        print("--- Testing Option 3c: Get Shelter Recommendations (SQLite DB) ---")
+
+        def option_3c_inputs():
+            yield "3"
+            yield SHELTER_DIR_CSV
+            yield TEST_CLIENTS_DB
+            while True:
+                yield "yes"
+
+        with patch(
+            "builtins.input", side_effect=option_3c_inputs()
+        ), patch.object(main.IOManager, "print_error") as mock_print_error_db:
+            menu_calls_db = 0
+
+            def mock_display_menu_db():
+                nonlocal menu_calls_db
+                menu_calls_db += 1
+                if menu_calls_db > 1:
+                    return 6
+                return 3
+
+            with patch.object(
+                main.IOManager, "display_menu", side_effect=mock_display_menu_db
+            ):
+                main.main()
+
+            assert not mock_print_error_db.called, (
+                f"Option 3c (SQLite DB) failed with error(s): {mock_print_error_db.call_args_list}"
+            )
+
+        print("PASS: Option 3c (SQLite DB) executed successfully.\n")
+
+        # --- OPTION 4: SEARCH CLIENT BY NRIC ---
         print("--- Testing Option 4: Search Client by NRIC (JSON) ---")
-        inputs_option_4 = [
-            "4",  # Select Option 4 (Search Client)
-            TEST_CLIENTS_JSON,  # Client records filename
-            "S1234567A",  # Client ID / NRIC
-            "6",  # Select Option 6 (Exit)
-        ]
+        inputs_option_4 = ["4", TEST_CLIENTS_JSON, "S1234567A", "6"]
         with patch("builtins.input", side_effect=inputs_option_4):
             main.main()
         print("PASS: Option 4 (JSON) executed successfully.\n")
 
-        # Option 4b: Test Search Client by NRIC (CSV)
         print("--- Testing Option 4b: Search Client by NRIC (CSV) ---")
-        inputs_option_4b = [
-            "4",  # Select Option 4 (Search Client)
-            TEST_CLIENTS_CSV,  # Client records filename
-            "S9999999B",  # Client ID / NRIC
-            "6",  # Select Option 6 (Exit)
-        ]
+        inputs_option_4b = ["4", TEST_CLIENTS_CSV, "S9999999B", "6"]
         with patch("builtins.input", side_effect=inputs_option_4b):
             main.main()
         print("PASS: Option 4b (CSV) executed successfully.\n")
 
-        # Option 5: Test Filter Cases by Outcome (JSON)
+        print("--- Testing Option 4c: Search Client by NRIC (SQLite DB) ---")
+        inputs_option_4c = ["4", TEST_CLIENTS_DB, "S8888888C", "6"]
+        with patch("builtins.input", side_effect=inputs_option_4c):
+            main.main()
+        print("PASS: Option 4c (SQLite DB) executed successfully.\n")
+
+        # --- OPTION 5: FILTER CASES BY OUTCOME ---
         print("--- Testing Option 5: Filter Cases by Outcome (JSON) ---")
-        inputs_option_5 = [
-            "5",  # Select Option 5 (Filter Cases by Outcome)
-            TEST_CLIENTS_JSON,  # Client records filename
-            "True",  # Outcome to filter by (True = Accepted)
-            "6",  # Select Option 6 (Exit)
-        ]
+        inputs_option_5 = ["5", TEST_CLIENTS_JSON, "True", "6"]
         with patch("builtins.input", side_effect=inputs_option_5):
             main.main()
         print("PASS: Option 5 (JSON) executed successfully.\n")
 
-        # Option 5b: Test Filter Cases by Outcome (CSV)
         print("--- Testing Option 5b: Filter Cases by Outcome (CSV) ---")
-        inputs_option_5b = [
-            "5",  # Select Option 5 (Filter Cases by Outcome)
-            TEST_CLIENTS_CSV,  # Client records filename
-            "Accepted",  # Outcome to filter by (alternative input format)
-            "6",  # Select Option 6 (Exit)
-        ]
+        inputs_option_5b = ["5", TEST_CLIENTS_CSV, "Accepted", "6"]
         with patch("builtins.input", side_effect=inputs_option_5b):
             main.main()
         print("PASS: Option 5b (CSV) executed successfully.\n")
+
+        print("--- Testing Option 5c: Filter Cases by Outcome (SQLite DB) ---")
+        inputs_option_5c = ["5", TEST_CLIENTS_DB, "Accepted", "6"]
+        with patch("builtins.input", side_effect=inputs_option_5c):
+            main.main()
+        print("PASS: Option 5c (SQLite DB) executed successfully.\n")
 
     print("==================================================")
     print("ALL TESTS COMPLETED SUCCESSFULLY!")
