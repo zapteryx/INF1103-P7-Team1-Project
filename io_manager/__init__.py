@@ -148,7 +148,7 @@ class IOManager:
             "username": username,
             "password": password
         }
-    
+
     @staticmethod
     def collect_login_input() -> dict:
         """Collects login credentials (username & password)."""
@@ -246,7 +246,7 @@ class IOManager:
         print("3. Get Shelter recommendations for clients")
         print("4. Search Client by NRIC")
         print("5. Filter Cases by Outcome")
-        print("6. Exit")
+        print("6. Log Out")
         print("====================================")
         choice_input = input("Select option (1-6): ").strip()
 
