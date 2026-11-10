@@ -13,7 +13,7 @@ docker run --rm -it -v "${PWD}:/usr/src/app" ghcr.io/zapteryx/inf1103-p7-team1-p
 ```
 Running the test script with Docker:
 ```bash
-docker run --rm ghcr.io/zapteryx/inf1103-p7-team1-project:latest python test_main.py
+docker run --rm ghcr.io/zapteryx/inf1103-p7-team1-project:latest python scripts/test_main.py
 ```
 
 ---
@@ -29,7 +29,7 @@ docker run --rm -it -v "${PWD}:/usr/src/app" inf1103-teamproject
 ```
 Running the test script with Docker:
 ```bash
-docker run --rm inf1103-teamproject python test_main.py
+docker run --rm inf1103-teamproject python scripts/test_main.py
 ```
 
 ---
@@ -45,5 +45,5 @@ python main.py
 ```
 Alternatively, run the automated test script:
 ```bash
-python test_main.py
+python scripts/test_main.py
 ```
