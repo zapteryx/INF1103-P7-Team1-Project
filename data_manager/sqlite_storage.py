@@ -328,4 +328,4 @@ class SQLiteStorage(Storage):
             return True, None
 
         except sqlite3.Error as error:
-            return False, f"SQLite delete failed: {error}"w
+            return False, f"SQLite delete failed: {error}"
