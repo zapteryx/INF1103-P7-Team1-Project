@@ -11,7 +11,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 import main
-from data_manager.sqlite_storage import SQLiteStorage
+from data_manager import SQLiteStorage, UserManager, Authentication
 
 # Maintained by Max (2604426)
 
@@ -75,7 +75,18 @@ def setup_test_environment():
     if hasattr(db_storage, "close") and callable(getattr(db_storage, "close")):
         db_storage.close()
 
-    print(f"PASS: Test environment initialized: {TEST_CLIENTS_DB} cleared & schema created\n")
+    print(f"PASS: Test environment initialized: {TEST_CLIENTS_DB} cleared & schema created")
+
+    # Setup test user for authentication
+    user_manager = UserManager(TEST_CLIENTS_DB)
+    auth = Authentication(user_manager)
+
+    # Register a test user if not exists
+    if auth.is_username_available("testuser"):
+        auth.register_user("Test User", "testuser", "TestPass123!")
+        print("PASS: Test user created for authentication\n")
+    else:
+        print("PASS: Test user already exists\n")
 
 
 def test_menu_options():
@@ -85,10 +96,21 @@ def test_menu_options():
     print("STARTING MENU OPTIONS TEST (JSON, CSV, & SQLITE)")
     print("==================================================\n")
 
+    # Mock authentication to bypass login for testing
+    def mock_authenticate():
+        from data_manager import UserManager, Authentication
+        user_manager = UserManager(TEST_CLIENTS_DB)
+        auth = Authentication(user_manager)
+        auth.login("testuser", "TestPass123!")
+        return auth.get_current_user()
+
     # Mock ai_manager.get_shelter_recommendation so no external API calls are made
     with patch(
         "ai_manager.AIManager.get_shelter_recommendation",
         return_value=FAKE_AI_RESPONSE,
+    ), patch(
+        "main.authenticate_user",
+        side_effect=mock_authenticate
     ):
 
         # --- OPTION 1: NEW CLIENT INTAKE ---

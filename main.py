@@ -1,6 +1,6 @@
 import time
 from ai_manager import AIManager, GeminiClient, SampleResponseClient
-from data_manager import DataManager, ShelterFileReader, FileStorage, SQLiteStorage
+from data_manager import DataManager, ShelterFileReader, FileStorage, SQLiteStorage, UserManager, Authentication, User
 from io_manager import IOManager
 from logic_manager import LogicManager
 
@@ -44,8 +44,71 @@ def get_recommendation(clients_file_path: str, client: dict, shelters: list[dict
         return True
     return None
 
+# Maintained by Mahima (2604701) & Ming Xuan (2604426)
+def authenticate_user() -> User | None:
+    """
+    Handle user authentication (login or registration).
+    Returns authenticated User object or None if user exits.
+    """
+    user_manager = UserManager("clients.db")
+    auth = Authentication(user_manager)
+
+    while True:
+        choice = IOManager.display_auth_menu()
+
+        # Register
+        if choice == 1:
+            registration_data = IOManager.collect_registration_input()
+
+            # Validate password strength
+            password_errors = auth.check_password_strength(registration_data["password"])
+            if password_errors:
+                IOManager.print_error("Password does not meet security requirements")
+                for error in password_errors:
+                    print(f"  {error}")
+                continue
+
+            # Register user
+            success, errors = auth.register_user(
+                registration_data["name"],
+                registration_data["username"],
+                registration_data["password"]
+            )
+
+            if success:
+                IOManager.print_update("Registration successful! Please login to continue.")
+            else:
+                IOManager.print_error("Registration failed", "\n".join(errors))
+
+        # Login
+        elif choice == 2:
+            login_data = IOManager.collect_login_input()
+            success, message = auth.login(
+                login_data["username"],
+                login_data["password"]
+            )
+
+            if success:
+                user = auth.get_current_user()
+                IOManager.display_login_status(True, user.name)
+                return user
+            else:
+                IOManager.print_error("Login failed", message)
+
+        # Exit
+        elif choice == 3:
+            IOManager.print_update("Exiting system. Goodbye!")
+            return None
+
 # Maintained by Ming Xuan (2604426)
 def main() -> None:
+    # Authenticate user first
+    user = authenticate_user()
+    if user is None:
+        return  # User chose to exit
+
+    IOManager.print_update(f"\nWelcome to Social Service AI, {user.name}!")
+
     while True:
         choice = IOManager.display_menu()
         # new client intake

@@ -15,3 +15,6 @@ clients-test.json
 clients-test.csv
 clients-test.db
 clients.db
+# Auth db for unit tests
+test_auth.db
+test_inactive.db
