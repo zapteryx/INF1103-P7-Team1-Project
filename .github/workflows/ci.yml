@@ -51,7 +51,7 @@ jobs:
 
       - name: Run Test Suite
         run: |
-          python test_main.py
+          python scripts/test_main.py
 
   # ---------------------------------------------------------------------------
   # 2. Docker Build & Test Execution
