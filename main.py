@@ -63,9 +63,8 @@ def authenticate_user() -> User | None:
             # Validate password strength
             password_errors = auth.check_password_strength(registration_data["password"])
             if password_errors:
-                IOManager.print_error("Password does not meet security requirements")
-                for error in password_errors:
-                    print(f"  {error}")
+                error_details = "\n".join(password_errors)
+                IOManager.print_error("Password does not meet security requirements", error_details)
                 continue
 
             # Register user
