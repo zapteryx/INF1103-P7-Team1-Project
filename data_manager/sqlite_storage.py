@@ -237,3 +237,25 @@ class SQLiteStorage(Storage):
             OverflowError
         ) as error:
             return False, f"SQLite insert failed: {error}"
+
+    def get_record(
+        self,
+        client_id: str
+    ) -> tuple[dict[str, Any] | None, str | None]:
+        try:
+            with self._connect() as connection:
+                row = connection.execute(
+                    """
+                    SELECT * FROM clients
+                    WHERE client_id = ?
+                    """,
+                    (str(client_id),)
+                ).fetchone()
+
+            if row is None:
+                return None, "Client record not found."
+
+            return self._decode(row), None
+
+        except (sqlite3.Error, ValueError, TypeError) as error:
+            return None, f"SQLite lookup failed: {error}"
