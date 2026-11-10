@@ -203,3 +203,37 @@ class SQLiteStorage(Storage):
             OverflowError
         ) as error:
             return False, f"SQLite save failed: {error}"
+        
+    def insert_record(
+        self,
+        record: dict[str, Any]
+    ) -> tuple[bool, str | None]:
+        try:
+            values = self._encode(record)
+
+            with self._connect() as connection:
+                connection.execute("""
+                    INSERT INTO clients (
+                        client_id,
+                        gender,
+                        age,
+                        dependents,
+                        care_type,
+                        special_needs,
+                        intake_notes,
+                        outcome,
+                        accepted_shelter,
+                        extra_fields
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, values)
+
+            return True, None
+
+        except (
+            sqlite3.Error,
+            ValueError,
+            TypeError,
+            OverflowError
+        ) as error:
+            return False, f"SQLite insert failed: {error}"
