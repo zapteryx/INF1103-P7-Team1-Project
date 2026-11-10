@@ -24,3 +24,10 @@ class SQLiteStorage(Storage):
 
         connection.row_factory = sqlite3.Row
         return connection
+    
+    def _initialize_database(self) -> None:
+        if self._database_path != ":memory:":
+            Path(self._database_path).parent.mkdir(
+                parents=True,
+                exist_ok=True
+            )
