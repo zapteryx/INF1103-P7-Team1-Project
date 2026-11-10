@@ -25,7 +25,7 @@ jobs:
 
       - name: Check I/O Separation
         run: |
-          python check_io_separation.py
+          python scripts/check_io_separation.py
 
   # ---------------------------------------------------------------------------
   # 2. Native Python Testing (without Docker)
