@@ -305,3 +305,27 @@ class SQLiteStorage(Storage):
             OverflowError
         ) as error:
             return False, f"SQLite update failed: {error}"
+
+    def delete_record(
+        self,
+        client_id: str
+    ) -> tuple[bool, str | None]:
+        try:
+            with self._connect() as connection:
+                cursor = connection.execute(
+                    """
+                    DELETE FROM clients
+                    WHERE client_id = ?
+                    """,
+                    (str(client_id),)
+                )
+
+                deleted = cursor.rowcount
+
+            if deleted == 0:
+                return False, "Client record not found."
+
+            return True, None
+
+        except sqlite3.Error as error:
+            return False, f"SQLite delete failed: {error}"w
