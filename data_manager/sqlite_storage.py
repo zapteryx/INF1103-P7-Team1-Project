@@ -137,3 +137,69 @@ class SQLiteStorage(Storage):
         record.update(json.loads(row["extra_fields"]))
 
         return record
+
+    def load_records(
+        self
+    ) -> tuple[list[dict[str, Any]], str | None]:
+        try:
+            with self._connect() as connection:
+                rows = connection.execute(
+                    "SELECT * FROM clients ORDER BY rowid"
+                ).fetchall()
+
+            records = [
+                self._decode(row)
+                for row in rows
+            ]
+
+            return records, None
+
+        except (sqlite3.Error, ValueError, TypeError) as error:
+            return [], f"SQLite load failed: {error}"
+
+    def save_records(
+        self,
+        records: list[dict[str, Any]]
+    ) -> tuple[bool, str | None]:
+        if not isinstance(records, list):
+            return False, "Records must be a list."
+
+        if not all(isinstance(r, dict) for r in records):
+            return False, "Every record must be a dictionary."
+
+        try:
+            values = [
+                self._encode(record)
+                for record in records
+            ]
+
+            with self._connect() as connection:
+                connection.execute(
+                    "DELETE FROM clients"
+                )
+
+                connection.executemany("""
+                    INSERT INTO clients (
+                        client_id,
+                        gender,
+                        age,
+                        dependents,
+                        care_type,
+                        special_needs,
+                        intake_notes,
+                        outcome,
+                        accepted_shelter,
+                        extra_fields
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, values)
+
+            return True, None
+
+        except (
+            sqlite3.Error,
+            ValueError,
+            TypeError,
+            OverflowError
+        ) as error:
+            return False, f"SQLite save failed: {error}"
