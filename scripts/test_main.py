@@ -97,12 +97,19 @@ def test_menu_options():
     print("==================================================\n")
 
     # Mock authentication to bypass login for testing
+    # First call returns user, second call returns None (simulating exit after logout)
+    call_count = {"count": 0}
+
     def mock_authenticate():
-        from data_manager import UserManager, Authentication
-        user_manager = UserManager(TEST_CLIENTS_DB)
-        auth = Authentication(user_manager)
-        auth.login("testuser", "TestPass123!")
-        return auth.get_current_user()
+        call_count["count"] += 1
+        if call_count["count"] == 1:
+            from data_manager import UserManager, Authentication
+            user_manager = UserManager(TEST_CLIENTS_DB)
+            auth = Authentication(user_manager)
+            auth.login("testuser", "TestPass123!")
+            return auth.get_current_user()
+        else:
+            return None  # Simulate user choosing to exit on subsequent calls
 
     # Mock ai_manager.get_shelter_recommendation so no external API calls are made
     with patch(

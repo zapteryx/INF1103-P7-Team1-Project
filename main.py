@@ -92,7 +92,7 @@ def authenticate_user() -> User | None:
 
         # Exit
         elif choice == 3:
-            IOManager.print_update("Exiting system. Goodbye!")
+            IOManager.print_update("Thank you for using Social Service AI. Goodbye!")
             return None
 
 # Maintained by Ming Xuan (2604426)
@@ -101,7 +101,7 @@ def main() -> None:
         # Authenticate user first
         user = authenticate_user()
         if user is None:
-            break  # User chose to exit
+            return  # User chose to exit from auth menu
 
         IOManager.print_update(f"\nWelcome to Social Service AI, {user.name}!")
 
@@ -176,9 +176,8 @@ def main() -> None:
                 time.sleep(1)
             # log out
             elif choice == 6:
-                IOManager.print_update("Thank you for using Social Service AI. Goodbye!")
-                user = None  # Clear the user session
-                break
+                IOManager.print_update("Logging out. Returning to authentication menu...")
+                break  # Break inner loop, return to authentication
 
 if __name__ == "__main__":
     main()
