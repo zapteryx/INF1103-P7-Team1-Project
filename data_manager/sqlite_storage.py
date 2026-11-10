@@ -103,3 +103,37 @@ class SQLiteStorage(Storage):
             accepted_shelter,
             json.dumps(extra_fields)
         )
+    
+    @staticmethod
+    def _decode(row: sqlite3.Row) -> dict[str, Any]:
+        record = {
+            "client_id": row["client_id"]
+        }
+
+        fields = (
+            "gender",
+            "age",
+            "dependents",
+            "care_type",
+            "special_needs",
+            "intake_notes"
+        )
+
+        for field in fields:
+            if row[field] is not None:
+                record[field] = row[field]
+
+        outcome = row["outcome"]
+
+        record["outcome"] = (
+            None if outcome is None else bool(outcome)
+        )
+
+        if row["accepted_shelter"] is not None:
+            record["accepted_shelter"] = json.loads(
+                row["accepted_shelter"]
+            )
+
+        record.update(json.loads(row["extra_fields"]))
+
+        return record
