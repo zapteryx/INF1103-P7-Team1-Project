@@ -5,7 +5,7 @@ class User:
         self.__username = username
         self.__password_hash = password_hash
         self.__registration_date = registration_date
-        self.__account_status = account_status
+        self.__account_status = bool(account_status)
 
     # Getters to access private user info
     def get_user_id(self):

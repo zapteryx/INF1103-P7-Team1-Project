@@ -85,12 +85,24 @@ class Authentication:
 
         # Checks if password_hash stored in DB matches entered password
         try:
-            self.__password_hasher.verify(user.get_password_hash(), password)
+            password_hash = (
+                user.get_password_hash()
+                if hasattr(user, "get_password_hash")
+                else user.password_hash
+            )
+
+            self.__password_hasher.verify(password_hash, password)
 
         except VerifyMismatchError:
             return False, "Invalid username or password"
 
-        if user.get_account_status() is False:
+        account_status = (
+            user.get_account_status()
+            if hasattr(user, "get_account_status")
+            else user.account_status
+        )
+
+        if not bool(account_status):
             return False, "Account is inactive"
 
         self.__current_user = user
