@@ -5,7 +5,7 @@ from typing import Any
 
 from .storage import Storage
 
-
+# Maintained by Htet Shine Aung (2604711)
 class SQLiteStorage(Storage):
     def __init__(self, database_path: str = "clients.db") -> None:
         self._database_path = str(database_path)
@@ -13,6 +13,7 @@ class SQLiteStorage(Storage):
         # Create the database and table if necessary
         self._initialize_database()
 
+# Maintained by Htet Shine Aung (2604711)
     def _connect(self) -> sqlite3.Connection:
         """
         Create a connection to the SQLite database.
@@ -24,7 +25,8 @@ class SQLiteStorage(Storage):
 
         connection.row_factory = sqlite3.Row
         return connection
-    
+
+# Maintained by Htet Shine Aung (2604711)    
     def _initialize_database(self) -> None:
         if self._database_path != ":memory:":
             Path(self._database_path).parent.mkdir(
@@ -51,6 +53,7 @@ class SQLiteStorage(Storage):
                     )
                 """)
 
+# Maintained by Htet Shine Aung (2604711)
     @staticmethod
     def _encode(record: dict[str, Any]) -> tuple:
         client_id = str(
@@ -103,7 +106,8 @@ class SQLiteStorage(Storage):
             accepted_shelter,
             json.dumps(extra_fields)
         )
-    
+
+# Maintained by Htet Shine Aung (2604711)    
     @staticmethod
     def _decode(row: sqlite3.Row) -> dict[str, Any]:
         record = {
@@ -138,6 +142,7 @@ class SQLiteStorage(Storage):
 
         return record
 
+# Maintained by Htet Shine Aung (2604711)
     def load_records(
         self
     ) -> tuple[list[dict[str, Any]], str | None]:
@@ -157,6 +162,7 @@ class SQLiteStorage(Storage):
         except (sqlite3.Error, ValueError, TypeError) as error:
             return [], f"SQLite load failed: {error}"
 
+# Maintained by Htet Shine Aung (2604711)
     def save_records(
         self,
         records: list[dict[str, Any]]
@@ -204,6 +210,7 @@ class SQLiteStorage(Storage):
         ) as error:
             return False, f"SQLite save failed: {error}"
         
+ # Maintained by Htet Shine Aung (2604711)       
     def insert_record(
         self,
         record: dict[str, Any]
@@ -238,6 +245,7 @@ class SQLiteStorage(Storage):
         ) as error:
             return False, f"SQLite insert failed: {error}"
 
+# Maintained by Htet Shine Aung (2604711)
     def get_record(
         self,
         client_id: str
@@ -260,6 +268,7 @@ class SQLiteStorage(Storage):
         except (sqlite3.Error, ValueError, TypeError) as error:
             return None, f"SQLite lookup failed: {error}"
 
+# Maintained by Htet Shine Aung (2604711)
     def update_record(
         self,
         client_id: str,
@@ -306,6 +315,7 @@ class SQLiteStorage(Storage):
         ) as error:
             return False, f"SQLite update failed: {error}"
 
+# Maintained by Htet Shine Aung (2604711)
     def delete_record(
         self,
         client_id: str

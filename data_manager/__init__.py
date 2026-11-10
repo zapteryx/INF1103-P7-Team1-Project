@@ -175,4 +175,5 @@ __all__ = [
     "ShelterFileReader",
     "FileStorage",
     "FileValidator"
+    "SQLiteStorage"
 ]
