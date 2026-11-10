@@ -61,8 +61,9 @@ class AIShelter(ShelterBase):
 class IOManager:
     @staticmethod
     def print_error(err_title: str, err_desc: str = "") -> None:
-        desc_str = f": {err_desc}" if err_desc else ""
-        print(f"Encountered an error:\n{err_title}{desc_str}", file=sys.stderr)
+        # Error details may contain database or user-provided data. Keep them
+        # out of terminal logs and expose only a safe, fixed error title.
+        print(f"Encountered an error:\n{err_title}", file=sys.stderr)
 
     @staticmethod
     def print_update(update_title: str, update_desc: str = "") -> None:
@@ -124,10 +125,10 @@ class IOManager:
             if password_validator:
                 password_errors = password_validator(password)
                 if password_errors:
-                    print("\n[!] Password does not meet security requirements:")
-                    for error in password_errors:
-                        print(f"  {error}")
-                    print()
+                    print(
+                        "\n[!] Password does not meet security requirements. "
+                        "Please choose a stronger password.\n"
+                    )
                     continue  # Reprompt for password only
 
             # Password is valid or no validator, now confirm

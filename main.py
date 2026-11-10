@@ -19,14 +19,14 @@ def get_recommendation(clients_file_path: str, client: dict, shelters: list[dict
     ai_manager = AIManager(GeminiClient(), SampleResponseClient())
     recommendation = ai_manager.get_shelter_recommendation(client, shelters)
     if recommendation is None:
-        IOManager.print_error(f"AI recommendation failed for client {client['client_id']}.")
+        IOManager.print_error("AI recommendation failed.")
         return False
     # IOManager.print_update(f"AI Recommendation for client {client['client_id']}", f"\n{json.dumps(recommendation, indent=2)}")
     IOManager.print_update("Finding the best shelter based on AI recommendation and additional criteria...")
     logic_manager = LogicManager()
     best_shelter = logic_manager.calculate_suitability_score(shelters, client, recommendation)
     if best_shelter is None:
-        IOManager.print_error(f"No suitable shelter found for client {client['client_id']} based on AI recommendation and additional criteria.")
+        IOManager.print_error("No suitable shelter found based on the recommendation.")
         return False
     # IOManager.print_update(f"Best shelter for client {client['client_id']}", f"\n{json.dumps(best_shelter, indent=2)}")
     outcome = IOManager.present_best_shelter(client, best_shelter)
@@ -157,7 +157,7 @@ def main() -> None:
                 data_manager = DataManager(storage)
                 record = data_manager.get_clientid(client_id)
                 if record[1] is not None:
-                    IOManager.print_error(f"Could not find client record for client_id {client_id}", record[1])
+                    IOManager.print_error("Could not find the requested client record.", record[1])
                     continue
                 IOManager.print_client_record(record[0])
                 time.sleep(1)
