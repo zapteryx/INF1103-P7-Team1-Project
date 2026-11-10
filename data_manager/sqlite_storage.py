@@ -12,3 +12,15 @@ class SQLiteStorage(Storage):
 
         # Create the database and table if necessary
         self._initialize_database()
+
+    def _connect(self) -> sqlite3.Connection:
+        """
+        Create a connection to the SQLite database.
+        """
+        connection = sqlite3.connect(
+            self._database_path,
+            timeout=10
+        )
+
+        connection.row_factory = sqlite3.Row
+        return connection
