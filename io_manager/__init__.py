@@ -126,8 +126,9 @@ class IOManager:
                 password_errors = password_validator(password)
                 if password_errors:
                     print(
-                        "\n[!] Password does not meet security requirements. "
-                        "Please choose a stronger password.\n"
+                        "\n[!] Password does not meet security requirements.\n"
+                        + "\n".join(password_errors)
+                        + "\nPlease choose a stronger password.\n"
                     )
                     continue  # Reprompt for password only
 
