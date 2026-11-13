@@ -1,4 +1,5 @@
 import sys
+import getpass
 from abc import ABC, abstractmethod
 from data_manager import ShelterFileReader, FileValidator
 
@@ -134,7 +135,7 @@ class IOManager:
         """Collects login credentials (username & password)."""
         print("\n--- ACCOUNT LOGIN ---")
         username = input("Username: ").strip()
-        password = input("Password: ").strip()
+        password = getpass.getpass("Password: ").strip()
         return {
             "username": username,
             "password": password
