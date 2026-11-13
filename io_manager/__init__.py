@@ -1,5 +1,7 @@
 import sys
 from abc import ABC, abstractmethod
+
+import pwinput
 from data_manager import ShelterFileReader, FileValidator
 
 
@@ -116,10 +118,10 @@ class IOManager:
 
         # Password collection with strength validation
         while True:
-            password = input("Enter Password: ").strip()
+            password = pwinput.pwinput(prompt="Enter password: ", mask="*").strip()
             while not password:
                 print("[!] Password cannot be empty.")
-                password = input("Enter Password: ").strip()
+                password = pwinput.pwinput(prompt="Enter password: ", mask="*").strip()
 
             # Validate password strength if validator provided
             if password_validator:
@@ -134,7 +136,7 @@ class IOManager:
 
             # Password is valid or no validator, now confirm
             while True:
-                confirm_password = input("Confirm Password: ").strip()
+                confirm_password = pwinput.pwinput(prompt="Confirm Password: ", mask="*").strip()
 
                 if password == confirm_password:
                     print("Passwords match successfully.")
@@ -156,7 +158,7 @@ class IOManager:
         """Collects login credentials (username & password)."""
         print("\n--- ACCOUNT LOGIN ---")
         username = input("Username: ").strip()
-        password = input("Password: ").strip()
+        password = pwinput.pwinput(prompt="Password: ", mask="*").strip()
         return {
             "username": username,
             "password": password

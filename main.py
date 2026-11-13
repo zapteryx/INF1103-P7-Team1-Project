@@ -89,6 +89,8 @@ def authenticate_user() -> User | None:
                 return user
             else:
                 IOManager.print_error("Login failed", message)
+                time.sleep(2)
+
 
         # Exit
         elif choice == 3:
