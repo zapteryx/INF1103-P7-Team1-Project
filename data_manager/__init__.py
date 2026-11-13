@@ -7,6 +7,7 @@ from .file_validator import FileValidator
 from typing import Any
 from .sqlite_storage import SQLiteStorage
 from .user_manager import User, UserManager
+from .authentication import Authentication
 
 # Maintained by Htet Shine Aung (2604711)
 class DataManager:
@@ -178,5 +179,6 @@ __all__ = [
     "FileValidator",
     "SQLiteStorage",
     "User",
-    "UserManager"
+    "UserManager",
+    "Authentication"
 ]

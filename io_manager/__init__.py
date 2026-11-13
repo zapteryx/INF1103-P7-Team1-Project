@@ -62,8 +62,9 @@ class AIShelter(ShelterBase):
 class IOManager:
     @staticmethod
     def print_error(err_title: str, err_desc: str = "") -> None:
-        desc_str = f": {err_desc}" if err_desc else ""
-        print(f"Encountered an error:\n{err_title}{desc_str}", file=sys.stderr)
+        # Error details may contain database or user-provided data. Keep them
+        # out of terminal logs and expose only a safe, fixed error title.
+        print(f"Encountered an error:\n{err_title}", file=sys.stderr)
 
     @staticmethod
     def print_update(update_title: str, update_desc: str = "") -> None:
@@ -87,16 +88,20 @@ class IOManager:
         return int(choice_input)
 
     @staticmethod
-    def collect_registration_input(existing_usernames: list = None) -> dict:
+    def collect_registration_input(existing_usernames: list = None, password_validator=None) -> dict:
         """
         Collects user registration inputs (name, username, password, confirm_password).
-        Validates non-empty fields, username uniqueness, and password matching with retry loops.
+        Validates non-empty fields, username uniqueness, password strength, and password matching with retry loops.
+
+        Args:
+            existing_usernames: List of existing usernames to check against
+            password_validator: Optional callable that takes password and returns list of errors (empty if valid)
         """
         if existing_usernames is None:
             existing_usernames = []
 
         print("\n--- ACCOUNT REGISTRATION ---")
-        
+
         name = input("Enter Full Name: ").strip()
         while not name:
             print("[!] Name cannot be empty.")
@@ -110,26 +115,43 @@ class IOManager:
                 print("[!] Username already taken. Please choose another username.")
             username = input("Enter Username: ").strip()
 
+        # Password collection with strength validation
         while True:
             password = input("Enter Password: ").strip()
             while not password:
                 print("[!] Password cannot be empty.")
                 password = input("Enter Password: ").strip()
 
-            confirm_password = input("Confirm Password: ").strip()
+            # Validate password strength if validator provided
+            if password_validator:
+                password_errors = password_validator(password)
+                if password_errors:
+                    print(
+                        "\n[!] Password does not meet security requirements.\n"
+                        + "\n".join(password_errors)
+                        + "\nPlease choose a stronger password.\n"
+                    )
+                    continue  # Reprompt for password only
 
-            if password == confirm_password:
-                print("Passwords match successfully.")
-                break
-            else:
-                print("Registration Error: Passwords do not match. Please try again.\n")
+            # Password is valid or no validator, now confirm
+            while True:
+                confirm_password = input("Confirm Password: ").strip()
+
+                if password == confirm_password:
+                    print("Passwords match successfully.")
+                    break
+                else:
+                    print("[!] Passwords do not match. Please re-enter confirmation.\n")
+
+            # Both password valid and confirmed, exit outer loop
+            break
 
         return {
             "name": name,
             "username": username,
             "password": password
         }
-    
+
     @staticmethod
     def collect_login_input() -> dict:
         """Collects login credentials (username & password)."""
@@ -227,7 +249,7 @@ class IOManager:
         print("3. Get Shelter recommendations for clients")
         print("4. Search Client by NRIC")
         print("5. Filter Cases by Outcome")
-        print("6. Exit")
+        print("6. Log Out")
         print("====================================")
         choice_input = input("Select option (1-6): ").strip()
 
