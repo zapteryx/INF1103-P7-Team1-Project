@@ -143,6 +143,8 @@ def main() -> None:
                     IOManager.print_error("Could not load shelters", shelters[1])
                     continue
                 for client in clients[0]:
+                    if client.get("outcome") is True:
+                        continue
                     result = get_recommendation(clients_file_path, client, shelters[0])
                     if result is not None:
                         continue
