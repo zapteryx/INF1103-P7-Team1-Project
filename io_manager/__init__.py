@@ -437,9 +437,21 @@ class IOManager:
         if not shelter:
             print("No suitable shelter found matching the client criteria.")
             return
+        
+        safe_shelter_info = {
+        "rank": shelter.get("rank"),
+        "shelter_name": shelter.get("shelter_name"),
+        "ai_suitability_score": shelter.get("ai_suitability_score"),
+        "calculated_suitability_score": shelter.get("calculated_suitability_score"),
+        "ai_confidence_score": shelter.get("ai_confidence_score"),
+        "min_age": shelter.get("min_age"),
+        "max_age": shelter.get("max_age"),
+        "gender_restriction": shelter.get("gender_restriction"),
+        "dependents_allowed": shelter.get("dependents_allowed"),
+    }
 
         print("Suggested Shelter Details:")
-        print(IOManager.format_shelter(shelter))
+        print(IOManager.format_shelter(safe_shelter_info))
         
         
     @staticmethod
