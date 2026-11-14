@@ -4,6 +4,8 @@ from abc import ABC, abstractmethod
 
 import pwinput
 from data_manager import ShelterFileReader, FileValidator
+ADMIN_SECRET_CODE = "STAFF2026"
+
 
 
 class ShelterBase(ABC):
@@ -438,7 +440,14 @@ class IOManager:
 
         print("Suggested Shelter Details:")
         print(IOManager.format_shelter(shelter))
-    
+        
+        
+    @staticmethod
+    def validate_admin_secret_code() -> bool:
+        user_code = input("Admin invite code (please go back if client): ").strip()
+        expected_code = ADMIN_SECRET_CODE  # This should be securely stored in a real application
+        return user_code == expected_code
+
     
     
 

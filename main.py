@@ -3,7 +3,6 @@ from ai_manager import AIManager, GeminiClient, SampleResponseClient
 from data_manager import DataManager, ShelterFileReader, FileStorage, SQLiteStorage, UserManager, Authentication, User
 from io_manager import IOManager
 from logic_manager import LogicManager
-ADMIN_SECRET_CODE = "STAFF2026"
 
 # Maintained by Ming Xuan (2604426)
 def get_suitable_storage(filename: str) -> FileStorage | SQLiteStorage:
@@ -125,29 +124,28 @@ def authenticate_user() -> User | None:
                 
                 
         elif choice == 3:
-            admin_invite_code = input("Admin invite code (please go back if client): ").strip()
-            if admin_invite_code == ADMIN_SECRET_CODE:
-                is_admin = 1
-                registration_data = IOManager.collect_registration_input(
-                    password_validator=auth.check_password_strength, is_admin = is_admin
-                )
-                # Register user (password already validated during input collection)
-                success, errors = auth.register_user(
-                    registration_data["name"],
-                    registration_data["nric"], #this will be None for admin registration
-                    registration_data["username"],
-                    registration_data["password"],
-                    is_admin
-                )
+                if IOManager.validate_admin_secret_code():
+                    is_admin = 1
+                    registration_data = IOManager.collect_registration_input(
+                        password_validator=auth.check_password_strength, is_admin = is_admin
+                    )
+                    # Register user (password already validated during input collection)
+                    success, errors = auth.register_user(
+                        registration_data["name"],
+                        registration_data["nric"], #this will be None for admin registration
+                        registration_data["username"],
+                        registration_data["password"],
+                        is_admin
+                    )
 
-                if success:
-                    IOManager.print_update("Admin registration successful! Please login to continue.")
+                    if success:
+                        IOManager.print_update("Admin registration successful! Please login to continue.")
+                    else:
+                        # This should only fail for database issues now, not password issues
+                        IOManager.print_error("Admin registration failed", "\n".join(errors))
                 else:
-                    # This should only fail for database issues now, not password issues
-                    IOManager.print_error("Admin registration failed", "\n".join(errors))
-            else:
-                IOManager.print_error("Invalid admin invite code.")
-                time.sleep(1)
+                    IOManager.print_error("Invalid admin invite code.")
+                    time.sleep(1)
             
         # Exit
         elif choice == 4:
