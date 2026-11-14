@@ -176,17 +176,64 @@ def main() -> None:
         if user.is_admin:
             IOManager.print_update("You are logged in as a social worker. You have access to all case management functionalities.")
             while True:
-                choice = IOManager.display_menu()
+                # Count pending approvals
+                clients_file_path = IOManager.get_client_records_filename(['json', 'csv', 'db'], True)
+                storage = get_suitable_storage(clients_file_path)
+                data_manager = DataManager(storage)
+                clients, error = data_manager.load_records()
+                pending_count = 0
+                if error is None:
+                    pending_count = sum(1 for c in clients if not c.get("approved", True))
+
+                choice = IOManager.display_menu(pending_count)
                 # new client intake
                 if choice == 1:
                     client = IOManager.collect_intake_input()
+                    client["approved"] = True  # Social worker-added clients are pre-approved
                     clients_file_path = IOManager.get_client_records_filename(['json', 'csv', 'db'], True)
                     storage = get_suitable_storage(clients_file_path)
                     data_manager = DataManager(storage)
                     data_manager.add_record(client)
                     time.sleep(1)
-                # view all shelters
+                # approve client applications
                 elif choice == 2:
+                    clients_file_path = IOManager.get_client_records_filename(['json', 'csv', 'db'])
+                    storage = get_suitable_storage(clients_file_path)
+                    data_manager = DataManager(storage)
+                    clients, error = data_manager.load_records()
+                    if error is not None:
+                        IOManager.print_error("Could not load client records", error)
+                        continue
+
+                    unapproved = [c for c in clients if not c.get("approved", True)]
+                    if not unapproved:
+                        IOManager.print_update("No pending applications to approve.")
+                        time.sleep(1)
+                        continue
+
+                    for client in unapproved:
+                        print("\n" + "="*50)
+                        IOManager.print_client_record(client)
+                        print("="*50)
+                        decision = input("\nApprove this application? (Yes / No / Exit): ").strip().lower()
+                        while decision not in ["yes", "no", "exit", "y", "n", "e"]:
+                            print("Invalid input. Please enter 'Yes', 'No', or 'Exit'.")
+                            decision = input("Approve this application? (Yes / No / Exit): ").strip().lower()
+
+                        if decision in ["exit", "e"]:
+                            break
+                        elif decision in ["yes", "y"]:
+                            client["approved"] = True
+                            IOManager.print_update(f"Application for {client['client_id']} approved.")
+                        else:
+                            # Remove unapproved application
+                            clients.remove(client)
+                            IOManager.print_update(f"Application for {client['client_id']} rejected and removed.")
+
+                    data_manager.save_records(clients)
+                    time.sleep(1)
+                # view all shelters
+                elif choice == 3:
                     shelter_file_path = IOManager.get_shelter_filename()
                     shelter_reader = ShelterFileReader(shelter_file_path)
                     shelters = shelter_reader.load_shelters()
@@ -196,7 +243,7 @@ def main() -> None:
                     IOManager.print_shelter_list(shelters[0])
                     time.sleep(1)
                 # get shelter recommendations for clients
-                elif choice == 3:
+                elif choice == 4:
                     shelter_file_path = IOManager.get_shelter_filename()
                     clients_file_path = IOManager.get_client_records_filename(['csv', 'json', 'db'])
                     storage = get_suitable_storage(clients_file_path)
@@ -211,7 +258,7 @@ def main() -> None:
                         IOManager.print_error("Could not load shelters", shelters[1])
                         continue
                     for client in clients[0]:
-                        if client.get("outcome") is True:
+                        if client.get("outcome") is True or not client.get("approved", True):
                             continue
                         result = get_recommendation(clients_file_path, client, shelters[0])
                         if result is not None:
@@ -222,7 +269,7 @@ def main() -> None:
                             get_recommendation(clients_file_path, client, shelters[0])
                     time.sleep(1)
                 # search for a client record by client_id
-                elif choice == 4:
+                elif choice == 5:
                     clients_file_path = IOManager.get_client_records_filename(['csv', 'json', 'db'])
                     client_id = IOManager.ask_for_client_id()
                     storage = get_suitable_storage(clients_file_path)
@@ -234,7 +281,7 @@ def main() -> None:
                     IOManager.print_client_record(record[0])
                     time.sleep(1)
                 # filter cases by outcome
-                elif choice == 5:
+                elif choice == 6:
                     clients_file_path = IOManager.get_client_records_filename(['csv', 'json', 'db'])
                     storage = get_suitable_storage(clients_file_path)
                     data_manager = DataManager(storage)
@@ -270,7 +317,9 @@ def main() -> None:
                         IOManager.print_update("You have an active application.")
                     else:
                         client = IOManager.collect_intake_input(user.nric)
+                        client["approved"] = False  # Self-registered clients need approval
                         data_manager.add_record(client)
+                        IOManager.print_update("Application submitted successfully. Please wait for social worker approval.")
                     time.sleep(1)
 
                 elif choice == 2:

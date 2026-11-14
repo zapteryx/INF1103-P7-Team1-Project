@@ -279,22 +279,26 @@ class IOManager:
             print(IOManager.format_shelter(shelter))
 
     @staticmethod
-    def display_menu() -> int:
+    def display_menu(pending_approvals: int = 0) -> int:
+        approval_indicator = " [!!]" if pending_approvals > 0 else ""
         print("====================================")
         print("         Social Service AI          ")
         print("====================================")
         print("1. New Client Intake")
-        print("2. View All Shelters")
-        print("3. Get Shelter recommendations for clients")
-        print("4. Search Client by NRIC")
-        print("5. Filter Cases by Outcome")
-        print("6. Log Out")
+        print(f"2. Approve Client Applications{approval_indicator}")
+        if pending_approvals > 0:
+            print(f"> {pending_approvals} pending case(s) awaiting approval")
+        print("3. View All Shelters")
+        print("4. Get Shelter recommendations for clients")
+        print("5. Search Client by NRIC")
+        print("6. Filter Cases by Outcome")
+        print("7. Log Out")
         print("====================================")
-        choice_input = input("Select option (1-6): ").strip()
+        choice_input = input("Select option (1-7): ").strip()
 
-        while not choice_input.isdigit() or int(choice_input) not in range(1, 7):
-            print("Invalid option. Please enter a number between 1 and 6.")
-            choice_input = input("Select option (1-6): ").strip()
+        while not choice_input.isdigit() or int(choice_input) not in range(1, 8):
+            print("Invalid option. Please enter a number between 1 and 7.")
+            choice_input = input("Select option (1-7): ").strip()
         return int(choice_input)
     
     @staticmethod
