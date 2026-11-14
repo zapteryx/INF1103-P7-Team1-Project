@@ -299,19 +299,21 @@ class IOManager:
     
     @staticmethod
     def display_client_menu(menu_editor: int = 0) -> int:
-        shelter_found_string = "*AVAILABLE SHELTER FOUND*" if menu_editor == 1 else ""
+        shelter_found_string = " [!!]" if menu_editor == 1 else ""
         print("====================================")
         print("         Social Service AI          ")
         print("====================================")
         print("1. Submit my Shelter Intake Form")
-        print("2. View My Application Status")
+        print("2. View Application Status")
         print(f"3. View my Assigned Shelter{shelter_found_string}")
+        if menu_editor == 1:
+            print("> A shelter has been found for you!")
         print("4. Log Out")
         print("====================================")
         choice_input = input("Select option (1-4): ").strip()
         while not choice_input.isdigit() or int(choice_input) not in range(1, 5):
             print("Invalid option. Please enter a number between 1 and 4.")
-            choice_input = input("Select option (1-3): ").strip()
+            choice_input = input("Select option (1-4): ").strip()
         return int(choice_input)
         
         
