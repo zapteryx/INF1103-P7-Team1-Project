@@ -315,9 +315,7 @@ class IOManager:
             print("Invalid option. Please enter a number between 1 and 4.")
             choice_input = input("Select option (1-4): ").strip()
         return int(choice_input)
-        
-        
-        
+
     @staticmethod
     def collect_intake_input(client_nric: str = "") -> dict:
         print("\n--- NEW CLIENT INTAKE---")
@@ -458,16 +456,12 @@ class IOManager:
         print("Suggested Shelter Details:")
         print(IOManager.format_shelter(safe_shelter_info))
         return
-        
-        
+
     @staticmethod
     def validate_admin_secret_code() -> bool:
         user_code = input("Admin invite code (please go back if client): ").strip()
         expected_code = ADMIN_SECRET_CODE  # This should be securely stored in a real application
         return user_code == expected_code
-
-    
-    
 
     @staticmethod
     def print_client_record(client: dict) -> None:
