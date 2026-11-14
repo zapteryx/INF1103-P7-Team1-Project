@@ -83,9 +83,10 @@ def test_user_registration():
 
     # Test successful registration
     success, errors = auth.register_user(
-        "John Doe",
-        "johndoe123",
-        "SecurePass123!"
+        name="John Doe",
+        nric="S1234567A",
+        username="johndoe123",
+        password="SecurePass123!"
     )
     assert success is True, f"Registration should succeed, got errors: {errors}"
     assert errors == [], "Should have no errors on successful registration"
@@ -93,9 +94,10 @@ def test_user_registration():
 
     # Test duplicate username
     success, errors = auth.register_user(
-        "Jane Doe",
-        "johndoe123",  # Same username
-        "AnotherPass123!"
+        name="Jane Doe",
+        nric="S8901234B",
+        username="johndoe123",  # Same username
+        password="AnotherPass123!"
     )
     assert success is False, "Should reject duplicate username"
     assert "Username already exists" in errors[0]
@@ -103,9 +105,10 @@ def test_user_registration():
 
     # Test registration with weak password
     success, errors = auth.register_user(
-        "Bob Smith",
-        "bobsmith",
-        "weak"
+        name="Bob Smith",
+        nric="S5678901C",
+        username="bobsmith",
+        password="weak"
     )
     assert success is False, "Should reject weak password"
     assert len(errors) > 0, "Should return password validation errors"
@@ -120,7 +123,7 @@ def test_user_login():
     auth = setup_test_auth()
 
     # Register a test user first
-    auth.register_user("Alice Johnson", "alice123", "SecurePass123!")
+    auth.register_user(name="Alice Johnson", username="alice123", password="SecurePass123!", nric="S2345678D")
 
     # Test successful login
     success, message = auth.login("alice123", "SecurePass123!")
@@ -162,7 +165,7 @@ def test_user_logout():
     auth = setup_test_auth()
 
     # Register and login
-    auth.register_user("Bob Wilson", "bob456", "SecurePass123!")
+    auth.register_user(name="Bob Wilson", nric="S9012345C", username="bob456", password="SecurePass123!", nric="S9012345C")
     auth.login("bob456", "SecurePass123!")
 
     assert auth.get_current_user() is not None
@@ -196,7 +199,7 @@ def test_inactive_account():
         auth = Authentication(user_manager)
 
         # Register user
-        auth.register_user("Charlie Brown", "charlie789", "SecurePass123!")
+        auth.register_user(name="Charlie Brown", nric="S3456789E", username="charlie789", password="SecurePass123!")
 
         # Login successfully
         success, message = auth.login("charlie789", "SecurePass123!")
@@ -257,7 +260,7 @@ def test_username_availability():
     print("PASS: Correctly identified available username")
 
     # Register user
-    auth.register_user("Test User", "newuser", "SecurePass123!")
+    auth.register_user(name="Test User", nric="S1111111A", username="newuser", password="SecurePass123!")
 
     # Check taken username
     assert auth.is_username_available("newuser") is False

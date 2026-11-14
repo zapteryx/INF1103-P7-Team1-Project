@@ -83,7 +83,7 @@ def setup_test_environment():
 
     # Register a test user if not exists
     if auth.is_username_available("testuser"):
-        auth.register_user("Test User", "testuser", "TestPass123!")
+        auth.register_user(name="Test User", nric="S1111112A", username="testuser", password="TestPass123!")
         print("PASS: Test user created for authentication\n")
     else:
         print("PASS: Test user already exists\n")

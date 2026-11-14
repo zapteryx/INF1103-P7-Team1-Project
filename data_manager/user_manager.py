@@ -12,6 +12,8 @@ class User:
     user_id: int
     name: str
     username: str
+    nric: str
+    is_admin: int
     password_hash: str
     registration_date: str
     account_status: int
@@ -54,6 +56,8 @@ class UserManager:
                         user_id INTEGER PRIMARY KEY AUTOINCREMENT,
                         name TEXT NOT NULL,
                         username TEXT NOT NULL UNIQUE,
+                        nric TEXT UNIQUE,
+                        is_admin INTEGER NOT NULL DEFAULT 0 CHECK (is_admin IN (0, 1)),
                         password_hash TEXT NOT NULL,
                         registration_date TEXT NOT NULL,
                         account_status INTEGER NOT NULL DEFAULT 1
@@ -97,6 +101,8 @@ class UserManager:
                     user_id,
                     name,
                     username,
+                    nric,
+                    is_admin,
                     password_hash,
                     registration_date,
                     account_status
@@ -111,6 +117,8 @@ class UserManager:
             user_id=row["user_id"],
             name=row["name"],
             username=row["username"],
+            nric=row["nric"],
+            is_admin=row["is_admin"],
             password_hash=row["password_hash"],
             registration_date=row["registration_date"],
             account_status=row["account_status"]
@@ -122,8 +130,10 @@ class UserManager:
     def create_user(
         self,
         name: str,
+        nric: str,
         username: str,
-        password_hash: str
+        password_hash: str,
+        is_admin: int,
     ) -> int | None:
 
         if not all(
@@ -131,9 +141,13 @@ class UserManager:
             for value in (name, username, password_hash)
         ):
             return None
-
+        
+        nric = nric.strip()
         name = name.strip()
         username = username.strip()
+        
+        if nric == "0":     #admin nric is 0, will now be None for admin registration
+            nric = None
 
         if not name or not username or not password_hash:
             return None
@@ -149,15 +163,19 @@ class UserManager:
                         INSERT INTO users (
                             name,
                             username,
+                            nric,
                             password_hash,
+                            is_admin,
                             registration_date,
                             account_status
                         )
-                        VALUES (?, ?, ?, ?, 1)
+                        VALUES (?, ?, ?, ?, ?, ?, 1)
                     """, (
                         name,
                         username,
+                        nric,
                         password_hash,
+                        is_admin,
                         registration_date
                     ))
 
