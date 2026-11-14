@@ -105,8 +105,10 @@ class Authentication:
     def register_user(
         self,
         name: str,
+        nric: str,
         username: str,
-        password: str
+        password: str,
+        is_admin: bool = False,
     ) -> tuple[bool, list[str]]:
         """
         Register a new user account.
@@ -128,7 +130,7 @@ class Authentication:
 
         password_hash = self.__password_hasher.hash(password)
 
-        user_id = self.__user_manager.create_user(name, username, password_hash)
+        user_id = self.__user_manager.create_user(name, nric, username, password_hash, is_admin)
 
         if user_id is not None:
             return True, []

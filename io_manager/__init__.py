@@ -1,9 +1,15 @@
 import sys
 import getpass
+import os
 from abc import ABC, abstractmethod
 
 import pwinput
+from dotenv import load_dotenv
 from data_manager import ShelterFileReader, FileValidator
+
+load_dotenv()
+ADMIN_SECRET_CODE = os.getenv("ADMIN_SECRET_CODE")
+
 
 
 class ShelterBase(ABC):
@@ -76,33 +82,37 @@ class IOManager:
     @staticmethod
     def display_auth_menu() -> int:
         print("\n====================================")
-        print("    Social Service AI - Access Portal  ")
+        print("  Social Service AI - Access Portal  ")
         print("====================================")
         print("1. Register")
         print("2. Login")
-        print("3. Exit System")
+        print("3. Social Worker Registration")
+        print("4. Exit System")
         print("====================================")
-        choice_input = input("Select option (1-3): ").strip()
+        choice_input = input("Select option (1-4): ").strip()
 
-        while not choice_input.isdigit() or int(choice_input) not in range(1, 4):
-            print("Invalid option. Please enter a number between 1 and 3.")
-            choice_input = input("Select option (1-3): ").strip()
+        while not choice_input.isdigit() or int(choice_input) not in range(1, 5):
+            print("Invalid option. Please enter a number between 1 and 4.")
+            choice_input = input("Select option (1-4): ").strip()
         return int(choice_input)
 
     @staticmethod
-    def collect_registration_input(existing_usernames: list = None, password_validator=None) -> dict:
+    def collect_registration_input(nric_age_dict: dict = None, password_validator=None, username_validator=None, is_admin: bool = False) -> dict:
         """
         Collects user registration inputs (name, username, password, confirm_password).
         Validates non-empty fields, username uniqueness, password strength, and password matching with retry loops.
 
         Args:
-            existing_usernames: List of existing usernames to check against
+            nric_age_dict: Dictionary mapping NRICs to ages for verification
             password_validator: Optional callable that takes password and returns list of errors (empty if valid)
+            username_validator: Optional callable that takes username and returns True if available, False if taken
+            is_admin: Whether this is admin registration (skips NRIC collection)
         """
-        if existing_usernames is None:
-            existing_usernames = []
 
         print("\n--- ACCOUNT REGISTRATION ---")
+        #this method is used twice, but only the clients will need this data, admin no need
+        if nric_age_dict is None: 
+            nric_age_dict = {}
 
         name = input("Enter Full Name: ").strip()
         while not name:
@@ -110,13 +120,39 @@ class IOManager:
             name = input("Enter Full Name: ").strip()
 
         username = input("Enter Username: ").strip()
-        while not username or username.lower() in [u.lower() for u in existing_usernames]:
+        while not username or (username_validator and not username_validator(username)):
             if not username:
                 print("[!] Username cannot be empty.")
             else:
                 print("[!] Username already taken. Please choose another username.")
             username = input("Enter Username: ").strip()
-
+            
+        nric_input = "0"    #placeholder for admin registration, will be None for admin registration
+        if not is_admin:
+            nric_input = input("Enter NRIC: ").strip().upper()
+            is_valid_nric = (
+                len(nric_input) == 9
+                and nric_input[0] in ["S", "T"]
+                and nric_input[1:8].isdigit()
+                and nric_input[-1].isalpha()
+            )
+            while not is_valid_nric:
+                print("Invalid NRIC. Must start with S or T, followed by 7 digits and end with a letter (eg; S1234567H)")
+                nric_input = input("Enter NRIC: ").strip().upper()
+                is_valid_nric = (
+                    len(nric_input) == 9
+                    and nric_input[0] in ["S", "T"]
+                    and nric_input[1:8].isdigit()
+                    and nric_input[-1].isalpha()
+                )
+        if nric_input in nric_age_dict:
+            input_age = input("[EXISTING RECORD DETECTED] Enter your age for security purposes: ").strip()
+            if not input_age.isdigit():
+                print("Invalid input. Verification failed.")
+                return
+            elif int(input_age) != nric_age_dict[nric_input]:
+                print("security verification failed. Age does not match records.")
+                return
         # Password collection with strength validation
         while True:
             password = pwinput.pwinput(prompt="Enter password: ", mask="*").strip()
@@ -151,6 +187,7 @@ class IOManager:
         return {
             "name": name,
             "username": username,
+            "nric": nric_input,
             "password": password
         }
 
@@ -242,39 +279,53 @@ class IOManager:
             print(IOManager.format_shelter(shelter))
 
     @staticmethod
-    def display_menu() -> int:
+    def display_menu(pending_approvals: int = 0) -> int:
+        approval_indicator = " [!!]" if pending_approvals > 0 else ""
         print("====================================")
         print("         Social Service AI          ")
         print("====================================")
         print("1. New Client Intake")
-        print("2. View All Shelters")
-        print("3. Get Shelter recommendations for clients")
-        print("4. Search Client by NRIC")
-        print("5. Filter Cases by Outcome")
-        print("6. Log Out")
+        print(f"2. Approve Client Applications{approval_indicator}")
+        if pending_approvals > 0:
+            print(f"> {pending_approvals} pending case(s) awaiting approval")
+        print("3. View All Shelters")
+        print("4. Get Shelter recommendations for clients")
+        print("5. Search Client by NRIC")
+        print("6. Filter Cases by Outcome")
+        print("7. Log Out")
         print("====================================")
-        choice_input = input("Select option (1-6): ").strip()
+        choice_input = input("Select option (1-7): ").strip()
 
-        while not choice_input.isdigit() or int(choice_input) not in range(1, 7):
-            print("Invalid option. Please enter a number between 1 and 6.")
-            choice_input = input("Select option (1-6): ").strip()
+        while not choice_input.isdigit() or int(choice_input) not in range(1, 8):
+            print("Invalid option. Please enter a number between 1 and 7.")
+            choice_input = input("Select option (1-7): ").strip()
+        return int(choice_input)
+    
+    @staticmethod
+    def display_client_menu(has_assigned_shelter: bool = False) -> int:
+        shelter_found_string = " [!!]" if has_assigned_shelter else ""
+        print("====================================")
+        print("         Social Service AI          ")
+        print("====================================")
+        print("1. Submit my Shelter Intake Form")
+        print("2. View Application Status")
+        print(f"3. View my Assigned Shelter{shelter_found_string}")
+        if has_assigned_shelter:
+            print("> A shelter has been found for you!")
+        print("4. Log Out")
+        print("====================================")
+        choice_input = input("Select option (1-4): ").strip()
+        while not choice_input.isdigit() or int(choice_input) not in range(1, 5):
+            print("Invalid option. Please enter a number between 1 and 4.")
+            choice_input = input("Select option (1-4): ").strip()
         return int(choice_input)
 
     @staticmethod
-    def collect_intake_input() -> dict:
+    def collect_intake_input(client_nric: str = "") -> dict:
         print("\n--- NEW CLIENT INTAKE---")
-
-        # Client ID Input & NRIC Validation
-        client_id = input("Enter NRIC: ").strip().upper()
-        is_valid_nric = (
-            len(client_id) == 9
-            and client_id[0] in ["S", "T"]
-            and client_id[1:8].isdigit()
-            and client_id[-1].isalpha()
-        )
-
-        while not is_valid_nric:
-            print("Invalid NRIC. Must start with S or T, followed by 7 digits and end with a letter (eg; S1234567H)")
+        client_id = client_nric.strip().upper()
+        #for logged-in clients, we will not ask them for NRIC again.
+        if not client_nric.strip():
             client_id = input("Enter NRIC: ").strip().upper()
             is_valid_nric = (
                 len(client_id) == 9
@@ -282,6 +333,15 @@ class IOManager:
                 and client_id[1:8].isdigit()
                 and client_id[-1].isalpha()
             )
+            while not is_valid_nric:
+                print("Invalid NRIC. Must start with S or T, followed by 7 digits and end with a letter (eg; S1234567H)")
+                client_id = input("Enter NRIC: ").strip().upper()
+                is_valid_nric = (
+                    len(client_id) == 9
+                    and client_id[0] in ["S", "T"]
+                    and client_id[1:8].isdigit()
+                    and client_id[-1].isalpha()
+                )
 
         # Gender Input & Validation
         gender_input = input("Enter Client Gender (Male / Female): ").strip().lower()
@@ -373,6 +433,49 @@ class IOManager:
             print("Invalid input. please enter 'Yes' or 'No'.")
             choice = input("Do you accept this shelter outcome (Yes / No): ").strip().lower()
         return choice in ["yes", "y"]
+
+    @staticmethod
+    def present_best_shelter_client(client: dict, shelter) -> None:
+        print("\n======== RECOMMENDED MATCH ========")
+        print(f"Client ID: {client.get('client_id', 'N/A')}")
+        print(f"Care Type: {client.get('care_type', 'N/A')}")
+        print("-------------------------------------")
+
+        if not shelter:
+            print("No suitable shelter found matching the client criteria.")
+            return
+        
+        safe_shelter_info = {
+        "rank": shelter.get("rank"),
+        "shelter_name": shelter.get("shelter_name"),
+        "ai_suitability_score": shelter.get("ai_suitability_score"),
+        "calculated_suitability_score": shelter.get("calculated_suitability_score"),
+        "ai_confidence_score": shelter.get("ai_confidence_score"),
+        "min_age": shelter.get("min_age"),
+        "max_age": shelter.get("max_age"),
+        "gender_restriction": shelter.get("gender_restriction"),
+        "dependents_allowed": shelter.get("dependents_allowed"),
+    }
+
+        print("Suggested Shelter Details:")
+        print(IOManager.format_shelter(safe_shelter_info))
+        return
+
+    @staticmethod
+    def validate_admin_secret_code() -> bool:
+        user_code = input("Enter social worker invite code (or press Enter to cancel): ").strip()
+        if not user_code:
+            return False
+        return user_code == ADMIN_SECRET_CODE
+
+    @staticmethod
+    def get_approval_decision() -> str:
+        """Get approval decision for a client application."""
+        decision = input("\nApprove this application? (Yes / No / Exit): ").strip().lower()
+        while decision not in ["yes", "no", "exit", "y", "n", "e"]:
+            print("Invalid input. Please enter 'Yes', 'No', or 'Exit'.")
+            decision = input("Approve this application? (Yes / No / Exit): ").strip().lower()
+        return decision
 
     @staticmethod
     def print_client_record(client: dict) -> None:

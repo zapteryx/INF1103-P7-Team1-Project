@@ -9,7 +9,7 @@ class LogicManager:
 
     @property
     def validator(self):
-        """Getter for validator using @property as taught in Week 9."""
+        """Getter for validator using @property"""
         return self._validator
 
     def validate_ai_recommendation(self, ai_recommendation: dict, shelter_csv: list[dict]):

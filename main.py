@@ -12,6 +12,14 @@ def get_suitable_storage(filename: str) -> FileStorage | SQLiteStorage:
         return SQLiteStorage(filename)
     else:
         raise ValueError("Unsupported file format. Please provide a .json, .csv, or .db file.")
+    
+    
+def init_client_storage(filename: str = "clients.json") -> None:
+    storage = get_suitable_storage(filename)
+    data_manager = DataManager(storage)
+    match, error = data_manager.load_records()
+    if error == "File not found.":
+        data_manager.save_records([])
 
 # Maintained by Ming Xuan (2604426)
 def get_recommendation(clients_file_path: str, client: dict, shelters: list[dict], tries = 0) -> bool | None:
@@ -44,6 +52,19 @@ def get_recommendation(clients_file_path: str, client: dict, shelters: list[dict
         return True
     return None
 
+
+def find_client_record(data_manager: DataManager, nric: str):
+    client_list, error = data_manager.load_records()
+    if error:
+        return None, error
+
+    target_nric = nric.strip().upper()
+    matched_client = next(
+        (c for c in client_list if str(c.get("client_id", "")).strip().upper() == target_nric),
+        None
+    )
+    return matched_client, None
+
 # Maintained by Mahima (2604701) & Ming Xuan (2604426)
 def authenticate_user() -> User | None:
     """
@@ -58,13 +79,32 @@ def authenticate_user() -> User | None:
 
         # Register
         if choice == 1:
-            registration_data = IOManager.collect_registration_input(
-                password_validator=auth.check_password_strength
-            )
+            clients_file_path = "clients.json"  # Default path for client records
+            storage = get_suitable_storage(clients_file_path)
+            data_manager = DataManager(storage)
+            client_list, error = data_manager.load_records()
+            if error is not None:
+                IOManager.print_error("There is an error in the registration process", error)
+                continue
+            else:
+                #client id in JSON is actually the NRIC.
+                client_nric_ages = {
+                    client.get("client_id"): client.get("age") for client in client_list
+                }
+                registration_data = IOManager.collect_registration_input(
+                    nric_age_dict=client_nric_ages,
+                    password_validator=auth.check_password_strength,
+                    username_validator=auth.is_username_available
+                )
+                if not registration_data:
+                    IOManager.print_error("Registration failed due to security verification failure.")
+                    time.sleep(1)
+                    continue
 
             # Register user (password already validated during input collection)
             success, errors = auth.register_user(
                 registration_data["name"],
+                registration_data["nric"],
                 registration_data["username"],
                 registration_data["password"]
             )
@@ -90,98 +130,226 @@ def authenticate_user() -> User | None:
             else:
                 IOManager.print_error("Login failed", message)
                 time.sleep(2)
-
-
-        # Exit
+                
+                
         elif choice == 3:
+                if IOManager.validate_admin_secret_code():
+                    is_admin = True
+                    registration_data = IOManager.collect_registration_input(
+                        password_validator=auth.check_password_strength,
+                        username_validator=auth.is_username_available,
+                        is_admin=is_admin
+                    )
+                    # Register user (password already validated during input collection)
+                    success, errors = auth.register_user(
+                        registration_data["name"],
+                        registration_data["nric"], #this will be None for admin registration
+                        registration_data["username"],
+                        registration_data["password"],
+                        is_admin
+                    )
+
+                    if success:
+                        IOManager.print_update("Social worker registration successful! Please login to continue.")
+                    else:
+                        # This should only fail for database issues now, not password issues
+                        IOManager.print_error("Social worker registration failed", "\n".join(errors))
+                else:
+                    IOManager.print_error("Invalid social worker invite code.")
+                    time.sleep(1)
+            
+        # Exit
+        elif choice == 4:
             IOManager.print_update("Thank you for using Social Service AI. Goodbye!")
             return None
 
 # Maintained by Ming Xuan (2604426)
 def main() -> None:
     while True:
+        init_client_storage("clients.json")
         # Authenticate user first
         user = authenticate_user()
         if user is None:
             return  # User chose to exit from auth menu
 
         IOManager.print_update(f"\nWelcome to Social Service AI, {user.name}!")
-
-        while True:
-            choice = IOManager.display_menu()
-            # new client intake
-            if choice == 1:
-                client = IOManager.collect_intake_input()
+        if user.is_admin:
+            IOManager.print_update("You are logged in as a social worker. You have access to all case management functionalities.")
+            while True:
+                # Count pending approvals
                 clients_file_path = IOManager.get_client_records_filename(['json', 'csv', 'db'], True)
                 storage = get_suitable_storage(clients_file_path)
                 data_manager = DataManager(storage)
-                data_manager.add_record(client)
-                time.sleep(1)
-            # view all shelters
-            elif choice == 2:
-                shelter_file_path = IOManager.get_shelter_filename()
-                shelter_reader = ShelterFileReader(shelter_file_path)
-                shelters = shelter_reader.load_shelters()
-                if shelters[1] is not None:
-                    IOManager.print_error("Could not load shelters", shelters[1])
-                    continue
-                IOManager.print_shelter_list(shelters[0])
-                time.sleep(1)
-            # get shelter recommendations for clients
-            elif choice == 3:
-                shelter_file_path = IOManager.get_shelter_filename()
-                clients_file_path = IOManager.get_client_records_filename(['csv', 'json', 'db'])
-                storage = get_suitable_storage(clients_file_path)
-                data_manager = DataManager(storage)
-                clients = data_manager.load_records()
-                if clients[1] is not None:
-                    IOManager.print_error("Could not load clients", clients[1])
-                    continue
-                shelter_reader = ShelterFileReader(shelter_file_path)
-                shelters = shelter_reader.load_shelters()
-                if shelters[1] is not None:
-                    IOManager.print_error("Could not load shelters", shelters[1])
-                    continue
-                for client in clients[0]:
-                    if client.get("outcome") is True:
+                clients, error = data_manager.load_records()
+                pending_count = 0
+                if error is None:
+                    pending_count = sum(1 for c in clients if not c.get("approved", True))
+
+                choice = IOManager.display_menu(pending_count)
+                # new client intake
+                if choice == 1:
+                    client = IOManager.collect_intake_input()
+                    client["approved"] = True  # Social worker-added clients are pre-approved
+                    clients_file_path = IOManager.get_client_records_filename(['json', 'csv', 'db'], True)
+                    storage = get_suitable_storage(clients_file_path)
+                    data_manager = DataManager(storage)
+                    data_manager.add_record(client)
+                    time.sleep(1)
+                # approve client applications
+                elif choice == 2:
+                    clients_file_path = IOManager.get_client_records_filename(['json', 'csv', 'db'])
+                    storage = get_suitable_storage(clients_file_path)
+                    data_manager = DataManager(storage)
+                    clients, error = data_manager.load_records()
+                    if error is not None:
+                        IOManager.print_error("Could not load client records", error)
                         continue
-                    result = get_recommendation(clients_file_path, client, shelters[0])
-                    if result is not None:
+
+                    unapproved = [c for c in clients if not c.get("approved", True)]
+                    if not unapproved:
+                        IOManager.print_update("No pending applications to approve.")
+                        time.sleep(1)
                         continue
-                    rerun = IOManager.get_rerun_decision()
-                    if rerun:
-                        # only rerun once more, do not ask for rerun decision again
-                        get_recommendation(clients_file_path, client, shelters[0])
-                time.sleep(1)
-            # search for a client record by client_id
-            elif choice == 4:
-                clients_file_path = IOManager.get_client_records_filename(['csv', 'json', 'db'])
-                client_id = IOManager.ask_for_client_id()
-                storage = get_suitable_storage(clients_file_path)
-                data_manager = DataManager(storage)
-                record = data_manager.get_clientid(client_id)
-                if record[1] is not None:
-                    IOManager.print_error("Could not find the requested client record.", record[1])
-                    continue
-                IOManager.print_client_record(record[0])
-                time.sleep(1)
-            # filter cases by outcome
-            elif choice == 5:
-                clients_file_path = IOManager.get_client_records_filename(['csv', 'json', 'db'])
-                storage = get_suitable_storage(clients_file_path)
-                data_manager = DataManager(storage)
-                clients = data_manager.load_records()
-                if clients[1] is not None:
-                    IOManager.print_error("Could not load clients", clients[1])
-                    continue
-                outcome = IOManager.ask_for_outcome_filter()
-                filtered_cases = data_manager.filter_records_by_outcome(clients[0], outcome)
-                IOManager.print_filtered_cases(filtered_cases, outcome)
-                time.sleep(1)
-            # log out
-            elif choice == 6:
-                IOManager.print_update("Logging out. Returning to authentication menu...")
-                break  # Break inner loop, return to authentication
+
+                    for client in unapproved:
+                        IOManager.print_client_record(client)
+                        decision = IOManager.get_approval_decision()
+
+                        if decision in ["exit", "e"]:
+                            break
+                        elif decision in ["yes", "y"]:
+                            client["approved"] = True
+                            IOManager.print_update(f"Application for {client['client_id']} approved.")
+                        else:
+                            # Remove unapproved application
+                            clients.remove(client)
+                            IOManager.print_update(f"Application for {client['client_id']} rejected and removed.")
+
+                    data_manager.save_records(clients)
+                    success, error = data_manager.save_records(clients)
+                    if not success:
+                        IOManager.print_error("Failed to save approval decisions", error or "Unknown error")
+                    else:
+                        IOManager.print_update("Approval decisions saved successfully.")
+                    time.sleep(1)
+                # view all shelters
+                elif choice == 3:
+                    shelter_file_path = IOManager.get_shelter_filename()
+                    shelter_reader = ShelterFileReader(shelter_file_path)
+                    shelters = shelter_reader.load_shelters()
+                    if shelters[1] is not None:
+                        IOManager.print_error("Could not load shelters", shelters[1])
+                        continue
+                    IOManager.print_shelter_list(shelters[0])
+                    time.sleep(1)
+                # get shelter recommendations for clients
+                elif choice == 4:
+                    shelter_file_path = IOManager.get_shelter_filename()
+                    clients_file_path = IOManager.get_client_records_filename(['csv', 'json', 'db'])
+                    storage = get_suitable_storage(clients_file_path)
+                    data_manager = DataManager(storage)
+                    clients = data_manager.load_records()
+                    if clients[1] is not None:
+                        IOManager.print_error("Could not load clients", clients[1])
+                        continue
+                    shelter_reader = ShelterFileReader(shelter_file_path)
+                    shelters = shelter_reader.load_shelters()
+                    if shelters[1] is not None:
+                        IOManager.print_error("Could not load shelters", shelters[1])
+                        continue
+                    for client in clients[0]:
+                        if client.get("outcome") is True or not client.get("approved", True):
+                            continue
+                        result = get_recommendation(clients_file_path, client, shelters[0])
+                        if result is not None:
+                            continue
+                        rerun = IOManager.get_rerun_decision()
+                        if rerun:
+                            # only rerun once more, do not ask for rerun decision again
+                            get_recommendation(clients_file_path, client, shelters[0])
+                    time.sleep(1)
+                # search for a client record by client_id
+                elif choice == 5:
+                    clients_file_path = IOManager.get_client_records_filename(['csv', 'json', 'db'])
+                    client_id = IOManager.ask_for_client_id()
+                    storage = get_suitable_storage(clients_file_path)
+                    data_manager = DataManager(storage)
+                    record = data_manager.get_clientid(client_id)
+                    if record[1] is not None:
+                        IOManager.print_error("Could not find the requested client record.", record[1])
+                        continue
+                    IOManager.print_client_record(record[0])
+                    time.sleep(1)
+                # filter cases by outcome
+                elif choice == 6:
+                    clients_file_path = IOManager.get_client_records_filename(['csv', 'json', 'db'])
+                    storage = get_suitable_storage(clients_file_path)
+                    data_manager = DataManager(storage)
+                    clients = data_manager.load_records()
+                    if clients[1] is not None:
+                        IOManager.print_error("Could not load clients", clients[1])
+                        continue
+                    outcome = IOManager.ask_for_outcome_filter()
+                    filtered_cases = data_manager.filter_records_by_outcome(clients[0], outcome)
+                    IOManager.print_filtered_cases(filtered_cases, outcome)
+                    time.sleep(1)
+                # log out
+                elif choice == 7:
+                    IOManager.print_update("Logging out. Returning to authentication menu...")
+                    break  # Break inner loop, return to authentication
+        else:
+            # Client workflow - use same file selection as social worker
+            clients_file_path = IOManager.get_client_records_filename(['json', 'csv', 'db'], True)
+            storage = get_suitable_storage(clients_file_path)
+            data_manager = DataManager(storage)
+            while True:
+                # Only fetch client data if the user selects an option that needs it (1, 2, or 3)
+                matched_client, error = find_client_record(data_manager, user.nric)
+                if error:
+                    IOManager.print_error("There is an error in finding your application record", error)
+                    break
+                has_assigned_shelter = False
+                if matched_client and matched_client.get("outcome") is True:
+                    has_assigned_shelter = True
+                choice = IOManager.display_client_menu(has_assigned_shelter)
+
+
+                if choice == 1:
+                    if matched_client is not None:
+                        IOManager.print_update("You have an active application.")
+                    else:
+                        client = IOManager.collect_intake_input(user.nric)
+                        client["approved"] = False  # Self-registered clients need approval
+                        data_manager.add_record(client)
+                        IOManager.print_update("Application submitted successfully. Please wait for social worker approval.")
+                    time.sleep(1)
+
+                elif choice == 2:
+                    if matched_client is None:
+                        IOManager.print_update("No application record found for your NRIC. Please submit an application first.")
+                    else:
+                        outcome = matched_client.get("outcome")
+                        if outcome is None:
+                            IOManager.print_update("Your application is still under review. Please check back later.")
+                        elif outcome is True:
+                            IOManager.print_update("Congratulations! Your application has been accepted. Please view your shelter with option 3.")
+                        elif outcome is False:
+                            IOManager.print_update("We regret to inform you that your application has been rejected, we are resolving the matter.")
+                    time.sleep(1)
+
+                elif choice == 3:
+                    if not matched_client or matched_client.get("outcome") is not True:
+                        IOManager.print_update("You have no assigned shelter. If you have an active application, please wait for the outcome to be updated.")
+                    else:
+                        best_shelter = matched_client.get("accepted_shelter")
+                        IOManager.present_best_shelter_client(matched_client, best_shelter)
+                        time.sleep(1)
+                    time.sleep(1)
+                elif choice == 4:
+                    IOManager.print_update("Logging out. Returning to authentication menu...")
+                    time.sleep(1)
+                    break   # Break inner loop, return to authentication
+            
 
 if __name__ == "__main__":
     main()

@@ -59,6 +59,15 @@ class FileStorage(Storage):
                             "outcome": row.get("outcome", "")
                         }
 
+                        # Handle approved field (convert string to bool)
+                        approved_value = row.get("approved", "")
+                        if approved_value:
+                            if approved_value.lower() == "true":
+                                case["approved"] = True
+                            elif approved_value.lower() == "false":
+                                case["approved"] = False
+                            # If empty or invalid, don't set it (will default to True in .get("approved", True))
+
                         # Reconstruct nested shelter information
                         if row.get("accepted_shelter_name"):
                             accepted_shelter = {}

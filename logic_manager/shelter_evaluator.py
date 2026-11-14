@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 
 
 class Evaluator(ABC):
-    """Abstract Base Class enforcing the evaluation contract taught in Week 9 & 10."""
     
     @abstractmethod
     def evaluate(self, shelter_description: str, client_data: dict) -> tuple[int, str | None]:

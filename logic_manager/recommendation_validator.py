@@ -1,5 +1,4 @@
 class RecommendationValidator:
-    """Validator class implementing Encapsulation (Week 8)."""
 
     def check_urgency_level(self, ai_recommendation: dict):
         urgency_level = ai_recommendation.get("urgency_level")

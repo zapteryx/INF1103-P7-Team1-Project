@@ -50,6 +50,8 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Run Test Suite
+        env:
+          ADMIN_SECRET_CODE: "STAFF2026"
         run: |
           python scripts/test_main.py
           python scripts/test_authentication.py
@@ -77,8 +79,8 @@ jobs:
 
       - name: Run Tests inside Docker Container
         run: |
-          docker run --rm inf1103-teamproject:latest python scripts/test_main.py
-          docker run --rm inf1103-teamproject:latest python scripts/test_authentication.py
+          docker run --rm -e ADMIN_SECRET_CODE="STAFF2026" inf1103-teamproject:latest python scripts/test_main.py
+          docker run --rm -e ADMIN_SECRET_CODE="STAFF2026" inf1103-teamproject:latest python scripts/test_authentication.py
 
   # ---------------------------------------------------------------------------
   # 3. Security Scanning (CodeQL Analysis)
