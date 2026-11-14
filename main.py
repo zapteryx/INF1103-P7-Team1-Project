@@ -226,6 +226,11 @@ def main() -> None:
                             IOManager.print_update(f"Application for {client['client_id']} rejected and removed.")
 
                     data_manager.save_records(clients)
+                    success, error = data_manager.save_records(clients)
+                    if not success:
+                        IOManager.print_error("Failed to save approval decisions", error or "Unknown error")
+                    else:
+                        IOManager.print_update("Approval decisions saved successfully.")
                     time.sleep(1)
                 # view all shelters
                 elif choice == 3:
@@ -293,7 +298,9 @@ def main() -> None:
                     IOManager.print_update("Logging out. Returning to authentication menu...")
                     break  # Break inner loop, return to authentication
         else:
-            storage = get_suitable_storage("clients.json")
+            # Client workflow - use same file selection as social worker
+            clients_file_path = IOManager.get_client_records_filename(['json', 'csv', 'db'], True)
+            storage = get_suitable_storage(clients_file_path)
             data_manager = DataManager(storage)
             while True:
                 # Only fetch client data if the user selects an option that needs it (1, 2, or 3)

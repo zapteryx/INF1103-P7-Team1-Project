@@ -198,7 +198,7 @@ def test_menu_options():
         ), patch.object(main.IOManager, "print_error") as mock_print_error:
             menu_calls = 0
 
-            def mock_display_menu():
+            def mock_display_menu(pending_count=0):
                 nonlocal menu_calls
                 menu_calls += 1
                 if menu_calls > 1:
@@ -230,7 +230,7 @@ def test_menu_options():
         ), patch.object(main.IOManager, "print_error") as mock_print_error_csv:
             menu_calls_csv = 0
 
-            def mock_display_menu_csv():
+            def mock_display_menu_csv(pending_count=0):
                 nonlocal menu_calls_csv
                 menu_calls_csv += 1
                 if menu_calls_csv > 1:
@@ -262,7 +262,7 @@ def test_menu_options():
         ), patch.object(main.IOManager, "print_error") as mock_print_error_db:
             menu_calls_db = 0
 
-            def mock_display_menu_db():
+            def mock_display_menu_db(pending_count=0):
                 nonlocal menu_calls_db
                 menu_calls_db += 1
                 if menu_calls_db > 1:
