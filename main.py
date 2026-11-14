@@ -177,7 +177,9 @@ def main() -> None:
             IOManager.print_update("You are logged in as a social worker. You have access to all case management functionalities.")
             while True:
                 # Count pending approvals
-                clients_file_path = IOManager.get_client_records_filename(['json', 'csv', 'db'], True)
+                
+                #to prevent code from always asking to add file after every activity
+                clients_file_path = "clients.json"
                 storage = get_suitable_storage(clients_file_path)
                 data_manager = DataManager(storage)
                 clients, error = data_manager.load_records()
@@ -299,7 +301,8 @@ def main() -> None:
                     break  # Break inner loop, return to authentication
         else:
             # Client workflow - use same file selection as social worker
-            clients_file_path = IOManager.get_client_records_filename(['json', 'csv', 'db'], True)
+            #to prevent code from always asking to add file after every activity
+            clients_file_path = "clients.json"
             storage = get_suitable_storage(clients_file_path)
             data_manager = DataManager(storage)
             while True:

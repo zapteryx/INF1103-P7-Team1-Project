@@ -203,10 +203,10 @@ class IOManager:
         }
 
     @staticmethod
-    def display_login_status(success: bool, username: str = "") -> None:
+    def display_login_status(success: bool, user_name: str = "") -> None:
         """Displays login outcome messages."""
         if success:
-            print(f"\n[✓] Login Successful! Welcome back, {username}.")
+            print(f"\n[✓] Login Successful! Welcome back, {user_name.capitalize()}.")
         else:
             print("\n[!] Login Failed: Invalid username or password.")
 
