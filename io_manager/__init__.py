@@ -298,15 +298,15 @@ class IOManager:
         return int(choice_input)
     
     @staticmethod
-    def display_client_menu(menu_editor: int = 0) -> int:
-        shelter_found_string = " [!!]" if menu_editor == 1 else ""
+    def display_client_menu(has_assigned_shelter: bool = False) -> int:
+        shelter_found_string = " [!!]" if has_assigned_shelter else ""
         print("====================================")
         print("         Social Service AI          ")
         print("====================================")
         print("1. Submit my Shelter Intake Form")
         print("2. View Application Status")
         print(f"3. View my Assigned Shelter{shelter_found_string}")
-        if menu_editor == 1:
+        if has_assigned_shelter:
             print("> A shelter has been found for you!")
         print("4. Log Out")
         print("====================================")

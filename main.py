@@ -259,10 +259,10 @@ def main() -> None:
                 if error:
                     IOManager.print_error("There is an error in finding your application record", error)
                     break
-                menu_editor = 0
+                has_assigned_shelter = False
                 if matched_client and matched_client.get("outcome") is True:
-                    menu_editor = 1
-                choice = IOManager.display_client_menu(menu_editor)
+                    has_assigned_shelter = True
+                choice = IOManager.display_client_menu(has_assigned_shelter)
 
 
                 if choice == 1:
