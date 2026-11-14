@@ -431,10 +431,7 @@ class IOManager:
             print("Invalid input. please enter 'Yes' or 'No'.")
             choice = input("Do you accept this shelter outcome (Yes / No): ").strip().lower()
         return choice in ["yes", "y"]
-    
-    
-    
-    
+
     @staticmethod
     def present_best_shelter_client(client: dict, shelter) -> None:
         print("\n======== RECOMMENDED MATCH ========")
