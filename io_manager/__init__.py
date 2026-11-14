@@ -459,9 +459,10 @@ class IOManager:
 
     @staticmethod
     def validate_admin_secret_code() -> bool:
-        user_code = input("Admin invite code (please go back if client): ").strip()
-        expected_code = ADMIN_SECRET_CODE  # This should be securely stored in a real application
-        return user_code == expected_code
+        user_code = input("Enter admin invite code (or press Enter to cancel): ").strip()
+        if not user_code:
+            return False
+        return user_code == ADMIN_SECRET_CODE
 
     @staticmethod
     def print_client_record(client: dict) -> None:
