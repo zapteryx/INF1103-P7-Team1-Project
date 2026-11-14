@@ -132,7 +132,7 @@ def test_menu_options():
             "No",  # Special Needs
             "Test intake note",  # Intake notes
             TEST_CLIENTS_JSON,  # Client file path
-            "6",  # Select Option 6 (Exit)
+            "7",  # Select Option 7 (Exit)
         ]
         with patch("builtins.input", side_effect=inputs_option_1):
             main.main()
@@ -149,7 +149,7 @@ def test_menu_options():
             "Yes",
             "CSV test client",
             TEST_CLIENTS_CSV,
-            "6",
+            "7",
         ]
         with patch("builtins.input", side_effect=inputs_option_1b):
             main.main()
@@ -166,28 +166,28 @@ def test_menu_options():
             "No",
             "SQLite test client",
             TEST_CLIENTS_DB,
-            "6",
+            "7",
         ]
         with patch("builtins.input", side_effect=inputs_option_1c):
             main.main()
         print("PASS: Option 1c (SQLite DB) executed successfully.\n")
 
-        # --- OPTION 2: VIEW ALL SHELTERS ---
-        print("--- Testing Option 2: View All Shelters ---")
+        # --- OPTION 3: VIEW ALL SHELTERS ---
+        print("--- Testing Option 3: View All Shelters ---")
         inputs_option_2 = [
-            "2",  # Select Option 2 (View All Shelters)
+            "3",  # Select Option 3 (View All Shelters)
             SHELTER_DIR_CSV,  # Shelter CSV filename
-            "6",  # Select Option 6 (Exit)
+            "7",  # Select Option 7 (Exit)
         ]
         with patch("builtins.input", side_effect=inputs_option_2):
             main.main()
         print("PASS: Option 2 executed successfully.\n")
 
-        # --- OPTION 3: SHELTER RECOMMENDATIONS ---
-        print("--- Testing Option 3: Get Shelter Recommendations (JSON) ---")
+        # --- OPTION 4: SHELTER RECOMMENDATIONS ---
+        print("--- Testing Option 4: Get Shelter Recommendations (JSON) ---")
 
         def option_3_inputs():
-            yield "3"
+            yield "4"
             yield SHELTER_DIR_CSV
             yield TEST_CLIENTS_JSON
             while True:
@@ -202,8 +202,8 @@ def test_menu_options():
                 nonlocal menu_calls
                 menu_calls += 1
                 if menu_calls > 1:
-                    return 6
-                return 3
+                    return 7
+                return 4
 
             with patch.object(
                 main.IOManager, "display_menu", side_effect=mock_display_menu
@@ -211,15 +211,15 @@ def test_menu_options():
                 main.main()
 
             assert not mock_print_error.called, (
-                f"Option 3 (JSON) failed with error(s): {mock_print_error.call_args_list}"
+                f"Option 4 (JSON) failed with error(s): {mock_print_error.call_args_list}"
             )
 
-        print("PASS: Option 3 (JSON) executed successfully.\n")
+        print("PASS: Option 4 (JSON) executed successfully.\n")
 
-        print("--- Testing Option 3b: Get Shelter Recommendations (CSV) ---")
+        print("--- Testing Option 4b: Get Shelter Recommendations (CSV) ---")
 
         def option_3b_inputs():
-            yield "3"
+            yield "4"
             yield SHELTER_DIR_CSV
             yield TEST_CLIENTS_CSV
             while True:
@@ -234,8 +234,8 @@ def test_menu_options():
                 nonlocal menu_calls_csv
                 menu_calls_csv += 1
                 if menu_calls_csv > 1:
-                    return 6
-                return 3
+                    return 7
+                return 4
 
             with patch.object(
                 main.IOManager, "display_menu", side_effect=mock_display_menu_csv
@@ -243,15 +243,15 @@ def test_menu_options():
                 main.main()
 
             assert not mock_print_error_csv.called, (
-                f"Option 3b (CSV) failed with error(s): {mock_print_error_csv.call_args_list}"
+                f"Option 4b (CSV) failed with error(s): {mock_print_error_csv.call_args_list}"
             )
 
-        print("PASS: Option 3b (CSV) executed successfully.\n")
+        print("PASS: Option 4b (CSV) executed successfully.\n")
 
-        print("--- Testing Option 3c: Get Shelter Recommendations (SQLite DB) ---")
+        print("--- Testing Option 4c: Get Shelter Recommendations (SQLite DB) ---")
 
         def option_3c_inputs():
-            yield "3"
+            yield "4"
             yield SHELTER_DIR_CSV
             yield TEST_CLIENTS_DB
             while True:
@@ -266,8 +266,8 @@ def test_menu_options():
                 nonlocal menu_calls_db
                 menu_calls_db += 1
                 if menu_calls_db > 1:
-                    return 6
-                return 3
+                    return 7
+                return 4
 
             with patch.object(
                 main.IOManager, "display_menu", side_effect=mock_display_menu_db
@@ -275,48 +275,48 @@ def test_menu_options():
                 main.main()
 
             assert not mock_print_error_db.called, (
-                f"Option 3c (SQLite DB) failed with error(s): {mock_print_error_db.call_args_list}"
+                f"Option 4c (SQLite DB) failed with error(s): {mock_print_error_db.call_args_list}"
             )
 
-        print("PASS: Option 3c (SQLite DB) executed successfully.\n")
-
-        # --- OPTION 4: SEARCH CLIENT BY NRIC ---
-        print("--- Testing Option 4: Search Client by NRIC (JSON) ---")
-        inputs_option_4 = ["4", TEST_CLIENTS_JSON, "S1234567A", "6"]
-        with patch("builtins.input", side_effect=inputs_option_4):
-            main.main()
-        print("PASS: Option 4 (JSON) executed successfully.\n")
-
-        print("--- Testing Option 4b: Search Client by NRIC (CSV) ---")
-        inputs_option_4b = ["4", TEST_CLIENTS_CSV, "S9999999B", "6"]
-        with patch("builtins.input", side_effect=inputs_option_4b):
-            main.main()
-        print("PASS: Option 4b (CSV) executed successfully.\n")
-
-        print("--- Testing Option 4c: Search Client by NRIC (SQLite DB) ---")
-        inputs_option_4c = ["4", TEST_CLIENTS_DB, "S8888888C", "6"]
-        with patch("builtins.input", side_effect=inputs_option_4c):
-            main.main()
         print("PASS: Option 4c (SQLite DB) executed successfully.\n")
 
-        # --- OPTION 5: FILTER CASES BY OUTCOME ---
-        print("--- Testing Option 5: Filter Cases by Outcome (JSON) ---")
-        inputs_option_5 = ["5", TEST_CLIENTS_JSON, "True", "6"]
-        with patch("builtins.input", side_effect=inputs_option_5):
+        # --- OPTION 5: SEARCH CLIENT BY NRIC ---
+        print("--- Testing Option 5: Search Client by NRIC (JSON) ---")
+        inputs_option_4 = ["5", TEST_CLIENTS_JSON, "S1234567A", "7"]
+        with patch("builtins.input", side_effect=inputs_option_4):
             main.main()
         print("PASS: Option 5 (JSON) executed successfully.\n")
 
-        print("--- Testing Option 5b: Filter Cases by Outcome (CSV) ---")
-        inputs_option_5b = ["5", TEST_CLIENTS_CSV, "Accepted", "6"]
-        with patch("builtins.input", side_effect=inputs_option_5b):
+        print("--- Testing Option 5b: Search Client by NRIC (CSV) ---")
+        inputs_option_4b = ["5", TEST_CLIENTS_CSV, "S9999999B", "7"]
+        with patch("builtins.input", side_effect=inputs_option_4b):
             main.main()
         print("PASS: Option 5b (CSV) executed successfully.\n")
 
-        print("--- Testing Option 5c: Filter Cases by Outcome (SQLite DB) ---")
-        inputs_option_5c = ["5", TEST_CLIENTS_DB, "Accepted", "6"]
-        with patch("builtins.input", side_effect=inputs_option_5c):
+        print("--- Testing Option 5c: Search Client by NRIC (SQLite DB) ---")
+        inputs_option_4c = ["5", TEST_CLIENTS_DB, "S8888888C", "7"]
+        with patch("builtins.input", side_effect=inputs_option_4c):
             main.main()
         print("PASS: Option 5c (SQLite DB) executed successfully.\n")
+
+        # --- OPTION 6: FILTER CASES BY OUTCOME ---
+        print("--- Testing Option 6: Filter Cases by Outcome (JSON) ---")
+        inputs_option_5 = ["6", TEST_CLIENTS_JSON, "True", "7"]
+        with patch("builtins.input", side_effect=inputs_option_5):
+            main.main()
+        print("PASS: Option 6 (JSON) executed successfully.\n")
+
+        print("--- Testing Option 6b: Filter Cases by Outcome (CSV) ---")
+        inputs_option_5b = ["6", TEST_CLIENTS_CSV, "Accepted", "7"]
+        with patch("builtins.input", side_effect=inputs_option_5b):
+            main.main()
+        print("PASS: Option 6b (CSV) executed successfully.\n")
+
+        print("--- Testing Option 6c: Filter Cases by Outcome (SQLite DB) ---")
+        inputs_option_5c = ["6", TEST_CLIENTS_DB, "Accepted", "7"]
+        with patch("builtins.input", side_effect=inputs_option_5c):
+            main.main()
+        print("PASS: Option 6c (SQLite DB) executed successfully.\n")
 
     print("==================================================")
     print("ALL TESTS COMPLETED SUCCESSFULLY!")

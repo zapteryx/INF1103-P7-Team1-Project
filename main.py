@@ -289,7 +289,7 @@ def main() -> None:
                     IOManager.print_filtered_cases(filtered_cases, outcome)
                     time.sleep(1)
                 # log out
-                elif choice == 6:
+                elif choice == 7:
                     IOManager.print_update("Logging out. Returning to authentication menu...")
                     break  # Break inner loop, return to authentication
         else:
