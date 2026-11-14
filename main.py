@@ -212,9 +212,7 @@ def main() -> None:
                         continue
 
                     for client in unapproved:
-                        print("\n" + "="*50)
                         IOManager.print_client_record(client)
-                        print("="*50)
                         decision = IOManager.get_approval_decision()
 
                         if decision in ["exit", "e"]:
