@@ -281,7 +281,6 @@ def main() -> None:
                         best_shelter = matched_client.get("accepted_shelter")
                         IOManager.present_best_shelter_client(matched_client, best_shelter)
                         time.sleep(1)
-                        input("\nPress Enter to continue...")
                     time.sleep(1)
                 elif choice == 4:
                     IOManager.print_update("Logging out. Returning to authentication menu...")
