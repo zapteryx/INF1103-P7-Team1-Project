@@ -118,7 +118,7 @@ class UserManager:
             name=row["name"],
             username=row["username"],
             nric=row["nric"],
-            is_admin=row["is_admin"],
+            is_admin=bool(row["is_admin"]),
             password_hash=row["password_hash"],
             registration_date=row["registration_date"],
             account_status=row["account_status"]
