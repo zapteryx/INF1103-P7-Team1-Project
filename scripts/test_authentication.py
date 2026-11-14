@@ -165,7 +165,7 @@ def test_user_logout():
     auth = setup_test_auth()
 
     # Register and login
-    auth.register_user(name="Bob Wilson", nric="S9012345C", username="bob456", password="SecurePass123!", nric="S9012345C")
+    auth.register_user(name="Bob Wilson", nric="S9012345C", username="bob456", password="SecurePass123!")
     auth.login("bob456", "SecurePass123!")
 
     assert auth.get_current_user() is not None
