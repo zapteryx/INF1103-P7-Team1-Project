@@ -1,10 +1,14 @@
 import sys
 import getpass
+import os
 from abc import ABC, abstractmethod
 
 import pwinput
+from dotenv import load_dotenv
 from data_manager import ShelterFileReader, FileValidator
-ADMIN_SECRET_CODE = "STAFF2026"
+
+load_dotenv()
+ADMIN_SECRET_CODE = os.getenv("ADMIN_SECRET_CODE")
 
 
 
