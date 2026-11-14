@@ -246,7 +246,7 @@ def main() -> None:
                 matched_client, error = find_client_record(data_manager, user.nric)
                 if error:
                     IOManager.print_error("There is an error in finding your application record", error)
-                    continue
+                    break
                 menu_editor = 0
                 if matched_client and matched_client.get("outcome") is True:
                     menu_editor = 1
