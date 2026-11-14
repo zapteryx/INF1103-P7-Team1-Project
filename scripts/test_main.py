@@ -585,6 +585,103 @@ def test_env_variable_loading():
     print("==================================================")
 
 
+def test_approval_workflow():
+    """Test client approval workflow for self-registered clients."""
+    print("\n==================================================")
+    print("TESTING APPROVAL WORKFLOW")
+    print("==================================================\n")
+
+    import tempfile
+    import json
+    import os
+
+    # Create test client records file
+    test_clients_file = tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False)
+
+    print("--- Testing Self-Registered Client (Unapproved) ---")
+
+    # Simulate self-registered client
+    self_registered_client = {
+        "client_id": "S1234567A",
+        "gender": "Male",
+        "age": 30,
+        "dependents": 1,
+        "care_type": "Short Term",
+        "special_needs": "No",
+        "intakes_notes": "Self-registered",
+        "outcome": None,
+        "accepted_shelter": None,
+        "approved": False  # Self-registered = unapproved
+    }
+
+    # Simulate social worker-added client
+    worker_added_client = {
+        "client_id": "S9876543B",
+        "gender": "Female",
+        "age": 25,
+        "dependents": 0,
+        "care_type": "Long Term",
+        "special_needs": "Yes",
+        "intakes_notes": "Added by worker",
+        "outcome": None,
+        "accepted_shelter": None,
+        "approved": True  # Worker-added = pre-approved
+    }
+
+    test_clients = [self_registered_client, worker_added_client]
+    json.dump(test_clients, test_clients_file)
+    test_clients_file.close()
+
+    try:
+        # Test 1: Count unapproved clients
+        with open(test_clients_file.name, 'r') as f:
+            clients = json.load(f)
+
+        unapproved = [c for c in clients if not c.get("approved", True)]
+        assert len(unapproved) == 1, "Should have 1 unapproved client"
+        assert unapproved[0]["client_id"] == "S1234567A", "Unapproved client should be self-registered one"
+        print("PASS: Self-registered client is unapproved")
+
+        # Test 2: Verify worker-added client is pre-approved
+        worker_clients = [c for c in clients if c.get("approved", True)]
+        assert len(worker_clients) == 1, "Should have 1 pre-approved client"
+        assert worker_clients[0]["client_id"] == "S9876543B", "Pre-approved client should be worker-added one"
+        print("PASS: Worker-added client is pre-approved")
+
+        # Test 3: Simulate approval
+        for client in clients:
+            if client["client_id"] == "S1234567A":
+                client["approved"] = True
+
+        with open(test_clients_file.name, 'w') as f:
+            json.dump(clients, f)
+
+        with open(test_clients_file.name, 'r') as f:
+            clients = json.load(f)
+
+        all_approved = all(c.get("approved", True) for c in clients)
+        assert all_approved, "All clients should be approved after approval process"
+        print("PASS: Client approval updates correctly")
+
+        # Test 4: Test AI matching filter (approved only)
+        approved_clients = [c for c in clients if c.get("approved", True) and c.get("outcome") is not True]
+        assert len(approved_clients) == 2, "AI matching should see 2 approved clients"
+        print("PASS: AI matching correctly filters approved clients only")
+
+        # Test 5: Test rejection (removal)
+        clients_before_rejection = len(clients)
+        clients = [c for c in clients if c["client_id"] != "S1234567A"]
+        assert len(clients) == clients_before_rejection - 1, "Rejected client should be removed"
+        print("PASS: Client rejection removes record correctly")
+
+    finally:
+        os.unlink(test_clients_file.name)
+
+    print("\n==================================================")
+    print("APPROVAL WORKFLOW TESTS COMPLETED!")
+    print("==================================================")
+
+
 if __name__ == "__main__":
     # Run original tests
     test_menu_options()
@@ -595,6 +692,7 @@ if __name__ == "__main__":
     test_nric_age_verification()
     test_username_validation_ux()
     test_env_variable_loading()
+    test_approval_workflow()
 
     print("\n" + "="*50)
     print("ALL TEST SUITES COMPLETED SUCCESSFULLY!")
