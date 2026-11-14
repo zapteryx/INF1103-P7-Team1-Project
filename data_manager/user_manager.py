@@ -141,13 +141,15 @@ class UserManager:
             for value in (name, username, password_hash)
         ):
             return None
-        
-        nric = nric.strip()
+
+        # Handle NRIC: strip if string, convert "0" to None for admin
+        if nric is not None:
+            nric = nric.strip()
+            if nric == "0":     #admin nric is 0, will now be None for admin registration
+                nric = None
+
         name = name.strip()
         username = username.strip()
-        
-        if nric == "0":     #admin nric is 0, will now be None for admin registration
-            nric = None
 
         if not name or not username or not password_hash:
             return None
