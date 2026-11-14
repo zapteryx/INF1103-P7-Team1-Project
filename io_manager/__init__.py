@@ -86,7 +86,7 @@ class IOManager:
         print("====================================")
         print("1. Register")
         print("2. Login")
-        print("3. Admin registration")
+        print("3. Admin Registration")
         print("4. Exit System")
         print("====================================")
         choice_input = input("Select option (1-4): ").strip()
