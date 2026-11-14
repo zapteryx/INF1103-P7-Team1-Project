@@ -421,6 +421,26 @@ class IOManager:
             print("Invalid input. please enter 'Yes' or 'No'.")
             choice = input("Do you accept this shelter outcome (Yes / No): ").strip().lower()
         return choice in ["yes", "y"]
+    
+    
+    
+    
+    @staticmethod
+    def present_best_shelter_client(client: dict, shelter) -> None:
+        print("\n======== RECOMMENDED MATCH ========")
+        print(f"Client ID: {client.get('client_id', 'N/A')}")
+        print(f"Care Type: {client.get('care_type', 'N/A')}")
+        print("-------------------------------------")
+
+        if not shelter:
+            print("No suitable shelter found matching the client criteria.")
+            return
+
+        print("Suggested Shelter Details:")
+        print(IOManager.format_shelter(shelter))
+    
+    
+    
 
     @staticmethod
     def print_client_record(client: dict) -> None:

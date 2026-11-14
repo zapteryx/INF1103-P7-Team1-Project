@@ -84,7 +84,6 @@ def authenticate_user() -> User | None:
                 client_nric_ages = {
                     client.get("client_id"): client.get("age") for client in client_list
                 }
-                print(client_nric_ages, "isudfhhohofsdf")  
                 registration_data = IOManager.collect_registration_input(
                     nric_age_dict=client_nric_ages,
                     password_validator=auth.check_password_strength
@@ -160,7 +159,6 @@ def main() -> None:
     while True:
         # Authenticate user first
         user = authenticate_user()
-        print(user, "99999999del")
         if user is None:
             return  # User chose to exit from auth menu
 
@@ -259,7 +257,7 @@ def main() -> None:
 
                 if choice == 1:
                     if matched_client is not None:
-                        print("You have an active application.")
+                        IOManager.print_update("You have an active application.")
                     else:
                         client = IOManager.collect_intake_input(user.nric)
                         data_manager.add_record(client)
@@ -267,24 +265,23 @@ def main() -> None:
 
                 elif choice == 2:
                     if matched_client is None:
-                        print("No application record found for your NRIC. Please submit an application first.")
+                        IOManager.print_update("No application record found for your NRIC. Please submit an application first.")
                     else:
                         outcome = matched_client.get("outcome")
                         if outcome is None:
-                            print("Your application is still under review. Please check back later.")
+                            IOManager.print_update("Your application is still under review. Please check back later.")
                         elif outcome is True:
-                            print("Congratulations! Your application has been accepted. Please view your shelter with option 3.")
+                            IOManager.print_update("Congratulations! Your application has been accepted. Please view your shelter with option 3.")
                         elif outcome is False:
-                            print("We regret to inform you that your application has been rejected, we are resolving the matter.")
+                            IOManager.print_update("We regret to inform you that your application has been rejected, we are resolving the matter.")
                     time.sleep(1)
 
                 elif choice == 3:
                     if not matched_client or matched_client.get("outcome") is not True:
-                        print("You have no assigned shelter. If you have an active application, please wait for the outcome to be updated.")
+                        IOManager.print_update("You have no assigned shelter. If you have an active application, please wait for the outcome to be updated.")
                     else:
                         best_shelter = matched_client.get("accepted_shelter")
-                        print("------------------------------------------------------")
-                        print(IOManager.format_shelter(best_shelter))
+                        IOManager.present_best_shelter_client(matched_client, best_shelter)
                         time.sleep(1)
                         input("\nPress Enter to continue...")
                     time.sleep(1)
