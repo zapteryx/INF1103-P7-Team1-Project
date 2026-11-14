@@ -452,6 +452,7 @@ class IOManager:
 
         print("Suggested Shelter Details:")
         print(IOManager.format_shelter(safe_shelter_info))
+        return
         
         
     @staticmethod
