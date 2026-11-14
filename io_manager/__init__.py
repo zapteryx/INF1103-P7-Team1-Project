@@ -97,7 +97,7 @@ class IOManager:
         return int(choice_input)
 
     @staticmethod
-    def collect_registration_input(nric_age_dict: dict = None, password_validator=None, is_admin: int = 0) -> dict:
+    def collect_registration_input(nric_age_dict: dict = None, password_validator=None, is_admin: bool = False) -> dict:
         """
         Collects user registration inputs (name, username, password, confirm_password).
         Validates non-empty fields, username uniqueness, password strength, and password matching with retry loops.
@@ -126,7 +126,7 @@ class IOManager:
             username = input("Enter Username: ").strip()
             
         nric_input = "0"    #placeholder for admin registration, will be None for admin registration
-        if is_admin == 0:
+        if not is_admin:
             nric_input = input("Enter NRIC: ").strip().upper()
             is_valid_nric = (
                 len(nric_input) == 9

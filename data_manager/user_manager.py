@@ -13,7 +13,7 @@ class User:
     name: str
     username: str
     nric: str
-    is_admin: int
+    is_admin: bool
     password_hash: str
     registration_date: str
     account_status: int
@@ -133,7 +133,7 @@ class UserManager:
         nric: str,
         username: str,
         password_hash: str,
-        is_admin: int,
+        is_admin: bool = False,
     ) -> int | None:
 
         if not all(

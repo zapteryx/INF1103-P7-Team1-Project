@@ -133,9 +133,9 @@ def authenticate_user() -> User | None:
                 
         elif choice == 3:
                 if IOManager.validate_admin_secret_code():
-                    is_admin = 1
+                    is_admin = True
                     registration_data = IOManager.collect_registration_input(
-                        password_validator=auth.check_password_strength, is_admin = is_admin
+                        password_validator=auth.check_password_strength, is_admin=is_admin
                     )
                     # Register user (password already validated during input collection)
                     success, errors = auth.register_user(
@@ -170,7 +170,7 @@ def main() -> None:
             return  # User chose to exit from auth menu
 
         IOManager.print_update(f"\nWelcome to Social Service AI, {user.name}!")
-        if user.is_admin == 1:
+        if user.is_admin:
             IOManager.print_update("You are logged in as an admin. You have access to all functionalities.")
             while True:
                 choice = IOManager.display_menu()

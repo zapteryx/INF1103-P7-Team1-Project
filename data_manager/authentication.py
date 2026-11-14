@@ -108,7 +108,7 @@ class Authentication:
         nric: str,
         username: str,
         password: str,
-        is_admin: int = 0,
+        is_admin: bool = False,
     ) -> tuple[bool, list[str]]:
         """
         Register a new user account.
