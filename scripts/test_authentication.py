@@ -273,6 +273,168 @@ def test_username_availability():
     print()
 
 
+def test_admin_user_creation():
+    """Test admin user registration with nric=None."""
+    print("--- Testing Admin User Creation ---")
+    auth = setup_test_auth()
+
+    # Create admin user with nric=None
+    success, errors = auth.register_user(
+        name="Admin User",
+        nric=None,
+        username="adminuser",
+        password="AdminPass123!",
+        is_admin=True
+    )
+    assert success is True, f"Admin registration should succeed, got errors: {errors}"
+    print("PASS: Admin user created with nric=None")
+
+    # Verify admin user can login
+    success, message = auth.login("adminuser", "AdminPass123!")
+    assert success is True, f"Admin login should succeed, got: {message}"
+
+    user = auth.get_current_user()
+    assert user.nric is None, f"Admin NRIC should be None, got: {user.nric}"
+    assert user.is_admin is True, f"is_admin should be True, got: {user.is_admin}"
+    print("PASS: Admin user has nric=None and is_admin=True")
+
+    print()
+
+
+def test_client_user_creation_with_nric():
+    """Test client user registration with valid NRIC."""
+    print("--- Testing Client User Creation with NRIC ---")
+    auth = setup_test_auth()
+
+    # Create client user with NRIC
+    success, errors = auth.register_user(
+        name="Client User",
+        nric="S1234567A",
+        username="clientuser",
+        password="ClientPass123!",
+        is_admin=False
+    )
+    assert success is True, f"Client registration should succeed, got errors: {errors}"
+    print("PASS: Client user created with NRIC")
+
+    # Verify client user can login
+    success, message = auth.login("clientuser", "ClientPass123!")
+    assert success is True, f"Client login should succeed, got: {message}"
+
+    user = auth.get_current_user()
+    assert user.nric == "S1234567A", f"Client NRIC should be S1234567A, got: {user.nric}"
+    assert user.is_admin is False, f"is_admin should be False, got: {user.is_admin}"
+    print("PASS: Client user has correct NRIC and is_admin=False")
+
+    print()
+
+
+def test_is_admin_bool_type():
+    """Test that is_admin is properly converted to bool from SQLite."""
+    print("--- Testing is_admin Bool Type Conversion ---")
+    auth = setup_test_auth()
+
+    # Create admin user
+    auth.register_user(
+        name="Bool Test Admin",
+        nric=None,
+        username="booladmin",
+        password="SecurePass123!",
+        is_admin=True
+    )
+
+    # Create client user
+    auth.register_user(
+        name="Bool Test Client",
+        nric="S9876543B",
+        username="boolclient",
+        password="SecurePass123!",
+        is_admin=False
+    )
+
+    # Test admin user
+    auth.login("booladmin", "SecurePass123!")
+    admin_user = auth.get_current_user()
+    assert isinstance(admin_user.is_admin, bool), f"is_admin should be bool, got: {type(admin_user.is_admin)}"
+    assert admin_user.is_admin is True, "Admin is_admin should be True"
+    assert admin_user.is_admin == True, "Admin is_admin should equal True"
+    print("PASS: Admin user is_admin is bool type (True)")
+
+    # Test client user
+    auth.logout()
+    auth.login("boolclient", "SecurePass123!")
+    client_user = auth.get_current_user()
+    assert isinstance(client_user.is_admin, bool), f"is_admin should be bool, got: {type(client_user.is_admin)}"
+    assert client_user.is_admin is False, "Client is_admin should be False"
+    assert client_user.is_admin == False, "Client is_admin should equal False"
+    print("PASS: Client user is_admin is bool type (False)")
+
+    # Test Pythonic boolean checks
+    auth.logout()
+    auth.login("booladmin", "SecurePass123!")
+    admin_user = auth.get_current_user()
+    if admin_user.is_admin:
+        print("PASS: Pythonic 'if user.is_admin:' check works for admin")
+    else:
+        assert False, "Pythonic boolean check failed for admin"
+
+    auth.logout()
+    auth.login("boolclient", "SecurePass123!")
+    client_user = auth.get_current_user()
+    if not client_user.is_admin:
+        print("PASS: Pythonic 'if not user.is_admin:' check works for client")
+    else:
+        assert False, "Pythonic boolean check failed for client"
+
+    print()
+
+
+def test_admin_nric_handling():
+    """Test that admin users with nric=None don't cause AttributeError."""
+    print("--- Testing Admin NRIC None Handling ---")
+
+    import tempfile
+    import os
+
+    test_db = tempfile.NamedTemporaryFile(suffix='.db', delete=False).name
+
+    try:
+        from data_manager import UserManager, Authentication
+        user_manager = UserManager(test_db)
+        auth = Authentication(user_manager)
+
+        # Test with nric=None (direct None)
+        user_id = user_manager.create_user(
+            name="Admin Direct None",
+            nric=None,
+            username="adminnone",
+            password_hash="hash123",
+            is_admin=True
+        )
+        assert user_id is not None, "Should create admin user with nric=None"
+        print("PASS: Admin user created with nric=None (direct)")
+
+        # Test with nric="0" (should convert to None)
+        user_id2 = user_manager.create_user(
+            name="Admin Zero NRIC",
+            nric="0",
+            username="adminzero",
+            password_hash="hash456",
+            is_admin=True
+        )
+        assert user_id2 is not None, "Should create admin user with nric='0'"
+
+        user = user_manager.get_user_by_username("adminzero")
+        assert user.nric is None, f"NRIC '0' should convert to None, got: {user.nric}"
+        print("PASS: Admin user created with nric='0' converts to None")
+
+    finally:
+        if os.path.exists(test_db):
+            os.remove(test_db)
+
+    print()
+
+
 def run_all_tests():
     """Run all authentication tests."""
     print("==================================================")
@@ -284,6 +446,10 @@ def run_all_tests():
         test_passwords_match()
         test_username_availability()
         test_user_registration()
+        test_admin_user_creation()
+        test_client_user_creation_with_nric()
+        test_is_admin_bool_type()
+        test_admin_nric_handling()
         test_user_login()
         test_user_logout()
         test_inactive_account()
