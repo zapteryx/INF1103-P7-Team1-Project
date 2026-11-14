@@ -45,9 +45,9 @@ def get_recommendation(clients_file_path: str, client: dict, shelters: list[dict
     return None
 
 
-def find_client_record(data_manager, nric):
+def find_client_record(data_manager: DataManager, nric: str):
     client_list, error = data_manager.load_records()
-    if error is not None:
+    if error:
         return None, error
 
     target_nric = nric.strip().upper()
@@ -244,11 +244,11 @@ def main() -> None:
             while True:
                 # Only fetch client data if the user selects an option that needs it (1, 2, or 3)
                 matched_client, error = find_client_record(data_manager, user.nric)
-                if error is not None:
+                if error:
                     IOManager.print_error("There is an error in finding your application record", error)
                     continue
                 menu_editor = 0
-                if matched_client is not None and matched_client.get("outcome") is True:
+                if matched_client and matched_client.get("outcome") is True:
                     menu_editor = 1
                 choice = IOManager.display_client_menu(menu_editor)
 
