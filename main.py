@@ -150,12 +150,12 @@ def authenticate_user() -> User | None:
                     )
 
                     if success:
-                        IOManager.print_update("Admin registration successful! Please login to continue.")
+                        IOManager.print_update("Social worker registration successful! Please login to continue.")
                     else:
                         # This should only fail for database issues now, not password issues
-                        IOManager.print_error("Admin registration failed", "\n".join(errors))
+                        IOManager.print_error("Social worker registration failed", "\n".join(errors))
                 else:
-                    IOManager.print_error("Invalid admin invite code.")
+                    IOManager.print_error("Invalid social worker invite code.")
                     time.sleep(1)
             
         # Exit
@@ -174,7 +174,7 @@ def main() -> None:
 
         IOManager.print_update(f"\nWelcome to Social Service AI, {user.name}!")
         if user.is_admin:
-            IOManager.print_update("You are logged in as an admin. You have access to all functionalities.")
+            IOManager.print_update("You are logged in as a social worker. You have access to all case management functionalities.")
             while True:
                 choice = IOManager.display_menu()
                 # new client intake

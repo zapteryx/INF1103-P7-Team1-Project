@@ -86,7 +86,7 @@ class IOManager:
         print("====================================")
         print("1. Register")
         print("2. Login")
-        print("3. Admin Registration")
+        print("3. Social Worker Registration")
         print("4. Exit System")
         print("====================================")
         choice_input = input("Select option (1-4): ").strip()
@@ -459,7 +459,7 @@ class IOManager:
 
     @staticmethod
     def validate_admin_secret_code() -> bool:
-        user_code = input("Enter admin invite code (or press Enter to cancel): ").strip()
+        user_code = input("Enter social worker invite code (or press Enter to cancel): ").strip()
         if not user_code:
             return False
         return user_code == ADMIN_SECRET_CODE
