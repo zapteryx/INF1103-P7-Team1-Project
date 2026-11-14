@@ -12,6 +12,14 @@ def get_suitable_storage(filename: str) -> FileStorage | SQLiteStorage:
         return SQLiteStorage(filename)
     else:
         raise ValueError("Unsupported file format. Please provide a .json, .csv, or .db file.")
+    
+    
+def init_client_storage(filename: str = "clients.json") -> None:
+    storage = get_suitable_storage(filename)
+    data_manager = DataManager(storage)
+    match, error = data_manager.load_records()
+    if error == "File not found.":
+        data_manager.save_records([])
 
 # Maintained by Ming Xuan (2604426)
 def get_recommendation(clients_file_path: str, client: dict, shelters: list[dict], tries = 0) -> bool | None:
@@ -155,6 +163,7 @@ def authenticate_user() -> User | None:
 # Maintained by Ming Xuan (2604426)
 def main() -> None:
     while True:
+        init_client_storage("clients.json")
         # Authenticate user first
         user = authenticate_user()
         if user is None:
