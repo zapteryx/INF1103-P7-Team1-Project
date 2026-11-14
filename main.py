@@ -215,10 +215,7 @@ def main() -> None:
                         print("\n" + "="*50)
                         IOManager.print_client_record(client)
                         print("="*50)
-                        decision = input("\nApprove this application? (Yes / No / Exit): ").strip().lower()
-                        while decision not in ["yes", "no", "exit", "y", "n", "e"]:
-                            print("Invalid input. Please enter 'Yes', 'No', or 'Exit'.")
-                            decision = input("Approve this application? (Yes / No / Exit): ").strip().lower()
+                        decision = IOManager.get_approval_decision()
 
                         if decision in ["exit", "e"]:
                             break

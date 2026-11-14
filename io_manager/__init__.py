@@ -469,6 +469,15 @@ class IOManager:
         return user_code == ADMIN_SECRET_CODE
 
     @staticmethod
+    def get_approval_decision() -> str:
+        """Get approval decision for a client application."""
+        decision = input("\nApprove this application? (Yes / No / Exit): ").strip().lower()
+        while decision not in ["yes", "no", "exit", "y", "n", "e"]:
+            print("Invalid input. Please enter 'Yes', 'No', or 'Exit'.")
+            decision = input("Approve this application? (Yes / No / Exit): ").strip().lower()
+        return decision
+
+    @staticmethod
     def print_client_record(client: dict) -> None:
         print("\n=================== CLIENT RECORD ===================")
         print(f"Client ID     : {client.get('client_id', 'N/A')}")
