@@ -93,7 +93,8 @@ def authenticate_user() -> User | None:
                 }
                 registration_data = IOManager.collect_registration_input(
                     nric_age_dict=client_nric_ages,
-                    password_validator=auth.check_password_strength
+                    password_validator=auth.check_password_strength,
+                    username_validator=auth.is_username_available
                 )
                 if not registration_data:
                     IOManager.print_error("Registration failed due to security verification failure.")
@@ -135,7 +136,9 @@ def authenticate_user() -> User | None:
                 if IOManager.validate_admin_secret_code():
                     is_admin = True
                     registration_data = IOManager.collect_registration_input(
-                        password_validator=auth.check_password_strength, is_admin=is_admin
+                        password_validator=auth.check_password_strength,
+                        username_validator=auth.is_username_available,
+                        is_admin=is_admin
                     )
                     # Register user (password already validated during input collection)
                     success, errors = auth.register_user(

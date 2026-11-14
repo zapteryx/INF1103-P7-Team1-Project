@@ -97,14 +97,16 @@ class IOManager:
         return int(choice_input)
 
     @staticmethod
-    def collect_registration_input(nric_age_dict: dict = None, password_validator=None, is_admin: bool = False) -> dict:
+    def collect_registration_input(nric_age_dict: dict = None, password_validator=None, username_validator=None, is_admin: bool = False) -> dict:
         """
         Collects user registration inputs (name, username, password, confirm_password).
         Validates non-empty fields, username uniqueness, password strength, and password matching with retry loops.
 
         Args:
-            existing_usernames: List of existing usernames to check against
+            nric_age_dict: Dictionary mapping NRICs to ages for verification
             password_validator: Optional callable that takes password and returns list of errors (empty if valid)
+            username_validator: Optional callable that takes username and returns True if available, False if taken
+            is_admin: Whether this is admin registration (skips NRIC collection)
         """
 
         print("\n--- ACCOUNT REGISTRATION ---")
@@ -118,7 +120,7 @@ class IOManager:
             name = input("Enter Full Name: ").strip()
 
         username = input("Enter Username: ").strip()
-        while not username:
+        while not username or (username_validator and not username_validator(username)):
             if not username:
                 print("[!] Username cannot be empty.")
             else:
