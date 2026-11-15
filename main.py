@@ -14,7 +14,7 @@ def get_suitable_storage(filename: str) -> FileStorage | SQLiteStorage:
         raise ValueError("Unsupported file format. Please provide a .json, .csv, or .db file.")
     
     
-def init_client_storage(filename: str = "clients.json") -> None:
+def init_client_storage(filename: str = "clients.db") -> None:
     storage = get_suitable_storage(filename)
     data_manager = DataManager(storage)
     match, error = data_manager.load_records()
@@ -79,7 +79,7 @@ def authenticate_user() -> User | None:
 
         # Register
         if choice == 1:
-            clients_file_path = "clients.json"  # Default path for client records
+            clients_file_path = "clients.db"  # Default path for client records
             storage = get_suitable_storage(clients_file_path)
             data_manager = DataManager(storage)
             client_list, error = data_manager.load_records()
@@ -166,7 +166,7 @@ def authenticate_user() -> User | None:
 # Maintained by Ming Xuan (2604426)
 def main() -> None:
     while True:
-        init_client_storage("clients.json")
+        init_client_storage("clients.db")
         # Authenticate user first
         user = authenticate_user()
         if user is None:
