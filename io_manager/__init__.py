@@ -224,7 +224,7 @@ class IOManager:
         return filename
 
     @staticmethod
-    def get_client_records_filename(accepted_filetypes: list, allow_creating_new: bool = False, default_filename: str = "clients.json") -> str:
+    def get_client_records_filename(accepted_filetypes: list, allow_creating_new: bool = False, default_filename: str = "clients.db") -> str:
         print(f"\nDefault dataset: '{default_filename}'")
         while True:
             filename = input(f"Enter client records filename ({'/'.join(accepted_filetypes).upper()}) (or press Enter for default): ").strip()

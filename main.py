@@ -174,10 +174,9 @@ def main() -> None:
 
         IOManager.print_update(f"\nWelcome to Social Service AI, {user.name}!")
 
-        # Ask for client file once per session
-        clients_file_path = IOManager.get_client_records_filename(['json', 'csv', 'db'], True)
-
         if user.is_admin:
+            # Ask for client file once per session (social workers can choose)
+            clients_file_path = IOManager.get_client_records_filename(['json', 'csv', 'db'], True)
             IOManager.print_update("You are logged in as a social worker. You have access to all case management functionalities.")
             while True:
                 # Count pending approvals
@@ -296,7 +295,8 @@ def main() -> None:
                     IOManager.print_update("Logging out. Returning to authentication menu...")
                     break  # Break inner loop, return to authentication
         else:
-            # Client workflow - uses session file path selected at login
+            # Client workflow - defaults to clients.db (no prompt)
+            clients_file_path = "clients.db"
             storage = get_suitable_storage(clients_file_path)
             data_manager = DataManager(storage)
             while True:
