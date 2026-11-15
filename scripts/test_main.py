@@ -123,6 +123,7 @@ def test_menu_options():
         # --- OPTION 1: NEW CLIENT INTAKE ---
         print("--- Testing Option 1: New Client Intake (JSON) ---")
         inputs_option_1 = [
+            TEST_CLIENTS_JSON,  # Client file path (asked once per session after login)
             "1",  # Select Option 1 (New Client Intake)
             "S1234567A",  # NRIC
             "Male",  # Gender
@@ -131,7 +132,6 @@ def test_menu_options():
             "Short Term",  # Care Type
             "No",  # Special Needs
             "Test intake note",  # Intake notes
-            TEST_CLIENTS_JSON,  # Client file path
             "7",  # Select Option 7 (Exit)
         ]
         with patch("builtins.input", side_effect=inputs_option_1):
@@ -140,6 +140,7 @@ def test_menu_options():
 
         print("--- Testing Option 1b: New Client Intake (CSV) ---")
         inputs_option_1b = [
+            TEST_CLIENTS_CSV,  # Client file path (asked once per session after login)
             "1",
             "S9999999B",
             "Female",
@@ -148,7 +149,6 @@ def test_menu_options():
             "Long Term",
             "Yes",
             "CSV test client",
-            TEST_CLIENTS_CSV,
             "7",
         ]
         with patch("builtins.input", side_effect=inputs_option_1b):
@@ -157,6 +157,7 @@ def test_menu_options():
 
         print("--- Testing Option 1c: New Client Intake (SQLite DB) ---")
         inputs_option_1c = [
+            TEST_CLIENTS_DB,  # Client file path (asked once per session after login)
             "1",
             "S8888888C",
             "Male",
@@ -165,7 +166,6 @@ def test_menu_options():
             "Short Term",
             "No",
             "SQLite test client",
-            TEST_CLIENTS_DB,
             "7",
         ]
         with patch("builtins.input", side_effect=inputs_option_1c):
@@ -175,6 +175,7 @@ def test_menu_options():
         # --- OPTION 3: VIEW ALL SHELTERS ---
         print("--- Testing Option 3: View All Shelters ---")
         inputs_option_2 = [
+            TEST_CLIENTS_JSON,  # Client file path (asked once per session after login)
             "3",  # Select Option 3 (View All Shelters)
             SHELTER_DIR_CSV,  # Shelter CSV filename
             "7",  # Select Option 7 (Exit)
@@ -187,9 +188,9 @@ def test_menu_options():
         print("--- Testing Option 4: Get Shelter Recommendations (JSON) ---")
 
         def option_3_inputs():
+            yield TEST_CLIENTS_JSON  # Client file path (asked once per session after login)
             yield "4"
             yield SHELTER_DIR_CSV
-            yield TEST_CLIENTS_JSON
             while True:
                 yield "yes"
 
@@ -219,9 +220,9 @@ def test_menu_options():
         print("--- Testing Option 4b: Get Shelter Recommendations (CSV) ---")
 
         def option_3b_inputs():
+            yield TEST_CLIENTS_CSV  # Client file path (asked once per session after login)
             yield "4"
             yield SHELTER_DIR_CSV
-            yield TEST_CLIENTS_CSV
             while True:
                 yield "yes"
 
@@ -251,9 +252,9 @@ def test_menu_options():
         print("--- Testing Option 4c: Get Shelter Recommendations (SQLite DB) ---")
 
         def option_3c_inputs():
+            yield TEST_CLIENTS_DB  # Client file path (asked once per session after login)
             yield "4"
             yield SHELTER_DIR_CSV
-            yield TEST_CLIENTS_DB
             while True:
                 yield "yes"
 
@@ -282,38 +283,38 @@ def test_menu_options():
 
         # --- OPTION 5: SEARCH CLIENT BY NRIC ---
         print("--- Testing Option 5: Search Client by NRIC (JSON) ---")
-        inputs_option_4 = ["5", TEST_CLIENTS_JSON, "S1234567A", "7"]
+        inputs_option_4 = [TEST_CLIENTS_JSON, "5", "S1234567A", "7"]
         with patch("builtins.input", side_effect=inputs_option_4):
             main.main()
         print("PASS: Option 5 (JSON) executed successfully.\n")
 
         print("--- Testing Option 5b: Search Client by NRIC (CSV) ---")
-        inputs_option_4b = ["5", TEST_CLIENTS_CSV, "S9999999B", "7"]
+        inputs_option_4b = [TEST_CLIENTS_CSV, "5", "S9999999B", "7"]
         with patch("builtins.input", side_effect=inputs_option_4b):
             main.main()
         print("PASS: Option 5b (CSV) executed successfully.\n")
 
         print("--- Testing Option 5c: Search Client by NRIC (SQLite DB) ---")
-        inputs_option_4c = ["5", TEST_CLIENTS_DB, "S8888888C", "7"]
+        inputs_option_4c = [TEST_CLIENTS_DB, "5", "S8888888C", "7"]
         with patch("builtins.input", side_effect=inputs_option_4c):
             main.main()
         print("PASS: Option 5c (SQLite DB) executed successfully.\n")
 
         # --- OPTION 6: FILTER CASES BY OUTCOME ---
         print("--- Testing Option 6: Filter Cases by Outcome (JSON) ---")
-        inputs_option_5 = ["6", TEST_CLIENTS_JSON, "True", "7"]
+        inputs_option_5 = [TEST_CLIENTS_JSON, "6", "True", "7"]
         with patch("builtins.input", side_effect=inputs_option_5):
             main.main()
         print("PASS: Option 6 (JSON) executed successfully.\n")
 
         print("--- Testing Option 6b: Filter Cases by Outcome (CSV) ---")
-        inputs_option_5b = ["6", TEST_CLIENTS_CSV, "Accepted", "7"]
+        inputs_option_5b = [TEST_CLIENTS_CSV, "6", "Accepted", "7"]
         with patch("builtins.input", side_effect=inputs_option_5b):
             main.main()
         print("PASS: Option 6b (CSV) executed successfully.\n")
 
         print("--- Testing Option 6c: Filter Cases by Outcome (SQLite DB) ---")
-        inputs_option_5c = ["6", TEST_CLIENTS_DB, "Accepted", "7"]
+        inputs_option_5c = [TEST_CLIENTS_DB, "6", "Accepted", "7"]
         with patch("builtins.input", side_effect=inputs_option_5c):
             main.main()
         print("PASS: Option 6c (SQLite DB) executed successfully.\n")

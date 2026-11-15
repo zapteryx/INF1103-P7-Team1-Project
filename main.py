@@ -173,13 +173,14 @@ def main() -> None:
             return  # User chose to exit from auth menu
 
         IOManager.print_update(f"\nWelcome to Social Service AI, {user.name}!")
+
+        # Ask for client file once per session
+        clients_file_path = IOManager.get_client_records_filename(['json', 'csv', 'db'], True)
+
         if user.is_admin:
             IOManager.print_update("You are logged in as a social worker. You have access to all case management functionalities.")
             while True:
                 # Count pending approvals
-                
-                #to prevent code from always asking to add file after every activity
-                clients_file_path = "clients.json"
                 storage = get_suitable_storage(clients_file_path)
                 data_manager = DataManager(storage)
                 clients, error = data_manager.load_records()
@@ -192,14 +193,12 @@ def main() -> None:
                 if choice == 1:
                     client = IOManager.collect_intake_input()
                     client["approved"] = True  # Social worker-added clients are pre-approved
-                    clients_file_path = IOManager.get_client_records_filename(['json', 'csv', 'db'], True)
                     storage = get_suitable_storage(clients_file_path)
                     data_manager = DataManager(storage)
                     data_manager.add_record(client)
                     time.sleep(1)
                 # approve client applications
                 elif choice == 2:
-                    clients_file_path = IOManager.get_client_records_filename(['json', 'csv', 'db'])
                     storage = get_suitable_storage(clients_file_path)
                     data_manager = DataManager(storage)
                     clients, error = data_manager.load_records()
@@ -247,7 +246,6 @@ def main() -> None:
                 # get shelter recommendations for clients
                 elif choice == 4:
                     shelter_file_path = IOManager.get_shelter_filename()
-                    clients_file_path = IOManager.get_client_records_filename(['csv', 'json', 'db'])
                     storage = get_suitable_storage(clients_file_path)
                     data_manager = DataManager(storage)
                     clients = data_manager.load_records()
@@ -272,7 +270,6 @@ def main() -> None:
                     time.sleep(1)
                 # search for a client record by client_id
                 elif choice == 5:
-                    clients_file_path = IOManager.get_client_records_filename(['csv', 'json', 'db'])
                     client_id = IOManager.ask_for_client_id()
                     storage = get_suitable_storage(clients_file_path)
                     data_manager = DataManager(storage)
@@ -284,7 +281,6 @@ def main() -> None:
                     time.sleep(1)
                 # filter cases by outcome
                 elif choice == 6:
-                    clients_file_path = IOManager.get_client_records_filename(['csv', 'json', 'db'])
                     storage = get_suitable_storage(clients_file_path)
                     data_manager = DataManager(storage)
                     clients = data_manager.load_records()
@@ -300,9 +296,7 @@ def main() -> None:
                     IOManager.print_update("Logging out. Returning to authentication menu...")
                     break  # Break inner loop, return to authentication
         else:
-            # Client workflow - use same file selection as social worker
-            #to prevent code from always asking to add file after every activity
-            clients_file_path = "clients.json"
+            # Client workflow - uses session file path selected at login
             storage = get_suitable_storage(clients_file_path)
             data_manager = DataManager(storage)
             while True:
