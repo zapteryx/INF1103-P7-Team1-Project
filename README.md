@@ -13,7 +13,7 @@ docker run --rm -it -v "${PWD}:/usr/src/app" ghcr.io/zapteryx/inf1103-p7-team1-p
 ```
 Running the test scripts with Docker:
 ```bash
-docker run --rm ghcr.io/zapteryx/inf1103-p7-team1-project:latest python scripts/test_main.py
+docker run -e ADMIN_SECRET_CODE=STAFF2026 --rm ghcr.io/zapteryx/inf1103-p7-team1-project:latest python scripts/test_main.py
 docker run --rm ghcr.io/zapteryx/inf1103-p7-team1-project:latest python scripts/test_authentication.py
 ```
 
